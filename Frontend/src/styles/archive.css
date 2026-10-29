@@ -1,0 +1,33 @@
+/* search + map */
+.find{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 22px}
+.find input{flex:1 1 280px;font:inherit;padding:13px 14px;border:1.5px solid var(--ink);background:transparent;border-radius:3px;color:var(--ink)}
+.find input::placeholder{color:var(--mute)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:26px}
+.chip{font:inherit;font-size:14px;padding:6px 12px;border:1px solid var(--ink);background:transparent;border-radius:99px;cursor:pointer;color:var(--ink)}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--lime)}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:clamp(20px,3vw,44px);align-items:start}
+#list{list-style:none;margin:0;padding:0;border-top:1px solid var(--ink)}
+#list li{border-bottom:1px solid rgba(23,32,31,.3)}
+#list button{all:unset;box-sizing:border-box;display:grid;grid-template-columns:1fr auto;gap:2px 12px;width:100%;padding:12px 6px;cursor:pointer}
+#list button:hover,#list button[aria-current=true]{background:rgba(255,255,255,.45)}
+#list button:focus-visible{outline:2px solid var(--indigo)}
+#list .n{font:400 18px var(--serif)} #list .m{font-size:14px;color:var(--mute);grid-column:1/-1}
+#list .c{font-size:14px;color:var(--mute)}
+#detail{min-height:6.4em;padding:14px 6px 0;font-size:16px}
+#detail em{font-style:normal;color:var(--indigo);font-weight:600}
+#empty{padding:14px 6px;color:var(--mute)}
+#map{width:100%;height:auto;background:rgba(255,255,255,.35);border:1px solid rgba(23,32,31,.4);border-radius:3px}
+#map .g{stroke:rgba(23,32,31,.16);stroke-width:1}
+#map text{font:12px var(--sans);fill:var(--mute)}
+#map:not(.all) .pt:not(.on):not(:hover):not(:focus) text{opacity:0}
+.pt circle{fill:var(--indigo);transition:r .15s,opacity .15s}
+.pt{cursor:pointer}
+.pt.off circle{opacity:.18}
+.pt.on circle{fill:var(--turmeric);stroke:var(--ink);stroke-width:1.5}
+.pt text{fill:var(--ink);font-size:12.5px;font-weight:600}
+.pt.off text{opacity:0}
+.pt:focus-visible{outline:none}.pt:focus-visible circle{stroke:var(--ink);stroke-width:2}
+
+@media (max-width:860px){
+  .split{grid-template-columns:1fr}
+}

@@ -1,0 +1,9 @@
+:root{
+  --lime:#E6E8DF; --lime2:#D6DCCD; --lime3:#BFC9BC; --water:#2B4B48; --deep:#12302F;
+  --ink:#17201F; --mute:#4F5C58; --indigo:#2D3A8C; --turmeric:#D9A21B;
+  --serif:"Young Serif",Georgia,"Times New Roman",serif;
+  --sans:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --dev:"Tiro Devanagari Hindi","Noto Serif Devanagari",serif;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}

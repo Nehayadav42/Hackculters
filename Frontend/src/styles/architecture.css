@@ -1,0 +1,7 @@
+.stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px 40px;margin-top:6px}
+.stack dt{font:400 20px var(--serif);margin:0 0 4px} .stack dd{margin:0;color:#A9BDB7;font-size:15.5px;line-height:1.5}
+footer{margin-top:90px;padding-top:20px;border-top:1px solid rgba(238,241,234,.3);font-size:14px;color:#A9BDB7;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+@media (max-width:860px){
+  .stack{grid-template-columns:1fr}
+}
