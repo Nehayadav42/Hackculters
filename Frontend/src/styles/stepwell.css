@@ -1,0 +1,11 @@
+/* see */
+.stage{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:clamp(20px,3vw,44px);align-items:center}
+canvas{width:100%;aspect-ratio:1/1;max-height:520px;display:block;border:1px solid rgba(238,241,234,.35);border-radius:3px;cursor:grab;touch-action:pan-y}
+canvas:active{cursor:grabbing}
+.ctl{margin:20px 0 0}
+.ctl label{display:flex;justify-content:space-between;font-size:15px;margin-bottom:6px}
+input[type=range]{width:100%;accent-color:var(--turmeric)}
+
+@media (max-width:860px){
+  .stage{grid-template-columns:1fr}
+}
