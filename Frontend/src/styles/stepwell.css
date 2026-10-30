@@ -1,11 +1,313 @@
-/* see */
-.stage{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:clamp(20px,3vw,44px);align-items:center}
-canvas{width:100%;aspect-ratio:1/1;max-height:520px;display:block;border:1px solid rgba(238,241,234,.35);border-radius:3px;cursor:grab;touch-action:pan-y}
-canvas:active{cursor:grabbing}
-.ctl{margin:20px 0 0}
-.ctl label{display:flex;justify-content:space-between;font-size:15px;margin-bottom:6px}
-input[type=range]{width:100%;accent-color:var(--turmeric)}
+/* Stepwell experience */
 
-@media (max-width:860px){
-  .stage{grid-template-columns:1fr}
+.stepwell-experience {
+  width: 100%;
+}
+
+.stepwell-heading {
+  max-width: 700px;
+  margin-bottom: 54px;
+}
+
+.stepwell-heading .eyebrow {
+  display: inline-block;
+  margin-bottom: 20px;
+  color: var(--gold-light);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.stepwell-heading h2 {
+  margin: 0;
+  color: var(--paper);
+  font-family: var(--serif);
+  font-size: clamp(44px, 6vw, 74px);
+  font-weight: 400;
+  line-height: 0.98;
+}
+
+.stepwell-heading h2 span {
+  color: var(--gold-light);
+  font-style: italic;
+}
+
+.stepwell-heading > p {
+  max-width: 570px;
+  margin-top: 22px;
+  color: rgba(250, 248, 242, 0.68);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+/* Main layout */
+
+.stepwell-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(260px, 0.75fr);
+  gap: 28px;
+  align-items: stretch;
+}
+
+/* Interactive viewer */
+
+.stepwell-viewer {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid rgba(250, 248, 242, 0.17);
+  background: rgba(250, 248, 242, 0.035);
+}
+
+.viewer-topbar,
+.viewer-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: rgba(250, 248, 242, 0.55);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.viewer-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--gold-light);
+}
+
+.viewer-status i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #8cad82;
+}
+
+.stepwell-canvas {
+  display: block;
+  width: 100%;
+  max-width: 540px;
+  aspect-ratio: 1 / 1;
+  max-height: 520px;
+  margin: 12px auto;
+  border: 0;
+  border-radius: 0;
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.stepwell-canvas:active {
+  cursor: grabbing;
+}
+
+.viewer-caption {
+  padding-top: 14px;
+  border-top: 1px solid rgba(250, 248, 242, 0.14);
+}
+
+/* Heritage information */
+
+.stepwell-info {
+  display: flex;
+  flex-direction: column;
+  padding: 30px 26px;
+  border: 1px solid rgba(250, 248, 242, 0.17);
+  background: rgba(250, 248, 242, 0.055);
+}
+
+.info-label {
+  color: var(--gold-light);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.7px;
+}
+
+.stepwell-info h3 {
+  margin: 20px 0 4px;
+  color: var(--paper);
+  font-family: var(--serif);
+  font-size: 36px;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.stepwell-location {
+  margin: 0;
+  color: rgba(250, 248, 242, 0.55);
+  font-size: 12px;
+}
+
+.info-divider {
+  height: 1px;
+  margin: 26px 0;
+  background: rgba(250, 248, 242, 0.17);
+}
+
+.info-detail {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.info-detail span {
+  color: rgba(250, 248, 242, 0.48);
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+
+.info-detail strong {
+  color: var(--paper);
+  font-size: 11px;
+  font-weight: 600;
+  text-align: right;
+}
+
+.stepwell-description {
+  margin: 10px 0 28px;
+  color: rgba(250, 248, 242, 0.68);
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.5;
+}
+
+.stepwell-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid rgba(250, 248, 242, 0.17);
+}
+
+.stepwell-metrics div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stepwell-metrics strong {
+  color: var(--gold-light);
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.stepwell-metrics span {
+  color: rgba(250, 248, 242, 0.55);
+  font-size: 10px;
+}
+
+/* Reconstruction controls */
+
+.stepwell-controls {
+  margin-top: 24px;
+  padding: 26px;
+  border: 1px solid rgba(250, 248, 242, 0.17);
+  background: rgba(250, 248, 242, 0.035);
+}
+
+.controls-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.controls-heading h3 {
+  margin: 8px 0 0;
+  color: var(--paper);
+  font-family: var(--serif);
+  font-size: 25px;
+  font-weight: 500;
+}
+
+.photo-count {
+  color: var(--gold-light);
+  font-family: var(--serif);
+  font-size: 24px;
+}
+
+.photo-control {
+  margin-top: 24px;
+}
+
+.photo-control label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  color: rgba(250, 248, 242, 0.75);
+  font-size: 12px;
+}
+
+.photo-control label strong {
+  color: var(--gold-light);
+}
+
+.photo-control input[type="range"] {
+  width: 100%;
+  accent-color: var(--gold-light);
+  cursor: pointer;
+}
+
+.slider-limits {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  color: rgba(250, 248, 242, 0.42);
+  font-size: 10px;
+}
+
+.simulation-note {
+  margin: 20px 0 0;
+  color: rgba(250, 248, 242, 0.48);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+/* Responsive */
+
+@media (max-width: 860px) {
+  .stepwell-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .stepwell-viewer {
+    width: 100%;
+  }
+
+  .stepwell-info {
+    min-height: 350px;
+  }
+}
+
+@media (max-width: 600px) {
+  .stepwell-heading {
+    margin-bottom: 38px;
+  }
+
+  .stepwell-heading h2 {
+    font-size: 46px;
+  }
+
+  .stepwell-viewer {
+    padding: 12px;
+  }
+
+  .stepwell-info {
+    padding: 24px 20px;
+  }
+
+  .stepwell-controls {
+    padding: 20px;
+  }
+
+  .controls-heading {
+    align-items: flex-start;
+  }
+
+  .controls-heading h3 {
+    font-size: 21px;
+  }
 }
