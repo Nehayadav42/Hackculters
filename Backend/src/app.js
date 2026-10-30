@@ -1,7 +1,7 @@
-const express = require('express');
-const cors = require('cors');
-const errorHandler = require('./middlewares/errorHandler');
-const locationRoutes = require('./routes/location.routes');
+import express from 'express';
+import cors from 'cors';
+import errorHandler from './middlewares/errorHandler.js';
+import monumentRoutes from './routes/monument.routes.js'; // Updated import
 
 const app = express();
 
@@ -9,10 +9,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Mount Routes
-app.use('/api/v1/locations', locationRoutes);
+// Mount the new Supabase routes
+app.use('/api/v1/monuments', monumentRoutes);
 
-// Centralized Error Handling Middleware (Catches all backend crashes safely)
+// Centralized Error Handling
 app.use(errorHandler);
 
-module.exports = app;
+export default app;
