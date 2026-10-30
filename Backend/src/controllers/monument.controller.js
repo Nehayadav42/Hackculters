@@ -33,3 +33,25 @@ export const getMonumentById = async (req, res, next) => {
         next(error);
     }
 };
+
+export const uploadArchiveFile = async (req, res, next) => {
+    try {
+        // req.file is provided by the Multer middleware
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: "No file uploaded" });
+        }
+
+        // The file is already securely uploaded to Cloudinary at this point
+        const fileUrl = req.file.path;
+
+        // Return the secure URL to the frontend so they can save it to the database
+        res.status(201).json({
+            success: true,
+            message: "File uploaded successfully to cloud storage",
+            file_url: fileUrl,
+            file_type: req.file.mimetype
+        });
+    } catch (error) {
+        next(error);
+    }
+};
