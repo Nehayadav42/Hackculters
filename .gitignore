@@ -1,0 +1,35 @@
+
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Environment variables
+frontend/.env
+backend/.env
+.env
+.env.*
+
+# Allow example environment files
+!.env.example
+
+# Build files
+frontend/dist/
+backend/dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Cache
+.cache/
+.vite/
+coverage/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
