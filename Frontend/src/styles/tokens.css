@@ -1,9 +1,52 @@
-:root{
-  --lime:#E6E8DF; --lime2:#D6DCCD; --lime3:#BFC9BC; --water:#2B4B48; --deep:#12302F;
-  --ink:#17201F; --mute:#4F5C58; --indigo:#2D3A8C; --turmeric:#D9A21B;
-  --serif:"Young Serif",Georgia,"Times New Roman",serif;
-  --sans:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --dev:"Tiro Devanagari Hindi","Noto Serif Devanagari",serif;
-  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
-  color-scheme:light;
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Noto+Serif+Devanagari:wght@400;500;600&display=swap");
+
+:root {
+  /* Brand colours */
+  --lime: #f5f1e8;
+  --lime2: #eae3d5;
+  --lime3: #d8cebb;
+
+  --water: #49685c;
+  --deep: #183b32;
+
+  --ink: #202923;
+  --mute: #737970;
+
+  --indigo: #526b61;
+  --turmeric: #bd8744;
+
+  /* Extended palette */
+  --paper: #faf8f2;
+  --surface: #f0ebdf;
+  --surface-dark: #e4ddce;
+
+  --forest: #183b32;
+  --forest-light: #31594b;
+
+  --gold: #bd8744;
+  --gold-light: #d8b47b;
+
+  --border: rgba(32, 41, 35, 0.16);
+  --border-light: rgba(250, 248, 242, 0.2);
+
+  /* Typography */
+  --serif: "Cormorant Garamond", Georgia, serif;
+  --sans: "Manrope", system-ui, sans-serif;
+  --dev: "Noto Serif Devanagari", serif;
+
+  /* Layout */
+  --content-width: 1320px;
+  --page-gutter: clamp(22px, 5vw, 76px);
+
+  /* Spacing */
+  --section-space: clamp(76px, 10vw, 140px);
+
+  /* Effects */
+  --shadow-soft: 0 12px 40px rgba(24, 59, 50, 0.08);
+  --shadow-card: 0 20px 60px rgba(24, 59, 50, 0.12);
+
+  --transition: 240ms ease;
+
+  /* Accessibility */
+  color-scheme: light;
 }
