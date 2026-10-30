@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   NAV_CTA,
@@ -13,6 +13,20 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const closeMenu = () => setMenuOpen(false);
+
+  useEffect(() => {
+  const handleEscape = (event) => {
+    if (event.key === "Escape") {
+      closeMenu();
+    }
+  };
+
+  window.addEventListener("keydown", handleEscape);
+
+  return () => {
+    window.removeEventListener("keydown", handleEscape);
+  };
+}, []);
 
   return (
     <header className="top">
