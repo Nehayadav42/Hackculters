@@ -33,3 +33,21 @@ export const getMonumentById = async (req, res, next) => {
         next(error);
     }
 };
+
+export const getManuscriptTranslation = async (req, res, next) => {
+    try {
+        // For the hackathon demo, you can send this static JSON to match his UI
+        // Later, this would be fetched from Supabase using the word ID
+        res.status(200).json({
+            success: true,
+            data: {
+                original: "गणेशाय",
+                transliteration: "ganesaya",
+                english: "to Ganesha",
+                meaning: "Ganesha in the dative case: an invocation addressed to him. The ending -aya means 'to'."
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
