@@ -1,5 +1,6 @@
 import * as monumentService from '../services/monument.service.js';
 import { supabase } from '../config/supabaseClient.js';
+import { ocrQueue } from '../workers/ocrWorker.js';
 
 export const getMapData = async (req, res, next) => {
     try {
@@ -60,28 +61,30 @@ export const uploadArchiveFile = async (req, res, next) => {
         }
 
         const fileUrl = req.file.path;
-        // The frontend should send these details when uploading
         const { monument_id, title, type } = req.body; 
 
-        // 1. Save the file record to Supabase
+        // 2. Save the file record to Supabase
         const { data, error } = await supabase
             .from('documents')
-            .insert([
-                { 
-                    monument_id: monument_id, 
-                    title: title || "Untitled Archive", 
-                    type: type || "Image", 
-                    file_url: fileUrl 
-                }
-            ])
+            .insert([{ monument_id, title: title || "Untitled", type: type || "Document", file_url: fileUrl }])
             .select();
 
         if (error) throw new Error(error.message);
 
+        const savedDocument = data[0];
+
+        // 3. THE INNOVATION: If it's a manuscript or document, send to the background worker for OCR
+        if (type === 'Manuscript' || type === 'Document') {
+            await ocrQueue.add('extract-text', { 
+                documentId: savedDocument.id, 
+                fileUrl: fileUrl 
+            });
+        }
+
         res.status(201).json({
             success: true,
-            message: "File uploaded and saved to archive successfully",
-            document: data[0]
+            message: "File uploaded! OCR text extraction is running in the background.",
+            document: savedDocument
         });
     } catch (error) {
         next(error);
@@ -101,6 +104,45 @@ export const get3DModelData = async (req, res, next) => {
                 wireframe_url: "https://example.com/models/rani-ki-vav-wireframe.obj",
                 total_photos_processed: 1344,
                 geometry_points: 672
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const searchArchives = async (req, res, next) => {
+    try {
+        const { q } = req.query; // The search term from the frontend
+        
+        if (!q) {
+            return res.status(400).json({ success: false, message: "Search query is required" });
+        }
+
+        // 1. Search for matching monuments (by name or description)
+        const { data: monuments, error: monError } = await supabase
+            .from('monuments')
+            .select('id, name, category, state, thumbnail_url')
+            .or(`name.ilike.%${q}%,description.ilike.%${q}%`);
+
+        if (monError) throw new Error(monError.message);
+
+        // 2. Search INSIDE the documents (by title or the extracted OCR text)
+        const { data: documents, error: docError } = await supabase
+            .from('documents')
+            .select('id, title, type, monument_id, file_url')
+            .or(`title.ilike.%${q}%,extracted_text.ilike.%${q}%`);
+
+        if (docError) throw new Error(docError.message);
+
+        // 3. Return the combined results
+        res.status(200).json({
+            success: true,
+            results: {
+                monumentsFound: monuments.length,
+                documentsFound: documents.length,
+                monuments,
+                documents
             }
         });
     } catch (error) {

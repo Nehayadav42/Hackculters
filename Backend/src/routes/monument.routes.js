@@ -10,5 +10,6 @@ router.post('/upload', upload.single('archive_file'), monumentController.uploadA
 router.get('/', monumentController.getMonuments);
 router.get('/:id', monumentController.getMonumentById);
 router.get('/:id/3d-model', monumentController.get3DModelData);
+router.get('/search/all', monumentController.searchArchives);
 
 export default router;
