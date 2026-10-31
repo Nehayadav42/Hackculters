@@ -10,6 +10,7 @@ const connection = new Redis(
 // 1. Create the Queue
 const ocrQueue = new Queue("ocr-processing", { connection });
 
+
 // 2. Create the Worker that processes jobs from the queue
 const ocrWorker = new Worker(
     "ocr-processing",
