@@ -1,22 +1,414 @@
-.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(28px,5vw,72px);align-items:end;max-width:1180px}
-.name{display:flex;gap:.3em;align-items:baseline;font:400 clamp(96px,16vw,210px)/.86 var(--serif);letter-spacing:-.045em;margin:0 0 .12em}
-.name small{font:400 .24em/1 var(--dev);letter-spacing:0;color:var(--indigo)}
-.steps{display:block;width:min(100%,420px);height:auto;margin:0 0 28px}
-.lede{font-size:clamp(22px,2.6vw,32px);line-height:1.25;max-width:22ch;margin-bottom:.7em;font-family:var(--serif)}
-.btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px}
-.btn{font:inherit;font-weight:600;font-size:15px;padding:12px 18px;border:1.5px solid var(--ink);border-radius:3px;text-decoration:none;background:var(--ink);color:var(--lime);cursor:pointer}
-.btn.alt{background:transparent;color:var(--ink)}
-.btn:hover{background:var(--indigo);border-color:var(--indigo);color:var(--lime)}
-.bh{border:1px solid var(--ink);border-radius:3px;background:rgba(255,255,255,.4)}
-.bh h2{font:400 21px/1.2 var(--serif);margin:0;padding:16px 18px 2px}
-.bh p{font-size:14px;padding:0 18px 12px;margin:0;color:var(--mute)}
-#bh{list-style:none;margin:0;padding:0;border-top:1px solid rgba(23,32,31,.3)}
-#bh button{all:unset;box-sizing:border-box;display:grid;grid-template-columns:1fr auto;gap:0 12px;width:100%;padding:11px 18px;cursor:pointer;border-bottom:1px solid rgba(23,32,31,.18)}
-#bh li:last-child button{border-bottom:0}
-#bh button:hover{background:rgba(255,255,255,.6)}
-#bh button:focus-visible{outline:2px solid var(--indigo)}
-#bh .n{font:400 17px var(--serif)} #bh .k,#bh .c{font-size:13.5px;color:var(--mute)} #bh .c{text-align:right;grid-row:1}
+/* =================================
+   Hero Layout
+================================= */
 
-@media (max-width:860px){
-  .hero{grid-template-columns:1fr}
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(340px, 0.9fr);
+  align-items: center;
+  gap: clamp(40px, 7vw, 100px);
+
+  width: 100%;
+  max-width: var(--content-width);
+  margin-inline: auto;
+
+  padding-block: clamp(70px, 9vw, 120px);
+}
+
+.hero-content {
+  min-width: 0;
+}
+
+/* =================================
+   Eyebrow
+================================= */
+
+.hero-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 28px;
+
+  color: var(--mute);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.eyebrow-line {
+  width: 32px;
+  height: 1px;
+  background: var(--gold);
+}
+
+/* =================================
+   Hero Heading
+================================= */
+
+.name {
+  display: block;
+
+  margin: 0 0 18px;
+
+  color: var(--forest);
+
+  font-family: var(--serif);
+  font-size: clamp(64px, 7.5vw, 108px);
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.055em;
+}
+
+.name-accent {
+  display: block;
+  color: var(--gold);
+  font-style: italic;
+}
+
+/* =================================
+   Decorative Steps Diagram
+================================= */
+
+.steps {
+  display: block;
+
+  width: min(100%, 380px);
+  height: auto;
+
+  margin: 30px 0 34px;
+}
+
+/* =================================
+   Hero Description
+================================= */
+
+.lede {
+  max-width: 23ch;
+
+  margin: 0 0 18px;
+
+  color: var(--ink);
+
+  font-family: var(--serif);
+  font-size: clamp(26px, 3vw, 38px);
+  font-weight: 500;
+  line-height: 1.18;
+}
+
+.lede span {
+  color: var(--forest-light);
+  font-style: italic;
+}
+
+.hero-description {
+  max-width: 58ch;
+
+  margin-bottom: 26px;
+
+  color: var(--mute);
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+/* =================================
+   Hero Buttons
+================================= */
+
+.btns {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  margin-top: 28px;
+}
+
+.btn {
+  min-height: 50px;
+  padding: 0 21px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+
+  border: 1px solid var(--forest);
+  border-radius: 0;
+
+  background: var(--forest);
+  color: var(--paper);
+
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 700;
+
+  transition:
+    background var(--transition),
+    color var(--transition),
+    border-color var(--transition),
+    transform var(--transition);
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  background: var(--forest-light);
+  border-color: var(--forest-light);
+  color: var(--paper);
+}
+
+.btn span {
+  color: var(--gold-light);
+  font-size: 17px;
+}
+
+.btn.alt {
+  background: transparent;
+  color: var(--forest);
+}
+
+.btn.alt:hover {
+  background: var(--lime2);
+  border-color: var(--gold);
+  color: var(--forest);
+}
+
+/* =================================
+   Hero Note
+================================= */
+
+.hero-note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-top: 34px;
+
+  color: var(--mute);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+
+.hero-note-dot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+/* =================================
+   Featured Collection
+================================= */
+
+.hero-feature {
+  min-width: 0;
+  padding-top: 12px;
+}
+
+.hero-feature-label,
+.hero-feature-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+
+  color: var(--mute);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.hero-feature-label {
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.hero-feature-footer {
+  padding-top: 17px;
+  border-top: 1px solid var(--border);
+}
+
+.hero-feature-footer span:last-child {
+  color: var(--gold);
+  font-size: 18px;
+}
+
+/* =================================
+   Bhopal Collection Card
+================================= */
+
+.bh {
+  overflow: hidden;
+
+  margin-block: 18px;
+
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.32);
+
+  box-shadow: var(--shadow-soft);
+}
+
+.bh h2 {
+  padding: 22px 22px 5px;
+
+  color: var(--forest);
+
+  font-family: var(--serif);
+  font-size: 27px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.bh > p {
+  padding: 0 22px 17px;
+  margin: 0;
+
+  color: var(--mute);
+  font-size: 12px;
+}
+
+#bh {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  border-top: 1px solid var(--border);
+}
+
+#bh button {
+  all: unset;
+  box-sizing: border-box;
+
+  width: 100%;
+  padding: 14px 22px;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 14px;
+
+  cursor: pointer;
+
+  border-bottom: 1px solid var(--border);
+
+  transition:
+    background var(--transition),
+    padding var(--transition);
+}
+
+#bh li:last-child button {
+  border-bottom: 0;
+}
+
+#bh button:hover {
+  padding-left: 27px;
+  background: var(--lime2);
+}
+
+#bh button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: -3px;
+}
+
+#bh .n {
+  color: var(--forest);
+
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.2;
+}
+
+#bh .k,
+#bh .c {
+  color: var(--mute);
+  font-size: 11px;
+}
+
+#bh .c {
+  grid-column: 2;
+  grid-row: 1;
+  text-align: right;
+}
+
+#bh .k {
+  grid-column: 1 / -1;
+}
+
+/* =================================
+   Responsive
+================================= */
+
+@media (max-width: 1000px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 0.9fr);
+    gap: 36px;
+  }
+
+  .name {
+    font-size: clamp(58px, 7vw, 82px);
+  }
+}
+
+@media (max-width: 860px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 56px;
+
+    padding-block: 65px;
+  }
+
+  .hero-content {
+    max-width: 680px;
+  }
+
+  .hero-feature {
+    width: 100%;
+    max-width: 650px;
+  }
+
+  .name {
+    font-size: clamp(68px, 12vw, 100px);
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding-block: 48px;
+  }
+
+  .hero-eyebrow {
+    font-size: 9px;
+  }
+
+  .name {
+    font-size: clamp(58px, 14vw, 76px);
+  }
+
+  .lede {
+    font-size: 27px;
+  }
+
+  .btns {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  .hero-feature-label {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .bh h2 {
+    font-size: 24px;
+  }
+
+  #bh button {
+    padding-inline: 15px;
+  }
 }

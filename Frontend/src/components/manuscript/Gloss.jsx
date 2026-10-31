@@ -1,13 +1,40 @@
 export default function Gloss({ word }) {
   return (
-    <p id="gloss" className="mute">
+    <div id="gloss" aria-live="polite">
+
       {word ? (
-        <>
-          <b style={{ color: "var(--ink)" }}>{word.roman}</b>, “{word.meaning}”. {word.gloss}
-        </>
+        <div className="gloss-content">
+
+          <div className="gloss-word">
+            <span className="gloss-label">SELECTED WORD</span>
+
+            <h3 lang="hi">{word.devanagari}</h3>
+
+            <span className="gloss-roman">
+              {word.roman}
+            </span>
+          </div>
+
+          <div className="gloss-meaning">
+            <span className="gloss-label">ENGLISH MEANING</span>
+
+            <h4>{word.meaning}</h4>
+
+            <p>{word.gloss}</p>
+          </div>
+
+        </div>
       ) : (
-        "Select a word to see what it means and how it was read."
+        <div className="gloss-empty">
+          <span aria-hidden="true">↖</span>
+
+          <p>
+            Select a word from the manuscript to explore its
+            transliteration, meaning and linguistic context.
+          </p>
+        </div>
       )}
-    </p>
+
+    </div>
   );
 }

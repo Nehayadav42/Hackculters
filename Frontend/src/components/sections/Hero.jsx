@@ -8,23 +8,73 @@ export default function Hero({ bhopalEntries, onOpenBhopal }) {
   return (
     <Section tone="s0" wrapped={false}>
       <div className="hero">
-        <div>
-          <h1 className="name intro" style={delay(".05s")}>Vav</h1>
+
+        {/* Hero introduction */}
+        <div className="hero-content">
+
+          <div className="hero-eyebrow intro" style={delay(".05s")}>
+            <span className="eyebrow-line" />
+            <span>Preserving India's cultural memory</span>
+          </div>
+
+          <h1 className="name intro" style={delay(".1s")}>
+            Heritage
+            <span className="name-accent">, reimagined.</span>
+          </h1>
+
           <StepsDiagram style={delay(".2s")} />
-          <p className="lede intro" style={delay(".3s")}>
-            India’s architecture, archived where you can walk into it.
+
+          <h2 className="lede intro" style={delay(".3s")}>
+            India's stories are written in its architecture.
+            <span> It's time to explore them.</span>
+          </h2>
+
+          <p className="hero-description intro" style={delay(".4s")}>
+            Discover historic places, explore digitised manuscripts,
+            uncover architectural details and experience cultural
+            heritage through interactive digital reconstructions.
           </p>
-          <p className="mute intro" style={delay(".4s")}>
-            Vav is a living archive for the heritage that Explorer Fellows document on the road. Search photos and field notes by place, read scanned regional manuscripts in translation, and turn a monument’s photographs into a 3D model you can turn around.
-          </p>
+
           <div className="btns intro" style={delay(".5s")}>
-            <a className="btn" href="#walk">Search the archive</a>
-            <button className="btn alt" id="goBh" type="button" onClick={() => onOpenBhopal(null)}>
-              Start with Bhopal
+            <a className="btn" href="#walk">
+              Explore heritage
+              <span aria-hidden="true">↗</span>
+            </a>
+
+            <button
+              className="btn alt"
+              type="button"
+              onClick={() => onOpenBhopal(null)}
+            >
+              Discover Bhopal
             </button>
           </div>
+
+          <div className="hero-note intro" style={delay(".6s")}>
+            <span className="hero-note-dot" />
+            <span>A growing digital archive of India's heritage</span>
+          </div>
         </div>
-        <BhopalCollection entries={bhopalEntries} onOpen={onOpenBhopal} style={delay(".45s")} />
+
+        {/* Featured heritage collection */}
+        <div className="hero-feature">
+          <div className="hero-feature-label">
+            <span>01 / Featured collection</span>
+            <span>Bhopal, Madhya Pradesh</span>
+          </div>
+
+          <BhopalCollection
+            entries={bhopalEntries}
+            onOpen={onOpenBhopal}
+            style={delay(".45s")}
+          />
+
+          <div className="hero-feature-footer">
+            <span>Explore historical records</span>
+            <span aria-hidden="true">↓</span>
+          </div>
+        </div>
+
       </div>
     </Section>
   );

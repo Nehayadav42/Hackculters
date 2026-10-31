@@ -1,7 +1,196 @@
-.stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px 40px;margin-top:6px}
-.stack dt{font:400 20px var(--serif);margin:0 0 4px} .stack dd{margin:0;color:#A9BDB7;font-size:15.5px;line-height:1.5}
-footer{margin-top:90px;padding-top:20px;border-top:1px solid rgba(238,241,234,.3);font-size:14px;color:#A9BDB7;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+/* Architecture section */
 
-@media (max-width:860px){
-  .stack{grid-template-columns:1fr}
+.architecture {
+  width: 100%;
+}
+
+.architecture-heading {
+  max-width: 720px;
+  margin-bottom: 64px;
+}
+
+.architecture-heading .eyebrow {
+  display: inline-block;
+  margin-bottom: 22px;
+  color: var(--gold-light);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2.2px;
+}
+
+.architecture-heading h2 {
+  margin: 0;
+  color: var(--paper);
+  font-family: var(--serif);
+  font-size: clamp(42px, 6vw, 76px);
+  font-weight: 400;
+  line-height: 0.98;
+  letter-spacing: -1.5px;
+}
+
+.architecture-heading h2 span {
+  color: var(--gold-light);
+  font-style: italic;
+}
+
+.architecture-intro {
+  max-width: 570px;
+  margin-top: 24px;
+  color: rgba(250, 248, 242, 0.68);
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+/* Four-stage flow */
+
+.architecture-flow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  align-items: stretch;
+}
+
+.architecture-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 330px;
+  padding: 24px 20px;
+  border: 1px solid rgba(250, 248, 242, 0.16);
+  background: rgba(250, 248, 242, 0.045);
+  transition:
+    background var(--transition),
+    border-color var(--transition),
+    transform var(--transition);
+}
+
+.architecture-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(216, 180, 123, 0.55);
+  background: rgba(250, 248, 242, 0.085);
+}
+
+.architecture-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 42px;
+}
+
+.architecture-number {
+  color: var(--gold-light);
+  font-family: var(--serif);
+  font-size: 36px;
+  line-height: 1;
+}
+
+.architecture-connector {
+  color: rgba(216, 180, 123, 0.65);
+  font-size: 22px;
+}
+
+.architecture-subtitle {
+  margin-bottom: 12px;
+  color: rgba(250, 248, 242, 0.48);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+}
+
+.architecture-card h3 {
+  margin: 0 0 14px;
+  color: var(--paper);
+  font-family: var(--serif);
+  font-size: 25px;
+  font-weight: 500;
+}
+
+.architecture-card p {
+  margin: 0 0 24px;
+  color: rgba(250, 248, 242, 0.66);
+  font-size: 12.5px;
+  line-height: 1.8;
+}
+
+.architecture-technologies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: auto;
+}
+
+.architecture-technologies span {
+  padding: 6px 9px;
+  border: 1px solid rgba(250, 248, 242, 0.16);
+  color: rgba(250, 248, 242, 0.76);
+  font-size: 9px;
+  letter-spacing: 0.3px;
+}
+
+/* Closing statement */
+
+.architecture-note {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 36px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(250, 248, 242, 0.16);
+}
+
+.architecture-note-mark {
+  color: var(--gold-light);
+  font-size: 23px;
+}
+
+.architecture-note p {
+  margin: 0;
+  color: rgba(250, 248, 242, 0.68);
+  font-family: var(--serif);
+  font-size: 19px;
+  font-style: italic;
+}
+
+/* Responsive layout */
+
+@media (max-width: 1050px) {
+  .architecture-flow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .architecture-card {
+    min-height: 290px;
+  }
+}
+
+@media (max-width: 600px) {
+  .architecture-heading {
+    margin-bottom: 42px;
+  }
+
+  .architecture-heading h2 {
+    font-size: 45px;
+  }
+
+  .architecture-flow {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .architecture-card {
+    min-height: auto;
+    padding: 22px;
+  }
+
+  .architecture-card-top {
+    margin-bottom: 28px;
+  }
+
+  .architecture-card p {
+    font-size: 13px;
+  }
+
+  .architecture-note {
+    align-items: flex-start;
+  }
 }

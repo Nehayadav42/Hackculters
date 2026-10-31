@@ -3,14 +3,15 @@ import { useStepwellCanvas } from "../../hooks/useStepwellCanvas.js";
 
 export default function StepwellCanvas({ photos }) {
   const { canvasRef, pointerHandlers } = useStepwellCanvas(photos);
+
   return (
     <canvas
-      id="cv"
+      className="stepwell-canvas"
       ref={canvasRef}
       width={CANVAS_SIZE}
       height={CANVAS_SIZE}
       role="img"
-      aria-label="Rotating wireframe of a stepwell, built from contributed photographs"
+      aria-label="Illustrative rotating wireframe of a multi-level stepwell. Drag to rotate."
       {...pointerHandlers}
     />
   );
