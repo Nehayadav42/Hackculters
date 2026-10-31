@@ -4,8 +4,8 @@ import AppError from '../utils/AppError.js';
 // 1. Fetch data for the Interactive Map
 export const fetchMapPins = async () => {
     const { data, error } = await supabase
-        .from('monuments')
-        .select('id, name, lat, lng, thumbnail_url, category, state');
+  .from('heritage_sites')
+  .select('*');
 
     if (error) throw new AppError(error.message, 500);
     return data;
@@ -13,7 +13,7 @@ export const fetchMapPins = async () => {
 
 // 2. Fetch data for the "Explore Monuments" List View with Filters
 export const fetchMonumentsList = async (filters = {}) => {
-    let query = supabase.from('monuments').select('*');
+    let query = supabase.from('heritage_sites').select('*');
 
     // Apply filters from the UI dropdowns
     if (filters.state) query = query.eq('state', filters.state);
@@ -29,7 +29,7 @@ export const fetchMonumentsList = async (filters = {}) => {
 // 3. Fetch specific Monument Details + Documents (For the Details Page)
 export const fetchMonumentDetails = async (monumentId) => {
     const { data, error } = await supabase
-        .from('monuments')
+        .from('heritage_')
         .select(`
             *,
             documents ( id, title, type, file_url )

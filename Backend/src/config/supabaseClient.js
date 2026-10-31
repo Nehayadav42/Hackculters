@@ -14,7 +14,6 @@
 // export const supabase = createClient(supabaseUrl, supabaseKey);
 
 
-
 import { createClient } from "@supabase/supabase-js";
 import "dotenv/config";
 
