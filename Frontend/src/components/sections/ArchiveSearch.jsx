@@ -7,15 +7,17 @@ import EntryMap from "../archive/EntryMap.jsx";
 
 export default function ArchiveSearch({ archive }) {
   const {
-    groups,
-    group,
-    query,
-    visible,
-    selected,
-    changeQuery,
-    changeGroup,
-    select,
-  } = archive;
+  groups,
+  group,
+  query,
+  visible,
+  selected,
+  loading,
+  error,
+  changeQuery,
+  changeGroup,
+  select,
+} = archive;
 
   const selectedId = selected?.id ?? null;
 
@@ -62,6 +64,19 @@ export default function ArchiveSearch({ archive }) {
             active={group}
             onSelect={changeGroup}
           />
+
+          {loading && (
+  <p className="archive-status" role="status">
+    Loading heritage records...
+  </p>
+)}
+
+{error && (
+  <p className="archive-status archive-error" role="alert">
+    Live archive unavailable: {error}
+    Showing locally available records instead.
+  </p>
+)}
         </div>
 
         <div className="archive-workspace">

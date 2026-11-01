@@ -1,4 +1,4 @@
-
+import { useAuth } from "./context/useAuth.js";
 import { useCallback } from "react";
 import {
   BrowserRouter,
@@ -24,7 +24,7 @@ import { BHOPAL_GROUP } from "./data/bhopal.js";
 
 import AuthPage from "./pages/AuthPage.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
-import { useAuth } from "./context/AuthContext.jsx";
+
 
 function LandingPage() {
   const navigate = useNavigate();
