@@ -1,116 +1,97 @@
-🏛️ HeritageVerse - Backend API
+# HeritageVerse
 
-Problem Statement: HC26-CULT01 - Digital Archiving and Interactive Exploration of Indian Heritage.
+HeritageVerse is a digital archive for exploring Indian heritage through a public storytelling experience and an authenticated monument collection. The frontend is built with React and Vite; the API uses Express and Supabase.
 
-HeritageVerse is a robust, scalable Node.js backend designed to power a digital heritage museum. It provides a seamless API for geospatial mapping, 3D immersive viewing, archival document search, and an AI-powered research assistant. By utilizing message queues and cloud storage, the system ensures high performance even when processing heavy historical manuscripts and point-cloud data.
+## What works today
 
-🏗️ System Architecture
+- Public landing page with archive, manuscript, architecture, and interactive stepwell sections. Some landing-page content is curated demo data.
+- Supabase authentication with protected dashboard and monument routes.
+- Dashboard and monument collection read records from the backend API.
+- Monument detail pages show available record fields, images, coordinates, and related documents.
+- Dashboard contribution form sends archive files to the existing multipart upload endpoint.
+- Saved discoveries do not persist yet; there is no user-specific bookmark API.
+- Manuscripts are shown through monument records; there is no separate manuscript listing API.
+- AI chat, AI summaries, 3D model metadata, manuscript translation, and OCR extraction currently return simulated responses or data.
 
-Our backend relies on a modern, decoupled architecture designed for high availability and asynchronous processing.
+## Run locally
 
-graph TD
-    Client[Frontend Client] -->|REST API| Express(Express.js Server)
-    Express -->|Location & Metadata| Supabase[(Supabase / PostgreSQL)]
-    Express -->|Image/PDF Uploads| Cloudinary☁️
-    Express -->|Queue OCR Jobs| Redis((Redis))
-    Redis --> Worker[BullMQ Background Worker]
-    Worker -->|Extracts Text| Worker
-    Worker -->|Updates Document| Supabase
-    Express -->|Chat & Summarize| AI[AI Processing API]
+Requirements: Node.js, a Supabase project, and the services needed by the backend features you want to test.
 
+1. Install frontend and backend dependencies:
 
-✨ Core Features Built for the Hackathon
+   ```powershell
+   cd Frontend
+   npm install
+   cd ..\Backend
+   npm install
+   ```
 
-📍 Geospatial Data Pipeline: Delivers optimized coordinate payloads (lat/lng) to render thousands of historical sites on an interactive map.
+2. Configure environment variables in local `.env` files. Never commit credentials.
 
-🔍 Archival NLP & Global Search: Allows users to search not just monument titles, but inside the actual historical documents using text extracted via OCR.
+   Frontend (`Frontend/.env`):
 
-⚙️ Asynchronous Background Workers: Heavy tasks like Optical Character Recognition (OCR) are handled by a BullMQ/Redis worker, preventing server blocking during manuscript uploads.
+   ```text
+   VITE_SUPABASE_URL=...
+   VITE_SUPABASE_ANON_KEY=...
+   ```
 
-🤖 AI Research Assistant: Integrated AI endpoints to summarize lengthy archaeological reports and answer chat queries based on archival data.
+   Backend (`Backend/.env`):
 
-🧊 3D Model Telemetry: Feeds geometric points and wireframe URLs to the frontend's WebGL reconstruction simulator.
+   ```text
+   PORT=5000
+   SUPABASE_URL=...
+   SUPABASE_ANON_KEY=...
+   CLOUDINARY_CLOUD_NAME=...
+   CLOUDINARY_API_KEY=...
+   CLOUDINARY_API_SECRET=...
+   REDIS_URL=redis://127.0.0.1:6379
+   ```
 
-☁️ Secure Cloud Storage: Files are processed via Multer and securely stored in Cloudinary.
+3. Start the API and frontend in separate terminals:
 
-💻 Tech Stack
+   ```powershell
+   cd Backend
+   npm run dev
+   ```
 
-Runtime: Node.js
+   ```powershell
+   cd Frontend
+   npm run dev
+   ```
 
-Framework: Express.js
+Vite proxies `/api` requests to `http://localhost:5000`. The backend currently allows the local Vite origin `http://localhost:5173`.
 
-Database: Supabase (PostgreSQL)
+## Routes
 
-Message Broker / Queue: Redis & BullMQ
+| Route | Access | Purpose |
+|---|---|---|
+| `/` | Public | HeritageVerse landing experience |
+| `/auth` | Public | Sign in and sign up |
+| `/dashboard` | Authenticated | Overview, profile, and archive contributions |
+| `/monuments` | Authenticated | Browse and filter live heritage records |
+| `/monuments/:id` | Authenticated | Monument details and related documents |
 
-Cloud Storage: Cloudinary & Multer
+## Current API surface
 
-Security & Utils: CORS, dotenv
+- `GET /api/v1/monuments` — list records and filter by `state`, `category`, `period`, or `search`.
+- `GET /api/v1/monuments/map-data` — map records.
+- `GET /api/v1/monuments/:id` — monument details and related documents.
+- `POST /api/v1/monuments/upload` — multipart upload; file field is `archive_file`, with `monument_id`, `title`, and `category`.
+- `GET /api/v1/monuments/search/all?q=...` — archive search.
+- `GET /api/v1/monuments/manuscript/:word` — currently returns a fixed translation example.
+- `GET /api/v1/monuments/:id/3d-model` — currently returns placeholder model metadata.
+- `POST /api/v1/ai/summarize` and `POST /api/v1/ai/chat` — currently return mock responses.
 
-🚀 Local Development Setup
+## Database and integration notes
 
-1. Clone the repository
+There are no database migrations or schema definitions in this repository; the Supabase schema is external and must be checked before changing it. The monument list/detail service queries `heritage_sites`, while archive search queries a separate `monuments` table. Monument detail currently selects `documents.category`; if the deployed `documents` table does not have that column, the detail request will fail until the database/schema or query is reconciled. This repository does not apply database changes automatically.
 
-git clone <your-repo-url>
-cd backend
+The OCR worker is simulated and depends on Redis. File uploads depend on Cloudinary configuration and successful document persistence. Verify those external services and the Supabase schema in the target environment before presenting a live upload as complete.
 
+## Checks
 
-2. Install dependencies
-
-npm install
-
-
-3. Environment Variables
-
-Create a .env file in the root directory and add your credentials:
-
-PORT=5000
-
-# Supabase Connection
-SUPABASE_URL=your_supabase_url
-SUPABASE_ANON_KEY=your_supabase_anon_key
-
-# Cloudinary Storage
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
-
-# Redis (For BullMQ)
-REDIS_URL=redis://127.0.0.1:6379
-
-
-4. Start the server
-
-# Starts server with Nodemon for development
-npm run dev
-
-
-📡 API Endpoints Documentation
-
-Monuments & Map
-
-GET /api/v1/monuments/map-data - Fetch all location pins for the interactive map.
-
-GET /api/v1/monuments/latest - Fetch the newest arrivals for the landing page carousel.
-
-GET /api/v1/monuments - Fetch monuments (Supports query filters: ?state=Gujarat&category=Temple).
-
-GET /api/v1/monuments/:id - Get detailed information and associated documents for a specific monument.
-
-Search & Interactive Media
-
-GET /api/v1/monuments/search/all?q=query - Global search across monument names and OCR-extracted document text.
-
-GET /api/v1/monuments/:id/3d-model - Fetch geometry data and model URLs for the 3D viewer.
-
-GET /api/v1/monuments/manuscript/:word - Fetch Sanskrit transliteration and English translations.
-
-Uploads & Processing
-
-POST /api/v1/monuments/upload - Upload an image/PDF. (Triggers background OCR worker if type is 'Manuscript').
-
-AI Assistant
-
-POST /api/v1/ai/summarize - Generate an AI summary for a specific document.
-
-POST /api/v1/ai/chat - Ask the AI a question about a specific monument.
+```powershell
+cd Frontend
+npm run lint
+npm run build
+```

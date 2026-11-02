@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import Section from "../layout/Section.jsx";
 import StepwellCanvas from "../stepwell/StepwellCanvas.jsx";
@@ -11,14 +12,17 @@ import {
 
 export default function Stepwell3D() {
   const [photos, setPhotos] = useState(DEFAULT_PHOTOS);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const featuredSite = STEPWELLS[0];
+  const featuredSite = STEPWELLS[selectedIndex];
 
   return (
     <Section id="see" tone="s3" dark>
       <div className="stepwell-experience">
         <div className="stepwell-heading">
-          <span className="eyebrow">DIGITAL HERITAGE LABORATORY</span>
+          <span className="eyebrow">
+            DIGITAL HERITAGE LABORATORY
+          </span>
 
           <h2>
             Architecture that
@@ -27,9 +31,8 @@ export default function Stepwell3D() {
           </h2>
 
           <p>
-            Explore how photographs and architectural references
-            can help create interactive digital representations
-            of India's historic stepwells.
+            Explore different historic Indian water structures
+            through interactive architectural visualizations.
           </p>
         </div>
 
@@ -37,22 +40,54 @@ export default function Stepwell3D() {
           <div className="stepwell-viewer">
             <div className="viewer-topbar">
               <span>INTERACTIVE VIEWER</span>
+
               <span className="viewer-status">
                 <i />
                 LIVE PREVIEW
               </span>
             </div>
 
-            <StepwellCanvas photos={photos} />
+            <StepwellCanvas
+              photos={photos}
+              site={featuredSite}
+            />
 
             <div className="viewer-caption">
-              <span>ILLUSTRATIVE GEOMETRY</span>
-              <span>DRAG TO ROTATE</span>
+              <span>ARCHITECTURAL VISUALIZATION</span>
+              <span>DRAG TO ROTATE · SCROLL TO ZOOM</span>
             </div>
           </div>
 
           <aside className="stepwell-info">
-            <span className="info-label">FEATURED HERITAGE</span>
+            <span className="info-label">
+              EXPLORE HERITAGE
+            </span>
+
+            <label
+              htmlFor="stepwell-select"
+              className="mt-5 block text-xs text-white/60"
+            >
+              SELECT MONUMENT
+            </label>
+
+            <select
+              id="stepwell-select"
+              value={selectedIndex}
+              onChange={(event) =>
+                setSelectedIndex(Number(event.target.value))
+              }
+              className="mt-2 w-full rounded-lg border border-white/20 bg-[#24483e] px-3 py-3 text-sm text-white outline-none focus:border-[#c49a58]"
+            >
+              {STEPWELLS.map((site, index) => (
+                <option
+                  key={site.name}
+                  value={index}
+                  className="bg-[#183b32] text-white"
+                >
+                  {site.name}
+                </option>
+              ))}
+            </select>
 
             <h3>{featuredSite.name}</h3>
 
@@ -69,7 +104,15 @@ export default function Stepwell3D() {
 
             <div className="info-detail">
               <span>ARCHITECTURAL FORM</span>
-              <strong>Multi-level stepwell</strong>
+              <strong>
+                {featuredSite.name === "Surya Kund"
+                  ? "Stepped ceremonial water tank"
+                  : featuredSite.name === "Chand Baori"
+                  ? "Symmetrical staircase baori"
+                  : featuredSite.name === "Agrasen ki Baoli"
+                  ? "Linear baoli"
+                  : "Multi-level stepwell"}
+              </strong>
             </div>
 
             <p className="stepwell-description">
@@ -84,7 +127,7 @@ export default function Stepwell3D() {
 
               <div>
                 <strong>{matchedPoints(photos)}</strong>
-                <span>Demo geometry points</span>
+                <span>Simulation points</span>
               </div>
             </div>
           </aside>
@@ -93,19 +136,30 @@ export default function Stepwell3D() {
         <div className="stepwell-controls">
           <div className="controls-heading">
             <div>
-              <span className="info-label">RECONSTRUCTION SIMULATOR</span>
-              <h3>Explore the effect of more photographs</h3>
+              <span className="info-label">
+                MODEL DETAIL
+              </span>
+
+              <h3>
+                Adjust architectural detail
+              </h3>
             </div>
 
-            <span className="photo-count">{photos} photos</span>
+            <span className="photo-count">
+              {photos} photos
+            </span>
           </div>
 
-          <PhotoSlider value={photos} onChange={setPhotos} />
+          <PhotoSlider
+            value={photos}
+            onChange={setPhotos}
+          />
 
           <p className="simulation-note">
-            This is an illustrative simulation. Changing the photo count
-            adjusts the wireframe detail; it does not perform actual
-            photogrammetry or reconstruct a real monument.
+            Each monument has a distinct illustrative geometry
+            inspired by its architectural form. These are
+            procedural visualizations, not historically accurate
+            3D scans or photogrammetric reconstructions.
           </p>
         </div>
       </div>
