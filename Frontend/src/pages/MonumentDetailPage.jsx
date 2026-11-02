@@ -20,7 +20,7 @@ function DetailSection({ title, children }) {
 function DetailText({ value }) {
   if (!value) {
     return (
-      <p className="text-sm text-[#928875]">
+      <p className="text-sm text-[#625e51]">
         Information is not available yet.
       </p>
     );
@@ -117,7 +117,7 @@ export default function MonumentDetailPage() {
           Monument unavailable
         </h1>
 
-        <p className="mt-3 max-w-lg text-sm text-[#777365]">
+        <p className="mt-3 max-w-lg text-sm text-[#5e625a]">
           {error || "The requested monument could not be found."}
         </p>
 
@@ -193,7 +193,7 @@ export default function MonumentDetailPage() {
 
           <Link
             to="/monuments"
-            className="text-sm font-medium text-[#777365] transition hover:text-[#a17b43]"
+            className="text-sm font-medium text-[#5e625a] transition hover:text-[#a17b43]"
           >
             ← All Monuments
           </Link>
@@ -227,7 +227,7 @@ export default function MonumentDetailPage() {
           </h1>
 
           {location && (
-            <p className="mt-4 text-sm text-[#777365]">
+            <p className="mt-4 text-sm text-[#5e625a]">
               <span className="mr-2">⌖</span>
               {location}
             </p>
@@ -267,7 +267,7 @@ export default function MonumentDetailPage() {
                         {item.year || item.date || "Historical period"}
                       </p>
 
-                      <p className="mt-2 text-sm leading-7 text-[#777365]">
+                      <p className="mt-2 text-sm leading-7 text-[#5e625a]">
                         {item.description || item.event || item.title}
                       </p>
                     </div>
@@ -301,7 +301,7 @@ export default function MonumentDetailPage() {
                           {document.title || "Untitled document"}
                         </p>
 
-                        <p className="mt-1 text-xs text-[#777365]">
+                        <p className="mt-1 text-xs text-[#5e625a]">
                           {document.category || "Archive"}
                         </p>
                       </div>
@@ -320,7 +320,7 @@ export default function MonumentDetailPage() {
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-[#777365]">
+                <p className="text-sm text-[#5e625a]">
                   No related documents are available yet.
                 </p>
               )}
@@ -370,7 +370,7 @@ export default function MonumentDetailPage() {
                     key={label}
                     className="border-b border-[#d8cfbd] pb-4"
                   >
-                    <p className="text-xs uppercase tracking-wider text-[#928875]">
+                    <p className="text-xs uppercase tracking-wider text-[#625e51]">
                       {label}
                     </p>
 
@@ -395,7 +395,7 @@ export default function MonumentDetailPage() {
         </div>
       </section>
 
-      <footer className="border-t border-[#ded6c6] px-5 py-8 text-center text-xs tracking-wide text-[#928875]">
+      <footer className="border-t border-[#ded6c6] px-5 py-8 text-center text-xs tracking-wide text-[#625e51]">
         HERITAGEVERSE · PRESERVING STORIES THROUGH TECHNOLOGY
       </footer>
     </div>

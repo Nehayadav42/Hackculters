@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth.js";
 
@@ -43,8 +43,8 @@ function Sidebar({ active, user, onLogout, onClose }) {
     "Explorer";
 
   return (
-    <aside className="flex h-full w-full flex-col bg-[#142b25] text-[#eee9dd]">
-      <div className="flex items-center gap-3 border-b border-white/10 px-6 py-7">
+    <aside className="app-sidebar flex h-full max-h-[100dvh] w-full flex-col overflow-y-auto overscroll-contain bg-[#142b25] text-[#eee9dd]">
+      <div className="flex shrink-0 items-center gap-3 border-b border-white/10 px-5 py-5 sm:px-6 sm:py-6">
         <div className="grid h-10 w-9 shrink-0 place-items-center border border-[#c49a58] font-serif text-2xl text-[#c49a58]">
           H
         </div>
@@ -52,7 +52,7 @@ function Sidebar({ active, user, onLogout, onClose }) {
           <h1 className="font-serif text-xl tracking-tight">
             Heritage<span className="text-[#c49a58]">Verse</span>
           </h1>
-          <p className="mt-1 text-[9px] tracking-[0.2em] text-white/40">
+          <p className="mt-1 text-[10px] font-medium tracking-[0.14em] text-white/75">
             DIGITAL HERITAGE ARCHIVE
           </p>
         </div>
@@ -60,7 +60,7 @@ function Sidebar({ active, user, onLogout, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="ml-auto text-xl text-white/60 lg:hidden"
+            className="ml-auto grid h-10 w-10 place-items-center rounded-lg text-2xl text-white/80 transition hover:bg-white/10 hover:text-white lg:hidden"
             aria-label="Close menu"
           >
             ×
@@ -68,8 +68,8 @@ function Sidebar({ active, user, onLogout, onClose }) {
         )}
       </div>
 
-      <nav aria-label="Workspace" className="flex flex-col gap-1 px-5 pt-8">
-        <p className="mb-3 px-3 text-[9px] font-semibold tracking-[0.2em] text-white/35">
+      <nav aria-label="Workspace" className="flex flex-col gap-1 px-4 py-5 sm:px-5 sm:py-7">
+        <p className="mb-2 px-3 text-[10px] font-semibold tracking-[0.16em] text-white/75">
           WORKSPACE
         </p>
         {NAVIGATION.map((item) => (
@@ -81,7 +81,7 @@ function Sidebar({ active, user, onLogout, onClose }) {
             className={() =>
               active === item.section
                 ? "flex items-center gap-3 rounded-lg bg-[#c49a58]/15 px-3 py-3 text-left text-sm text-[#e4c58d] transition"
-                : "flex items-center gap-3 rounded-lg px-3 py-3 text-left text-sm text-white/60 transition hover:bg-white/5 hover:text-white"
+                : "flex items-center gap-3 rounded-lg px-3 py-3 text-left text-sm text-white/80 transition hover:bg-white/10 hover:text-white"
             }
           >
             <span className="w-5 text-center text-lg">{item.icon}</span>
@@ -93,7 +93,7 @@ function Sidebar({ active, user, onLogout, onClose }) {
         ))}
       </nav>
 
-      <div className="mt-auto border-t border-white/10 p-5">
+      <div className="app-sidebar-footer sticky bottom-0 z-10 mt-auto shrink-0 border-t border-white/15 bg-[#142b25] p-4 sm:p-5">
         <Link
           to="/dashboard?section=profile"
           onClick={onClose}
@@ -104,14 +104,14 @@ function Sidebar({ active, user, onLogout, onClose }) {
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium">{displayName}</p>
-            <p className="truncate text-[10px] text-white/40">{user?.email}</p>
+            <p className="truncate text-xs text-white/75">{user?.email}</p>
           </div>
-          <span className="text-white/40">›</span>
+          <span className="text-white/75">›</span>
         </Link>
         <button
           type="button"
           onClick={onLogout}
-          className="mt-3 flex w-full items-center gap-3 rounded-lg px-3 py-3 text-xs text-white/50 transition hover:bg-white/5 hover:text-white"
+          className="mt-3 flex min-h-11 w-full items-center gap-3 rounded-lg border border-white/15 px-3 py-3 text-sm font-medium text-white/85 transition hover:border-white/30 hover:bg-white/10 hover:text-white"
         >
           <span className="text-base">↪</span>
           Sign out
@@ -133,6 +133,23 @@ export default function AuthenticatedLayout() {
     NAVIGATION.find((item) => item.section === active)?.label ||
     (active === "profile" ? "My Profile" : "Overview");
 
+  useEffect(() => {
+    if (!mobileOpen) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") setMobileOpen(false);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [mobileOpen]);
+
   async function handleLogout() {
     setLoggingOut(true);
     setLogoutError("");
@@ -151,20 +168,25 @@ export default function AuthenticatedLayout() {
   return (
     <div className="dashboard-layout min-h-screen bg-[#f5f2e9] text-[#263b30] lg:flex">
       <div className="hidden w-[270px] shrink-0 lg:block">
-        <div className="fixed inset-y-0 w-[270px]">
+        <div className="fixed inset-y-0 h-dvh w-[270px]">
           <Sidebar active={active} user={user} onLogout={handleLogout} />
         </div>
       </div>
 
       {mobileOpen && (
-        <div className="fixed inset-0 z-[100] lg:hidden">
+        <div
+          className="fixed inset-0 z-[100] lg:hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Workspace navigation"
+        >
           <button
             type="button"
             aria-label="Close navigation"
             onClick={() => setMobileOpen(false)}
             className="absolute inset-0 bg-black/50"
           />
-          <div className="relative h-full w-[290px] max-w-[85vw]">
+          <div className="relative h-dvh max-h-dvh w-[300px] max-w-[88vw]">
             <Sidebar
               active={active}
               user={user}
@@ -176,27 +198,27 @@ export default function AuthenticatedLayout() {
       )}
 
       <div className="min-w-0 flex-1">
-        <header className="sticky top-0 z-40 flex h-[72px] items-center justify-between border-b border-[#e5dfd1] bg-[#f5f2e9]/95 px-4 backdrop-blur-md sm:px-8 lg:px-10">
+        <header className="workspace-header sticky top-0 z-40 flex min-h-[72px] items-center justify-between border-b border-[#e5dfd1] bg-[#f5f2e9]/95 px-4 backdrop-blur-md sm:px-8 lg:px-10">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => setMobileOpen(true)}
-              className="grid h-9 w-9 place-items-center rounded-lg border border-[#e1dacb] text-lg lg:hidden"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-[#d1c9b8] bg-white/70 text-lg text-[#263b30] transition hover:bg-white lg:hidden"
               aria-label="Open navigation"
             >
               ☰
             </button>
             <div>
-              <p className="text-[9px] font-semibold tracking-[0.2em] text-[#a17b43]">
+              <p className="text-[10px] font-semibold tracking-[0.16em] text-[#80602f]">
                 HERITAGEVERSE WORKSPACE
               </p>
-              <h2 className="mt-1 text-sm font-semibold text-[#263b30]">
+              <h2 className="mt-0.5 text-base font-semibold leading-tight text-[#263b30]">
                 {pageTitle}
               </h2>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <span className="hidden text-xs text-[#898779] sm:block">
+            <span className="hidden max-w-[40vw] truncate text-xs text-[#5f6259] sm:block">
               {user?.email}
             </span>
             <div className="grid h-9 w-9 place-items-center rounded-full border border-[#c9b88f] bg-[#eee7d8] font-serif text-lg text-[#98713e]">
@@ -222,7 +244,7 @@ export default function AuthenticatedLayout() {
           <Outlet />
         </main>
 
-        <footer className="border-t border-[#e5dfd1] px-4 py-5 text-center text-[10px] tracking-wide text-[#999383] sm:px-8">
+        <footer className="border-t border-[#e5dfd1] px-4 py-5 text-center text-[10px] tracking-wide text-[#62645c] sm:px-8">
           HERITAGEVERSE · PRESERVING OUR PAST, INSPIRING OUR FUTURE
         </footer>
       </div>

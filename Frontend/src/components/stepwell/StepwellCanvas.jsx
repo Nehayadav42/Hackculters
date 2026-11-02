@@ -441,7 +441,7 @@ export default function StepwellCanvas({ photos = 12, site }) {
                   type="button"
                   onClick={() => setSelectedFeature(null)}
                   aria-label="Close details"
-                  className="flex h-7 w-7 items-center justify-center rounded-full text-xl text-white/70 hover:bg-white/10"
+                  className="flex h-7 w-7 items-center justify-center rounded-full text-xl text-white/90 hover:bg-white/10"
                 >
                   ×
                 </button>
@@ -450,7 +450,7 @@ export default function StepwellCanvas({ photos = 12, site }) {
               <h3 className="mb-2 font-serif text-lg font-medium">
                 {activeFeature.title}
               </h3>
-              <p className="mb-3 text-xs leading-5 text-white/75">
+              <p className="mb-3 text-xs leading-5 text-white/90">
                 {activeFeature.description}
               </p>
               <span className="inline-flex rounded-full border border-[#c49a58]/40 bg-[#c49a58]/10 px-3 py-1 text-[9px] font-medium tracking-wide text-[#e2bd7f]">
@@ -526,7 +526,7 @@ export default function StepwellCanvas({ photos = 12, site }) {
           </button>
         )}
 
-        <div className="pointer-events-none absolute bottom-4 left-4 z-10 text-[10px] tracking-wide text-white/55">
+        <div className="pointer-events-none absolute bottom-4 left-4 z-10 rounded bg-black/55 px-2 py-1 text-[10px] tracking-wide text-white/90">
           DRAG TO ROTATE · SCROLL TO ZOOM · SELECT A MARKER
         </div>
       </div>

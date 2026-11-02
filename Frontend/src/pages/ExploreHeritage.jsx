@@ -58,7 +58,7 @@ export default function ExploreHeritage({ onBack, onSelectMonument }) {
             <span className="italic text-[#a17b43]">etched in stone.</span>
           </h2>
 
-          <p className="mt-6 max-w-2xl text-sm leading-7 text-[#77766b] sm:text-base">
+          <p className="mt-6 max-w-2xl text-sm leading-7 text-[#5e655d] sm:text-base">
             Discover India's remarkable stepwells, architectural wonders and
             historical landmarks. Every monument carries a story waiting to
             be explored.
@@ -139,7 +139,7 @@ export default function ExploreHeritage({ onBack, onSelectMonument }) {
                 </div>
 
                 <div className="p-6">
-                  <p className="min-h-[72px] text-sm leading-6 text-[#77766b]">
+                  <p className="min-h-[72px] text-sm leading-6 text-[#5e655d]">
                     {monument.text}
                   </p>
 

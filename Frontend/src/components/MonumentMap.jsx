@@ -16,7 +16,7 @@ export default function MonumentMap({ latitude, longitude, name }) {
           <p className="text-lg font-semibold text-[#183b32]">
             Location unavailable
           </p>
-          <p className="mt-2 text-sm text-[#777365]">
+          <p className="mt-2 text-sm text-[#5e625a]">
             Coordinates are not available for this monument yet.
           </p>
         </div>
@@ -45,7 +45,7 @@ export default function MonumentMap({ latitude, longitude, name }) {
           <p className="font-semibold text-[#183b32]">
             {name || "Monument location"}
           </p>
-          <p className="mt-1 text-xs text-[#777365]">
+          <p className="mt-1 text-xs text-[#5e625a]">
             {lat.toFixed(5)}, {lng.toFixed(5)}
           </p>
         </div>

@@ -15,7 +15,7 @@ export default function ManuscriptReader({ documents = [] }) {
         <p className="font-serif text-xl text-[#183b32]">
           Manuscript collection
         </p>
-        <p className="mt-2 text-sm text-[#777365]">
+        <p className="mt-2 text-sm text-[#5e625a]">
           No digitized manuscripts are available for this monument yet.
         </p>
       </div>
@@ -79,13 +79,13 @@ export default function ManuscriptReader({ documents = [] }) {
             <h4 className="font-serif text-lg text-[#183b32]">
               {document.title || "Untitled Manuscript"}
             </h4>
-            <p className="mt-1 text-xs text-[#928875]">
+            <p className="mt-1 text-xs text-[#625e51]">
               {[document.category, document.language]
                 .filter(Boolean)
                 .join(" · ") || "Historical document"}
             </p>
             {processingStatus && (
-              <p className="mt-1 text-xs text-[#928875]">
+              <p className="mt-1 text-xs text-[#625e51]">
                 Processing status: {processingStatus}
               </p>
             )}
@@ -163,7 +163,7 @@ export default function ManuscriptReader({ documents = [] }) {
               <p className="mb-3 text-[10px] tracking-[0.2em] text-[#a17b43]">
                 TRANSCRIPTION UNAVAILABLE
               </p>
-              <p className="text-sm leading-6 text-[#777365]">
+              <p className="text-sm leading-6 text-[#5e625a]">
                 The current document API does not provide extracted or
                 corrected text for this record. No sample transcription is
                 shown.
@@ -173,7 +173,7 @@ export default function ManuscriptReader({ documents = [] }) {
         </div>
 
         <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
-          <div className="text-xs text-[#928875]">
+          <div className="text-xs text-[#625e51]">
             {document.language && <p>Language: {document.language}</p>}
             {(document.source || document.source_url || document.provenance) && (
               <p className="mt-1">

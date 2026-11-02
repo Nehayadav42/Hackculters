@@ -75,7 +75,7 @@ export default function ArchiveSearchPage() {
         <h1 className="mt-2 font-serif text-3xl text-[#183b32] sm:text-4xl">
           Search the archive
         </h1>
-        <p className="mt-3 max-w-2xl text-sm leading-6 text-[#77766b]">
+        <p className="mt-3 max-w-2xl text-sm leading-6 text-[#5e655d]">
           Search currently indexed monument names, descriptions, document
           titles, and extracted text. This is the backend&apos;s text-match
           search, not semantic search or an AI answer.
@@ -117,7 +117,7 @@ export default function ArchiveSearchPage() {
       )}
 
       {!query.trim() && !error && (
-        <p className="mt-8 rounded-xl border border-dashed border-[#d8cfbd] p-8 text-center text-sm text-[#77766b]">
+        <p className="mt-8 rounded-xl border border-dashed border-[#d8cfbd] p-8 text-center text-sm text-[#5e655d]">
           Enter a keyword to search indexed monuments and documents.
         </p>
       )}
@@ -132,7 +132,7 @@ export default function ArchiveSearchPage() {
               >
                 Monuments
               </h2>
-              <span className="text-xs text-[#77766b]">
+              <span className="text-xs text-[#5e655d]">
                 {queryResults.monuments.length} result
                 {queryResults.monuments.length === 1 ? "" : "s"}
               </span>
@@ -151,7 +151,7 @@ export default function ArchiveSearchPage() {
                     <h3 className="mt-2 font-serif text-xl text-[#183b32]">
                       {getMonumentName(monument)}
                     </h3>
-                    <p className="mt-2 text-sm text-[#77766b]">
+                    <p className="mt-2 text-sm text-[#5e655d]">
                       {[monument.state].filter(Boolean).join(", ") ||
                         "Location not provided"}
                     </p>
@@ -159,7 +159,7 @@ export default function ArchiveSearchPage() {
                 ))}
               </div>
             ) : (
-              <p className="rounded-lg bg-white/60 p-5 text-sm text-[#77766b]">
+              <p className="rounded-lg bg-white/80 p-5 text-sm text-[#5e655d]">
                 No monument matches were returned.
               </p>
             )}
@@ -173,7 +173,7 @@ export default function ArchiveSearchPage() {
               >
                 Documents
               </h2>
-              <span className="text-xs text-[#77766b]">
+              <span className="text-xs text-[#5e655d]">
                 {queryResults.documents.length} result
                 {queryResults.documents.length === 1 ? "" : "s"}
               </span>
@@ -210,7 +210,7 @@ export default function ArchiveSearchPage() {
                         Open source file ↗
                       </a>
                     ) : (
-                      <span className="text-xs text-[#77766b]">
+                      <span className="text-xs text-[#5e655d]">
                         No linked monument or file
                       </span>
                     )}
@@ -218,7 +218,7 @@ export default function ArchiveSearchPage() {
                 ))}
               </div>
             ) : (
-              <p className="rounded-lg bg-white/60 p-5 text-sm text-[#77766b]">
+              <p className="rounded-lg bg-white/80 p-5 text-sm text-[#5e655d]">
                 No document matches were returned.
               </p>
             )}

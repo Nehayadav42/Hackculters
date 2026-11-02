@@ -65,7 +65,7 @@ export default function Stepwell3D() {
 
             <label
               htmlFor="stepwell-select"
-              className="mt-5 block text-xs text-white/60"
+              className="mt-5 block text-xs text-white/85"
             >
               SELECT MONUMENT
             </label>
