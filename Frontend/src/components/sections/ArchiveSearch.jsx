@@ -4,6 +4,7 @@ import StateChips from "../archive/StateChips.jsx";
 import EntryList from "../archive/EntryList.jsx";
 import EntryDetail from "../archive/EntryDetail.jsx";
 import EntryMap from "../archive/EntryMap.jsx";
+import { Link } from "react-router-dom";
 
 export default function ArchiveSearch({ archive }) {
   const {
@@ -41,6 +42,16 @@ export default function ArchiveSearch({ archive }) {
             and cultural discoveries through a growing digital archive.
           </p>
         </div>
+
+        <div className="mt-6 flex justify-end">
+  <Link
+    to="/monuments"
+    className="inline-flex items-center gap-3 bg-[#183b32] px-5 py-3 text-xs font-semibold uppercase tracking-widest text-[#f5f2e9] transition hover:bg-[#285548]"
+  >
+    Explore all monuments
+    <span>↗</span>
+  </Link>
+</div>
 
         <div className="archive-search-panel">
           <div className="archive-search-heading">

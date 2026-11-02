@@ -2,17 +2,16 @@
 import { supabase } from '../config/supabaseClient.js';
 import AppError from '../utils/AppError.js';
 
-// Fetch data for the interactive map
 export const fetchMapPins = async () => {
     const { data, error } = await supabase
         .from('heritage_sites')
         .select('*');
 
     if (error) throw new AppError(error.message, 500);
+
     return data;
 };
 
-// Fetch monuments with optional filters
 export const fetchMonumentsList = async (filters = {}) => {
     let query = supabase
         .from('heritage_sites')
@@ -37,10 +36,10 @@ export const fetchMonumentsList = async (filters = {}) => {
     const { data, error } = await query;
 
     if (error) throw new AppError(error.message, 500);
+
     return data;
 };
 
-// Fetch one monument with its associated documents
 export const fetchMonumentDetails = async (monumentId) => {
     const { data, error } = await supabase
         .from('heritage_sites')
@@ -49,7 +48,7 @@ export const fetchMonumentDetails = async (monumentId) => {
             documents (
                 id,
                 title,
-                type,
+                category,
                 file_url
             )
         `)

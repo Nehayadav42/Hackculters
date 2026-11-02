@@ -66,16 +66,18 @@ img {
  /* Main Layout */
 
 
-main {
+.landing-main {
   margin-left: 56px;
   min-height: 100vh;
 }
 
-section {
+.landing-main section {
   position: relative;
-  padding:
-    clamp(64px, 8vw, 112px)
-    var(--page-gutter);
+  padding: clamp(64px, 8vw, 112px) var(--page-gutter);
+}
+
+.landing-main section.s0:has(.hero) {
+  padding-block: clamp(20px, 2.5vw, 36px);
 }
 
 .wrap {
@@ -89,32 +91,32 @@ section {
  /* Section Themes */
 
 
-.s0 {
+.landing-main .s0 {
   background: var(--lime);
   color: var(--ink);
 }
 
-.s1 {
+.landing-main .s1 {
   background: var(--lime2);
   color: var(--ink);
 }
 
-.s2 {
+.landing-main .s2 {
   background: var(--surface-dark);
   color: var(--ink);
 }
 
-.s3 {
+.landing-main .s3 {
   background: var(--water);
   color: var(--paper);
 }
 
-.s4 {
+.landing-main .s4 {
   background: var(--deep);
   color: var(--paper);
 }
 
-.dark {
+.landing-main .dark {
   color: var(--paper);
 }
 
@@ -155,7 +157,7 @@ p {
   color: var(--mute);
 }
 
-.dark .mute {
+.landing-main .dark .mute {
   color: rgba(250, 248, 242, 0.7);
 }
 
@@ -184,11 +186,11 @@ p {
 /* Responsive Layout*/
 
 @media (max-width: 860px) {
-  main {
+  .landing-main {
     margin-left: 0;
   }
 
-  section {
+  .landing-main section {
     padding-inline: 24px;
   }
 
@@ -202,7 +204,7 @@ p {
 }
 
 @media (max-width: 480px) {
-  section {
+  .landing-main section {
     padding: 64px 20px;
   }
 }

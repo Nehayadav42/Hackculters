@@ -1,6 +1,8 @@
 
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
+import SignIn from "../components/auth/SignIn.jsx";
+import SignUp from "../components/auth/SignUp.jsx";
 
 function EyeIcon({ visible }) {
   return visible ? (
@@ -283,113 +285,118 @@ export default function AuthPage({ onBack, onAuthSuccess }) {
             </p>
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-3">
+          {isSignin ? (
+            <SignIn
+              email={email}
+              onEmailChange={(event) => setEmail(event.target.value)}
+              password={password}
+              onPasswordChange={(event) => setPassword(event.target.value)}
+              showPassword={showPassword}
+              onTogglePassword={() => setShowPassword((previous) => !previous)}
+              onForgotPassword={() => changeMode("forgot")}
+              onSubmit={handleSubmit}
+              loading={loading}
+              error={error}
+              message={message}
+            />
+          ) : isSignup ? (
+            <SignUp
+              name={name}
+              onNameChange={(event) => setName(event.target.value)}
+              email={email}
+              onEmailChange={(event) => setEmail(event.target.value)}
+              password={password}
+              onPasswordChange={(event) => setPassword(event.target.value)}
+              confirmPassword={confirmPassword}
+              onConfirmPasswordChange={(event) =>
+                setConfirmPassword(event.target.value)
+              }
+              showPassword={showPassword}
+              onTogglePassword={() => setShowPassword((previous) => !previous)}
+              showConfirmPassword={showConfirmPassword}
+              onToggleConfirmPassword={() =>
+                setShowConfirmPassword((previous) => !previous)
+              }
+              onSubmit={handleSubmit}
+              loading={loading}
+              error={error}
+              message={message}
+            />
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-3">
+              {isForgot && (
+                <InputField
+                  label="Email Address"
+                  type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                />
+              )}
 
-            {isSignup && (
-              <InputField
-                label="Full Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Enter your full name"
-                autoComplete="name"
-              />
-            )}
+              {isReset && (
+                <>
+                  <InputField
+                    label="New Password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    placeholder="Enter your new password"
+                    autoComplete="new-password"
+                    minLength={8}
+                    showPassword={showPassword}
+                    onTogglePassword={() =>
+                      setShowPassword((previous) => !previous)
+                    }
+                  />
+                  <InputField
+                    label="Confirm Password"
+                    value={confirmPassword}
+                    onChange={(event) =>
+                      setConfirmPassword(event.target.value)
+                    }
+                    placeholder="Re-enter your password"
+                    autoComplete="new-password"
+                    minLength={8}
+                    showPassword={showConfirmPassword}
+                    onTogglePassword={() =>
+                      setShowConfirmPassword((previous) => !previous)
+                    }
+                  />
+                </>
+              )}
 
-            {!isReset && (
-              <InputField
-                label="Email Address"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                autoComplete="email"
-              />
-            )}
-
-            {(isSignin || isSignup || isReset) && (
-              <InputField
-                label={isReset ? "New Password" : "Password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
-                autoComplete={
-                  isSignin ? "current-password" : "new-password"
-                }
-                minLength={isSignin ? undefined : 8}
-                showPassword={showPassword}
-                onTogglePassword={() =>
-                  setShowPassword((prev) => !prev)
-                }
-              />
-            )}
-
-            {(isSignup || isReset) && (
-              <InputField
-                label="Confirm Password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Re-enter your password"
-                autoComplete="new-password"
-                minLength={8}
-                showPassword={showConfirmPassword}
-                onTogglePassword={() =>
-                  setShowConfirmPassword((prev) => !prev)
-                }
-              />
-            )}
-
-            {isSignin && (
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => changeMode("forgot")}
-                  className="text-xs font-medium text-[#c7a96b] transition hover:text-[#e0c58f]"
+              {error && (
+                <p
+                  role="alert"
+                  className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs leading-5 text-red-300"
                 >
-                  Forgot password?
-                </button>
-              </div>
-            )}
+                  {error}
+                </p>
+              )}
+              {message && (
+                <p
+                  role="status"
+                  className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs leading-5 text-emerald-300"
+                >
+                  {message}
+                </p>
+              )}
 
-            {/* Error */}
-            {error && (
-              <div
-                role="alert"
-                className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs leading-5 text-red-300"
+              <button
+                type="submit"
+                disabled={loading}
+                className="mt-1 flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#c7a96b] px-5 text-sm font-bold text-[#171710] transition duration-300 hover:-translate-y-0.5 hover:bg-[#d7bb82] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {error}
-              </div>
-            )}
-
-            {/* Success */}
-            {message && (
-              <div
-                role="status"
-                className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs leading-5 text-emerald-300"
-              >
-                {message}
-              </div>
-            )}
-
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="mt-1 flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#c7a96b] px-5 text-sm font-bold text-[#171710] transition duration-300 hover:-translate-y-0.5 hover:bg-[#d7bb82] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {loading
-                ? "Please wait..."
-                : isSignup
-                  ? "Create Account"
-                  : isSignin
-                    ? "Sign In"
-                    : isForgot
-                      ? "Send Reset Link"
-                      : "Update Password"}
-
-              {!loading && <span>→</span>}
-            </button>
-          </form>
+                {loading
+                  ? "Please wait..."
+                  : isForgot
+                    ? "Send Reset Link"
+                    : "Update Password"}
+                {!loading && <span aria-hidden="true">→</span>}
+              </button>
+            </form>
+          )}
 
           {/* Bottom Navigation */}
           <div className="mt-4 border-t border-[#454438] pt-4 text-center">

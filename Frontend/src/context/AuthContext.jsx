@@ -6,6 +6,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [logoutInProgress, setLogoutInProgress] = useState(false);
 
   useEffect(() => {
     const getSession = async () => {
@@ -38,8 +39,38 @@ export function AuthProvider({ children }) {
     return () => subscription.unsubscribe();
   }, []);
 
+  const signOut = async () => {
+    setLogoutInProgress(true);
+
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        throw error;
+      }
+
+      setSession(null);
+      setUser(null);
+    } catch (error) {
+      setLogoutInProgress(false);
+      throw error;
+    }
+  };
+
+  const finishSignOut = () => {
+    setLogoutInProgress(false);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, session, loading }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        session,
+        loading,
+        logoutInProgress,
+        signOut,
+        finishSignOut,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

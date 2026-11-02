@@ -10,10 +10,16 @@ async function request(endpoint, options = {}) {
     },
   });
 
-  const result = await response.json();
+  let result;
 
-  if (!response.ok || result.success === false) {
-    throw new Error(result.message || "Something went wrong");
+  try {
+    result = await response.json();
+  } catch {
+    throw new Error("Invalid response received from server.");
+  }
+
+  if (!response.ok || result?.success === false) {
+    throw new Error(result?.message || "Something went wrong");
   }
 
   return result;
@@ -23,7 +29,9 @@ export const getMonuments = (filters = {}) => {
   const params = new URLSearchParams();
 
   Object.entries(filters).forEach(([key, value]) => {
-    if (value) params.set(key, value);
+    if (value !== undefined && value !== null && value !== "") {
+      params.set(key, value);
+    }
   });
 
   const query = params.toString();
@@ -31,7 +39,49 @@ export const getMonuments = (filters = {}) => {
   return request(`/monuments${query ? `?${query}` : ""}`);
 };
 
+export const getMonumentById = (id) => {
+  if (!id) {
+    return Promise.reject(new Error("Monument ID is required."));
+  }
+
+  return request(`/monuments/${encodeURIComponent(id)}`);
+};
+
 export const getMapData = () => request("/monuments/map-data");
 
 export const searchArchives = (query) =>
   request(`/monuments/search/all?q=${encodeURIComponent(query)}`);
+
+export async function uploadArchiveFile({
+  file,
+  monumentId,
+  title,
+  category,
+}) {
+  const formData = new FormData();
+  formData.append("archive_file", file);
+  formData.append("monument_id", monumentId);
+  formData.append("title", title);
+  formData.append("category", category);
+
+  const response = await fetch(`${API_BASE_URL}/monuments/upload`, {
+    method: "POST",
+    body: formData,
+  });
+
+  let result;
+
+  try {
+    result = await response.json();
+  } catch {
+    throw new Error("Invalid response received from server.");
+  }
+
+  if (!response.ok || result?.success === false) {
+    throw new Error(
+      result?.message || "Unable to upload this archive item."
+    );
+  }
+
+  return result;
+}

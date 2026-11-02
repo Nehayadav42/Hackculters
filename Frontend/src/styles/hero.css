@@ -1,35 +1,25 @@
-/* =================================
-   Hero Layout
-================================= */
 
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(340px, 0.9fr);
   align-items: center;
-  gap: clamp(40px, 7vw, 100px);
-
+  gap: clamp(36px, 5vw, 76px);
   width: 100%;
   max-width: var(--content-width);
   margin-inline: auto;
-
-  padding-block: clamp(70px, 9vw, 120px);
+  padding-block: clamp(28px, 3.5vw, 48px);
 }
 
-.hero-content {
+.hero-content,
+.hero-feature {
   min-width: 0;
 }
-
-/* =================================
-   Eyebrow
-================================= */
 
 .hero-eyebrow {
   display: flex;
   align-items: center;
   gap: 12px;
-
-  margin-bottom: 28px;
-
+  margin-bottom: 24px;
   color: var(--mute);
   font-size: 11px;
   font-weight: 700;
@@ -43,17 +33,10 @@
   background: var(--gold);
 }
 
-/* =================================
-   Hero Heading
-================================= */
-
 .name {
   display: block;
-
-  margin: 0 0 18px;
-
+  margin: 0 0 16px;
   color: var(--forest);
-
   font-family: var(--serif);
   font-size: clamp(64px, 7.5vw, 108px);
   font-weight: 500;
@@ -67,30 +50,17 @@
   font-style: italic;
 }
 
-/* =================================
-   Decorative Steps Diagram
-================================= */
-
 .steps {
   display: block;
-
   width: min(100%, 380px);
   height: auto;
-
-  margin: 30px 0 34px;
+  margin: 24px 0 28px;
 }
-
-/* =================================
-   Hero Description
-================================= */
 
 .lede {
   max-width: 23ch;
-
-  margin: 0 0 18px;
-
+  margin: 0 0 16px;
   color: var(--ink);
-
   font-family: var(--serif);
   font-size: clamp(26px, 3vw, 38px);
   font-weight: 500;
@@ -104,51 +74,35 @@
 
 .hero-description {
   max-width: 58ch;
-
-  margin-bottom: 26px;
-
+  margin-bottom: 22px;
   color: var(--mute);
   font-size: 14px;
-  line-height: 1.9;
+  line-height: 1.85;
 }
-
-/* =================================
-   Hero Buttons
-================================= */
 
 .btns {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 12px;
-
-  margin-top: 28px;
+  margin-top: 24px;
 }
 
 .btn {
   min-height: 50px;
   padding: 0 21px;
-
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 15px;
-
   border: 1px solid var(--forest);
-  border-radius: 0;
-
+  border-radius: 2px;
   background: var(--forest);
   color: var(--paper);
-
   font-family: var(--sans);
   font-size: 12px;
   font-weight: 700;
-
-  transition:
-    background var(--transition),
-    color var(--transition),
-    border-color var(--transition),
-    transform var(--transition);
+  transition: background var(--transition), color var(--transition), border-color var(--transition), transform var(--transition);
 }
 
 .btn:hover {
@@ -174,17 +128,11 @@
   color: var(--forest);
 }
 
-/* =================================
-   Hero Note
-================================= */
-
 .hero-note {
   display: flex;
   align-items: center;
   gap: 10px;
-
-  margin-top: 34px;
-
+  margin-top: 28px;
   color: var(--mute);
   font-size: 11px;
   letter-spacing: 0.02em;
@@ -193,18 +141,12 @@
 .hero-note-dot {
   width: 7px;
   height: 7px;
-
   border-radius: 50%;
   background: var(--gold);
 }
 
-/* =================================
-   Featured Collection
-================================= */
-
 .hero-feature {
-  min-width: 0;
-  padding-top: 12px;
+  padding-top: 8px;
 }
 
 .hero-feature-label,
@@ -213,7 +155,6 @@
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-
   color: var(--mute);
   font-size: 10px;
   font-weight: 700;
@@ -227,7 +168,7 @@
 }
 
 .hero-feature-footer {
-  padding-top: 17px;
+  padding-top: 15px;
   border-top: 1px solid var(--border);
 }
 
@@ -236,26 +177,22 @@
   font-size: 18px;
 }
 
-/* =================================
-   Bhopal Collection Card
-================================= */
-
 .bh {
   overflow: hidden;
-
-  margin-block: 18px;
-
+  margin-block: 16px;
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.32);
-
+  background: rgba(255, 255, 255, 0.38);
   box-shadow: var(--shadow-soft);
+  transition: box-shadow var(--transition);
+}
+
+.bh:hover {
+  box-shadow: var(--shadow-card);
 }
 
 .bh h2 {
   padding: 22px 22px 5px;
-
   color: var(--forest);
-
   font-family: var(--serif);
   font-size: 27px;
   font-weight: 500;
@@ -265,7 +202,6 @@
 .bh > p {
   padding: 0 22px 17px;
   margin: 0;
-
   color: var(--mute);
   font-size: 12px;
 }
@@ -274,28 +210,20 @@
   list-style: none;
   margin: 0;
   padding: 0;
-
   border-top: 1px solid var(--border);
 }
 
 #bh button {
   all: unset;
   box-sizing: border-box;
-
   width: 100%;
   padding: 14px 22px;
-
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 4px 14px;
-
   cursor: pointer;
-
   border-bottom: 1px solid var(--border);
-
-  transition:
-    background var(--transition),
-    padding var(--transition);
+  transition: background var(--transition), padding var(--transition);
 }
 
 #bh li:last-child button {
@@ -314,7 +242,6 @@
 
 #bh .n {
   color: var(--forest);
-
   font-family: var(--serif);
   font-size: 19px;
   line-height: 1.2;
@@ -336,10 +263,6 @@
   grid-column: 1 / -1;
 }
 
-/* =================================
-   Responsive
-================================= */
-
 @media (max-width: 1000px) {
   .hero {
     grid-template-columns: minmax(0, 1fr) minmax(300px, 0.9fr);
@@ -354,9 +277,8 @@
 @media (max-width: 860px) {
   .hero {
     grid-template-columns: 1fr;
-    gap: 56px;
-
-    padding-block: 65px;
+    gap: 48px;
+    padding-block: 42px;
   }
 
   .hero-content {
@@ -375,7 +297,8 @@
 
 @media (max-width: 480px) {
   .hero {
-    padding-block: 48px;
+    padding-block: 32px;
+    gap: 36px;
   }
 
   .hero-eyebrow {

@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 import {
   NAV_CTA,
@@ -30,7 +31,6 @@ export default function Header({ onAuthClick }) {
   return (
     <header className="top">
       <div className="header-inner">
-
         <a
           className="mark"
           href="#home"
@@ -76,6 +76,14 @@ export default function Header({ onAuthClick }) {
                 {label}
               </a>
             ))}
+
+            <Link
+              to="/monuments"
+              onClick={closeMenu}
+              className="transition-colors hover:text-[#c7a96b]"
+            >
+              Monuments
+            </Link>
           </div>
 
           <a
@@ -99,7 +107,6 @@ export default function Header({ onAuthClick }) {
             <span aria-hidden="true">↗</span>
           </button>
         </nav>
-
       </div>
     </header>
   );
