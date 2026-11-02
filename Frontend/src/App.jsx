@@ -140,7 +140,7 @@ function AppRoutes() {
                   <h1 className="mt-2 font-serif text-3xl text-[#183b32]">
                     3D Heritage Explorer
                   </h1>
-                  <p className="mt-2 max-w-2xl text-sm leading-6 text-[#77766b]">
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-[#5e655d]">
                     Explore procedural architectural visualizations. These
                     models are not photogrammetric scans or verified digital
                     twins.

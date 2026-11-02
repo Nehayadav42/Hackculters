@@ -11,7 +11,7 @@ export default function MonumentGallery({ images = [], name = "Monument" }) {
 
   if (validImages.length === 0) {
     return (
-      <div className="flex h-[320px] items-center justify-center rounded-2xl bg-[#e9e3d5] text-[#777365]">
+      <div className="flex h-[320px] items-center justify-center rounded-2xl bg-[#e9e3d5] text-[#5e625a]">
         No images available for this monument.
       </div>
     );

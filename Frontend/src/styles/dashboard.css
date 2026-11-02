@@ -1,11 +1,15 @@
 .dashboard-layout {
+  --workspace-ink: #20372d;
+  --workspace-muted: #5e655d;
+  --workspace-accent: #8a642f;
   background:
-    radial-gradient(ellipse at 82% 0%, rgba(189, 135, 68, 0.08), transparent 34rem),
+    radial-gradient(ellipse at 82% 0%, rgba(189, 135, 68, 0.1), transparent 34rem),
     var(--paper);
+  color: var(--workspace-ink);
 }
 
 .dashboard-layout main > * {
-  animation: dashboard-enter 520ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation: dashboard-enter 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
 .dashboard-layout main > *:nth-child(2) {
@@ -17,7 +21,8 @@
 }
 
 .dashboard-card {
-  animation: dashboard-enter 560ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation: dashboard-enter 480ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  box-shadow: 0 1px 2px rgb(34 43 34 / 4%);
 }
 
 .dashboard-card:nth-child(2) {
@@ -26,6 +31,71 @@
 
 .dashboard-card:nth-child(3) {
   animation-delay: 140ms;
+}
+
+.app-sidebar {
+  scrollbar-color: rgb(238 233 221 / 35%) transparent;
+  scrollbar-width: thin;
+}
+
+.app-sidebar::-webkit-scrollbar {
+  width: 7px;
+}
+
+.app-sidebar::-webkit-scrollbar-thumb {
+  border: 2px solid #142b25;
+  border-radius: 999px;
+  background: rgb(238 233 221 / 35%);
+}
+
+.app-sidebar-footer {
+  box-shadow: 0 -12px 20px rgb(20 43 37 / 88%);
+}
+
+.app-sidebar a:focus-visible,
+.app-sidebar button:focus-visible {
+  outline-color: #e6c989;
+  outline-offset: -2px;
+}
+
+.workspace-header {
+  box-shadow: 0 1px 0 rgb(32 55 45 / 3%);
+  min-width: 0;
+}
+
+.workspace-header > div {
+  min-width: 0;
+}
+
+.dashboard-layout input,
+.dashboard-layout select,
+.dashboard-layout textarea {
+  color: #263b30;
+}
+
+.dashboard-layout input::placeholder,
+.dashboard-layout textarea::placeholder {
+  color: #66675f;
+  opacity: 1;
+}
+
+.dashboard-layout :disabled {
+  cursor: not-allowed;
+}
+
+.dashboard-layout a,
+.dashboard-layout button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dashboard-layout button:not(:disabled),
+.dashboard-layout a {
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
 }
 
 @keyframes dashboard-enter {
@@ -37,6 +107,17 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-layout main {
+    padding-top: 1.25rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .dashboard-layout .dashboard-card:hover {
+    transform: none;
   }
 }
 

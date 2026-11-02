@@ -192,7 +192,7 @@ export default function MonumentsPage() {
             <div className="lg:col-span-1">
               <label
                 htmlFor="monument-search"
-                className="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-[#858579]"
+                className="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-[#62645c]"
               >
                 Search archive
               </label>
@@ -203,14 +203,14 @@ export default function MonumentsPage() {
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="Search monuments..."
-                className="w-full border border-[#ded8ca] bg-[#f5f2e9] px-4 py-3 text-sm text-[#183b32] outline-none transition placeholder:text-[#99998e] focus:border-[#a17b43]"
+                className="w-full border border-[#ded8ca] bg-[#f5f2e9] px-4 py-3 text-sm text-[#183b32] outline-none transition placeholder:text-[#62645c] focus:border-[#a17b43]"
               />
             </div>
 
             <div>
               <label
                 htmlFor="state-filter"
-                className="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-[#858579]"
+                className="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-[#62645c]"
               >
                 Region / State
               </label>
@@ -231,7 +231,7 @@ export default function MonumentsPage() {
             <div>
               <label
                 htmlFor="category-filter"
-                className="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-[#858579]"
+                className="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-[#62645c]"
               >
                 Category
               </label>
@@ -252,7 +252,7 @@ export default function MonumentsPage() {
             <div>
               <label
                 htmlFor="period-filter"
-                className="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-[#858579]"
+                className="mb-2 block text-[10px] font-semibold uppercase tracking-widest text-[#62645c]"
               >
                 Architectural period
               </label>
@@ -393,7 +393,7 @@ export default function MonumentsPage() {
       </section>
 
       <footer className="border-t border-[#ded8ca] px-5 py-7 sm:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col justify-between gap-3 text-xs text-[#858579] sm:flex-row">
+        <div className="mx-auto flex max-w-7xl flex-col justify-between gap-3 text-xs text-[#62645c] sm:flex-row">
           <span>HERITAGEVERSE — A LIVING ARCHIVE</span>
           <Link to="/dashboard" className="transition hover:text-[#a17b43]">
             Return to workspace ↑

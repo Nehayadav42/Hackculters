@@ -100,7 +100,7 @@ export default function HeritageMapPage() {
           <h1 className="mt-2 font-serif text-3xl text-[#183b32] sm:text-4xl">
             Heritage map
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-[#77766b]">
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-[#5e655d]">
             Locations are shown only when the backend record supplies valid
             coordinates. Coverage reflects the current archive, not nationwide
             completeness.
@@ -125,7 +125,7 @@ export default function HeritageMapPage() {
       </div>
 
       {loading && (
-        <p role="status" className="rounded-xl bg-white/60 p-6 text-sm text-[#77766b]">
+        <p role="status" className="rounded-xl bg-white/85 p-6 text-sm text-[#5e655d]">
           Loading monument locations...
         </p>
       )}
@@ -137,7 +137,7 @@ export default function HeritageMapPage() {
 
       {!loading && !error && (
         <>
-          <p className="mb-4 text-xs text-[#77766b]">
+          <p className="mb-4 text-xs text-[#5e655d]">
             {locatedSites.length} of {filteredSites.length} records have valid
             coordinates in this view.
           </p>
@@ -156,7 +156,7 @@ export default function HeritageMapPage() {
                     <h2 className="font-serif text-xl text-[#183b32]">
                       {selectedSite.name || selectedSite.title || "Heritage site"}
                     </h2>
-                    <p className="mt-1 text-xs text-[#77766b]">
+                    <p className="mt-1 text-xs text-[#5e655d]">
                       {selectedSite.latitude}, {selectedSite.longitude}
                     </p>
                   </div>
@@ -187,7 +187,7 @@ export default function HeritageMapPage() {
                     <span className="block font-medium text-[#183b32]">
                       {site.name || site.title || "Untitled heritage site"}
                     </span>
-                    <span className="mt-1 block text-xs text-[#77766b]">
+                    <span className="mt-1 block text-xs text-[#5e655d]">
                       {[site.city, site.state].filter(Boolean).join(", ") ||
                         "Location name unavailable"}
                     </span>
@@ -200,13 +200,13 @@ export default function HeritageMapPage() {
               <h2 className="font-serif text-2xl text-[#183b32]">
                 No mapped records in this view
               </h2>
-              <p className="mt-2 text-sm text-[#77766b]">
+              <p className="mt-2 text-sm text-[#5e655d]">
                 The current API returned no records with valid coordinates.
               </p>
               {filteredSites.length > 0 && (
                 <div className="mt-5 space-y-2">
                   {filteredSites.map((site) => (
-                    <p key={site.id} className="text-sm text-[#77766b]">
+                    <p key={site.id} className="text-sm text-[#5e655d]">
                       {site.name || site.title || "Untitled record"} — location
                       coordinates unavailable
                     </p>

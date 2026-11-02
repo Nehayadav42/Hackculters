@@ -80,7 +80,7 @@ img {
   padding-block: clamp(20px, 2.5vw, 36px);
 }
 
-.wrap {
+.landing-main .wrap {
   width: 100%;
   max-width: var(--content-width);
   margin-inline: auto;
@@ -125,10 +125,10 @@ img {
  /* Typography */
 
 
-h1,
-h2,
-h3,
-h4 {
+.landing-main h1,
+.landing-main h2,
+.landing-main h3,
+.landing-main h4 {
   margin: 0 0 0.5em;
   font-family: var(--serif);
   font-weight: 500;
@@ -136,24 +136,24 @@ h4 {
   line-height: 1.08;
 }
 
-h1 {
+.landing-main h1 {
   font-size: clamp(56px, 8vw, 112px);
 }
 
-h2 {
+.landing-main h2 {
   font-size: clamp(36px, 4.5vw, 64px);
 }
 
-h3 {
+.landing-main h3 {
   font-size: clamp(24px, 2.5vw, 34px);
 }
 
-p {
+.landing-main p {
   max-width: 65ch;
   margin: 0 0 1em;
 }
 
-.mute {
+.landing-main .mute {
   color: var(--mute);
 }
 
@@ -194,11 +194,11 @@ p {
     padding-inline: 24px;
   }
 
-  h1 {
+  .landing-main h1 {
     font-size: clamp(48px, 12vw, 76px);
   }
 
-  h2 {
+  .landing-main h2 {
     font-size: clamp(34px, 8vw, 48px);
   }
 }

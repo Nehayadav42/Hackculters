@@ -45,7 +45,7 @@ function SectionHeading({ eyebrow, title, description, action }) {
         </h2>
 
         {description && (
-          <p className="mt-2 max-w-xl text-sm leading-6 text-[#77766b]">
+          <p className="mt-2 max-w-xl text-sm leading-6 text-[#5e655d]">
             {description}
           </p>
         )}
@@ -100,11 +100,11 @@ function MonumentCard({ monument, index }) {
           {monument.name}
         </h3>
 
-        <p className="mt-1 text-xs text-[#898779]">
+        <p className="mt-1 text-xs text-[#5f6259]">
           {location || "Location not available"}
         </p>
 
-        <p className="mt-4 line-clamp-3 text-xs leading-6 text-[#77766b]">
+        <p className="mt-4 line-clamp-3 text-xs leading-6 text-[#5e655d]">
           {monument.description ||
             "Explore the historical and architectural record of this heritage site."}
         </p>
@@ -152,7 +152,7 @@ function Overview({
             </span>
           </h2>
 
-          <p className="mt-4 max-w-lg text-sm leading-7 text-white/65">
+          <p className="mt-4 max-w-lg text-sm leading-7 text-white/85">
             Discover the stories, architecture and knowledge that shaped
             our history. Your personal space to explore India's cultural heritage.
           </p>
@@ -187,7 +187,7 @@ function Overview({
                   {item.icon}
                 </span>
 
-                <span className="text-[10px] tracking-widest text-[#aaa393]">
+                <span className="text-[10px] tracking-widest text-[#5f6259]">
                   {item.number}
                 </span>
               </div>
@@ -196,7 +196,7 @@ function Overview({
                 {item.title}
               </h3>
 
-              <p className="mt-2 min-h-[48px] text-xs leading-6 text-[#77766b]">
+              <p className="mt-2 min-h-[48px] text-xs leading-6 text-[#5e655d]">
                 {item.description}
               </p>
 
@@ -273,7 +273,7 @@ function Overview({
             <p className="font-serif text-xl text-[#263b30]">
               The collection is waiting for its first records.
             </p>
-            <p className="mt-2 text-sm text-[#77766b]">
+            <p className="mt-2 text-sm text-[#5e655d]">
               There are no heritage sites available from the archive yet.
             </p>
           </div>
@@ -324,7 +324,7 @@ function EmptySection({ type, onNavigate }) {
           {type === "saved" ? "Not available yet." : "Start with a monument."}
         </h3>
 
-        <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-[#77766b]">
+        <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-[#5e655d]">
           {type === "saved"
             ? "Saved discoveries need a user-specific storage endpoint before this can persist between visits."
             : "Open a monument record to explore its related digitized documents."}
@@ -446,14 +446,14 @@ function Contributions({ monuments, loading, error }) {
           </label>
 
           <label className="text-xs font-semibold text-[#53675d] sm:col-span-2">
-            Title <span className="font-normal text-[#898779]">(optional)</span>
+            Title <span className="font-normal text-[#5f6259]">(optional)</span>
             <input
               value={title}
               onChange={(event) => setTitle(event.target.value)}
               type="text"
               maxLength={160}
               placeholder="Give this archive item a title"
-              className="mt-2 h-12 w-full rounded-lg border border-[#e1dacb] bg-[#faf8f2] px-3 text-sm font-normal text-[#263b30] outline-none placeholder:text-[#aaa393] focus:border-[#a17b43]"
+              className="mt-2 h-12 w-full rounded-lg border border-[#e1dacb] bg-[#faf8f2] px-3 text-sm font-normal text-[#263b30] outline-none placeholder:text-[#5f6259] focus:border-[#a17b43]"
             />
           </label>
 
@@ -466,14 +466,14 @@ function Contributions({ monuments, loading, error }) {
               required
               className="mt-2 block w-full rounded-lg border border-dashed border-[#cfc5b2] bg-[#faf8f2] px-3 py-4 text-sm font-normal text-[#53675d] file:mr-4 file:rounded-full file:border-0 file:bg-[#183b32] file:px-4 file:py-2 file:text-xs file:font-semibold file:text-white"
             />
-            <span className="mt-2 block font-normal text-[#898779]">
+            <span className="mt-2 block font-normal text-[#5f6259]">
               Supported by the current upload service: JPG, PNG, and PDF. No
               extracted text, translation, or processing progress is returned.
             </span>
           </label>
         </div>
 
-        <p className="mt-5 rounded-lg border border-[#e5dfd1] bg-[#f7f3e8] px-4 py-3 text-xs leading-5 text-[#77766b]">
+        <p className="mt-5 rounded-lg border border-[#e5dfd1] bg-[#f7f3e8] px-4 py-3 text-xs leading-5 text-[#5e655d]">
           Source/provenance notes are not accepted or stored by the current
           upload endpoint. Keep a note of your source until the backend adds
           provenance fields.
@@ -495,7 +495,7 @@ function Contributions({ monuments, loading, error }) {
           </p>
         )}
         {uploading && (
-          <p role="status" className="mt-5 text-sm text-[#77766b]">
+          <p role="status" className="mt-5 text-sm text-[#5e655d]">
             Uploading file... Keep this page open until the server responds.
           </p>
         )}
@@ -537,7 +537,7 @@ function Profile({ user }) {
             <h3 className="font-serif text-2xl text-[#263b30]">
               {displayName}
             </h3>
-            <p className="mt-1 text-xs text-[#898779]">
+            <p className="mt-1 text-xs text-[#5f6259]">
               HeritageVerse Explorer
             </p>
           </div>
