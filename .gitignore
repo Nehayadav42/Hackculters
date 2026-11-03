@@ -1,29 +1,119 @@
-# Dependencies
+
+# ==============================
+# Node.js Dependencies
+# ==============================
 node_modules/
 **/node_modules/
 
-# Environment variables
+# ==============================
+# Python Dependencies
+# ==============================
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# Python Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+**/venv/
+**/.venv/
+
+# Python Build Files
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Python Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Google Cloud credentials
+google-credentials.json
+**/google-credentials.json
+
+# ==============================
+# Environment Variables
+# ==============================
 .env
 .env.*
 !.env.example
 
-# Build files
+# ==============================
+# Build Files
+# ==============================
 **/dist/
 build/
 
+# ==============================
 # Logs
+# ==============================
 *.log
 npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
 
+# ==============================
 # Cache
+# ==============================
 .cache/
 .vite/
 coverage/
+.mypy_cache/
+.ruff_cache/
 
-# OS files
+# ==============================
+# OS Files
+# ==============================
 .DS_Store
 Thumbs.db
+desktop.ini
 
+# ==============================
 # IDE
+# ==============================
 .vscode/
 .idea/
+
+# ==============================
+# OCR Model Files
+# ==============================
+*.onnx
+*.pt
+*.pth
+*.pdmodel
+*.pdiparams
+*.engine
+
+# ==============================
+# Temporary Uploads
+# ==============================
+uploads/
+temp/
+tmp/
+```
+
+### Important for your OCR project
+
+- `venv/` prevents uploading your Python virtual environment.
+- `__pycache__/` prevents unnecessary Python cache files.
+- `*.pt`, `*.pth` and `*.onnx` prevent large model files from being committed.
+- `.env` protects API keys and credentials.
+- `uploads/` prevents temporary uploaded documents from being committed.
+
+**One caution:** If you intentionally store trained OCR models inside your repository, don't ignore those model files without checking your project structure. You can use Git LFS or model storage for large models.
+
+### Where to create it?
+
+Create `.gitignore` in your main `Hackculters/` folder, not just inside `ocr-service/`.
+
+This will protect files across your React frontend, Node.js backend and Python OCR service.

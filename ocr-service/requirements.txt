@@ -1,0 +1,13 @@
+fastapi==0.110.0
+uvicorn==0.28.0
+opencv-python-headless==4.9.0.80
+numpy==1.26.4
+paddlepaddle==2.6.2
+paddleocr==2.7.3
+google-cloud-vision==3.7.0
+google-cloud-translate==3.15.3
+python-multipart==0.0.9
+PyMuPDF==1.23.26
+python-docx==1.1.0
+langdetect==1.0.9
+python-dotenv==1.0.1

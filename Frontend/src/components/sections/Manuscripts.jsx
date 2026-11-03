@@ -1,70 +1,25 @@
-import { useState } from "react";
-
-import Section from "../layout/Section.jsx";
-import Folio from "../manuscript/Folio.jsx";
-import Gloss from "../manuscript/Gloss.jsx";
-
-import { MANUSCRIPT_WORDS } from "../../data/manuscript.js";
+import React from 'react';
+import OcrViewer from '../OcrViewer.jsx';
 
 export default function Manuscripts() {
-  const [activeIndex, setActiveIndex] = useState(null);
+    return (
+        <div style={{ minHeight: '100vh', backgroundColor: '#f5f2e9', padding: '40px', boxSizing: 'border-box' }}>
+            <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+                <div style={{ marginBottom: '30px' }}>
+                    <p style={{ fontSize: '12px', letterSpacing: '0.2em', color: '#a17b43', fontWeight: 'bold' }}>
+                        DIGITAL HERITAGE WORKSPACE
+                    </p>
+                    <h1 style={{ fontFamily: 'serif', fontSize: '2.5rem', color: '#183b32', marginTop: '5px' }}>
+                        Manuscript OCR & Translation Hub
+                    </h1>
+                    <p style={{ color: '#5e625a', marginTop: '10px', fontSize: '1rem' }}>
+                        Upload historical archives, images, or documents. Our local AI pipeline extracts text via PaddleOCR, translates via deep-translator, and provides Roman transliteration.
+                    </p>
+                </div>
 
-  const selectedWord =
-    activeIndex === null ? null : MANUSCRIPT_WORDS[activeIndex];
-
-  return (
-    <Section id="read" tone="s2">
-      <div className="manuscript-section">
-
-        <div className="manuscript-heading">
-          <div className="manuscript-eyebrow">
-            <span>THE MANUSCRIPT COLLECTION</span>
-            <span>03 / READ</span>
-          </div>
-
-          <h2>
-            Every word holds
-            <span> a piece of history.</span>
-          </h2>
-
-          <p className="manuscript-intro mute">
-            Explore historical scripts through their original
-            language, transliteration and English meaning.
-            Select individual words to discover their context.
-          </p>
-        </div>
-
-        <div className="manuscript-reader">
-
-          <div className="reader-toolbar">
-            <div>
-              <span className="reader-label">DIGITAL FOLIO</span>
-              <h3>A verse of devotion</h3>
+                {/* This mounts your real AI processing pipeline */}
+                <OcrViewer />
             </div>
-
-            <span className="reader-status">
-              INTERACTIVE TRANSCRIPTION
-            </span>
-          </div>
-
-          <div className="reader-instruction">
-            Select any word to explore its meaning and interpretation.
-          </div>
-
-          <Folio
-            activeIndex={activeIndex}
-            onSelect={setActiveIndex}
-          />
-
-          <Gloss word={selectedWord} />
-
-          <div className="reader-footer">
-            <span>ORIGINAL SCRIPT · TRANSLITERATION · TRANSLATION</span>
-            <span>DEMO TRANSCRIPTION</span>
-          </div>
-
         </div>
-      </div>
-    </Section>
-  );
+    );
 }

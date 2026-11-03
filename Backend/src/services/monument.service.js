@@ -122,12 +122,11 @@ export const fetchMonumentDetails = async (monumentId) => {
                 title,
                 document_type,
                 file_path,
-                original_file_name,
+                ocr_text,
+                original_text,
+                translated_text,
                 language,
-                source_name,
-                source_url,
-                status,
-                created_at
+                source_name
             )
         `)
         .eq("id", monumentId)
@@ -137,13 +136,7 @@ export const fetchMonumentDetails = async (monumentId) => {
         throw new AppError(error.message, 404);
     }
 
-    const [monumentWithThumbnail] =
-        await attachThumbnailUrls([data]);
-
-    return {
-        ...monumentWithThumbnail,
-        documents: attachDocumentUrls(data.documents || []),
-    };
+    return data;
 };
 
 // Fetch all public images belonging to one monument

@@ -5,32 +5,34 @@ export default function ManuscriptReader({ documents = [] }) {
   const [activeDocument, setActiveDocument] = useState(0);
   const [showTranslation, setShowTranslation] = useState(false);
 
-  const validDocuments = documents.filter(
-    (doc) => doc && (doc.title || doc.file_url || doc.extracted_text)
+ // 1. Update the filter so it doesn't hide documents that use 'original_text' or 'ocr_text'
+ const validDocuments = documents.filter(
+  (doc) => doc && (doc.title || doc.file_url || doc.ocr_text || doc.original_text)
+);
+
+if (!validDocuments.length) {
+  return (
+    <div className="rounded-2xl border border-[#ded6c6] bg-[#eee9dc] p-8 text-center">
+      <p className="font-serif text-xl text-[#183b32]">
+        Manuscript collection
+      </p>
+      <p className="mt-2 text-sm text-[#5e625a]">
+        No digitized manuscripts are available for this monument yet.
+      </p>
+    </div>
   );
+}
 
-  if (!validDocuments.length) {
-    return (
-      <div className="rounded-2xl border border-[#ded6c6] bg-[#eee9dc] p-8 text-center">
-        <p className="font-serif text-xl text-[#183b32]">
-          Manuscript collection
-        </p>
-        <p className="mt-2 text-sm text-[#5e625a]">
-          No digitized manuscripts are available for this monument yet.
-        </p>
-      </div>
-    );
-  }
+const document = validDocuments[activeDocument];
 
-  const document = validDocuments[activeDocument];
-
-  const rawText = document.extracted_text || document.ocr_text || "";
-  const correctedText = document.corrected_text || document.reviewed_text || "";
-  const translatedText =
-    document.translation ||
-    document.translated_text ||
-    document.english_translation ||
-    "";
+// 2. Add 'document.original_text' here so it actually reads the column shown in your DB
+const rawText = document.ocr_text || document.original_text || document.extracted_text || "";
+const correctedText = document.corrected_text || document.reviewed_text || "";
+const translatedText =
+  document.translated_text ||
+  document.translation ||
+  document.english_translation ||
+  "";
   const processingStatus =
     document.processing_status || document.ocr_status || "";
 
