@@ -1,5 +1,6 @@
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   getMonumentImages,
   uploadMonumentImage,
@@ -63,6 +64,8 @@ export default function MonumentGallery({
 
     async function fetchGallery() {
       try {
+        setLoading(true);
+
         const response = await getMonumentImages(monumentId);
 
         const fallbackImages = JSON.parse(fallbackImagesKey);
@@ -91,7 +94,10 @@ export default function MonumentGallery({
       }
     }
 
-    if (!monumentId) return;
+    if (!monumentId) {
+  cancelled = true;
+  return;
+}
 
     fetchGallery();
 
@@ -99,6 +105,24 @@ export default function MonumentGallery({
       cancelled = true;
     };
   }, [monumentId, name, fallbackImagesKey]);
+
+  // Lock background scrolling while image viewer is open
+  useEffect(() => {
+    if (!activeImage) return;
+
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflow =
+      document.documentElement.style.overflow;
+
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow =
+        previousHtmlOverflow;
+    };
+  }, [activeImage]);
 
   // Refresh gallery after upload
   const refreshGallery = async () => {
@@ -164,11 +188,12 @@ export default function MonumentGallery({
     }
   };
 
-  // Image preview
+  // Open image viewer
   const openPreview = (image) => {
     setActiveImage(image);
   };
 
+  // Close image viewer
   const closePreview = () => {
     setActiveImage(null);
   };
@@ -177,6 +202,7 @@ export default function MonumentGallery({
     (image) => image.id === activeImage?.id
   );
 
+  // Previous image
   const showPrevious = () => {
     if (galleryImages.length < 2) return;
 
@@ -187,6 +213,7 @@ export default function MonumentGallery({
     setActiveImage(galleryImages[index]);
   };
 
+  // Next image
   const showNext = () => {
     if (galleryImages.length < 2) return;
 
@@ -196,47 +223,50 @@ export default function MonumentGallery({
     setActiveImage(galleryImages[index]);
   };
 
-  // Keyboard navigation
+  // Keyboard controls
   useEffect(() => {
-    if (!activeImage) return;
+  if (!activeImage) return;
 
-    const handleKeyDown = (event) => {
-      if (event.key === "Escape") {
-        setActiveImage(null);
-      }
+  const handleKeyDown = (event) => {
+    if (event.key === "Escape") {
+      setActiveImage(null);
+    }
 
-      if (event.key === "ArrowLeft" && galleryImages.length > 1) {
-        setActiveImage((current) => {
-          const index = galleryImages.findIndex(
-            (image) => image.id === current?.id
-          );
+    if (event.key === "ArrowLeft") {
+      setActiveImage((current) => {
+        const index = galleryImages.findIndex(
+          (image) => image.id === current?.id
+        );
 
-          return galleryImages[
-            (index - 1 + galleryImages.length) %
-              galleryImages.length
-          ];
-        });
-      }
+        if (index === -1) return current;
 
-      if (event.key === "ArrowRight" && galleryImages.length > 1) {
-        setActiveImage((current) => {
-          const index = galleryImages.findIndex(
-            (image) => image.id === current?.id
-          );
+        return galleryImages[
+          (index - 1 + galleryImages.length) % galleryImages.length
+        ];
+      });
+    }
 
-          return galleryImages[
-            (index + 1) % galleryImages.length
-          ];
-        });
-      }
-    };
+    if (event.key === "ArrowRight") {
+      setActiveImage((current) => {
+        const index = galleryImages.findIndex(
+          (image) => image.id === current?.id
+        );
 
-    window.addEventListener("keydown", handleKeyDown);
+        if (index === -1) return current;
 
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [activeImage, galleryImages]);
+        return galleryImages[
+          (index + 1) % galleryImages.length
+        ];
+      });
+    }
+  };
+
+  window.addEventListener("keydown", handleKeyDown);
+
+  return () => {
+    window.removeEventListener("keydown", handleKeyDown);
+  };
+}, [activeImage, galleryImages]);
 
   return (
     <>
@@ -312,7 +342,7 @@ export default function MonumentGallery({
                   key={image.id}
                   type="button"
                   onClick={() => openPreview(image)}
-                  className="group relative aspect-square overflow-hidden rounded-xl border border-[#ded6c6] bg-[#e9e3d5]"
+                  className="group relative flex aspect-square items-center justify-center overflow-hidden rounded-xl border border-[#ded6c6] bg-[#e9e3d5]"
                 >
                   {failedImages.includes(image.url) ? (
                     <div className="flex h-full items-center justify-center text-xs text-[#77796f]">
@@ -330,7 +360,7 @@ export default function MonumentGallery({
                             : [...previous, image.url]
                         )
                       }
-                      className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                      className="h-full w-full object-contain transition duration-300 group-hover:scale-[1.03]"
                     />
                   )}
 
@@ -344,72 +374,78 @@ export default function MonumentGallery({
         )}
       </section>
 
-      {/* Full image preview */}
-      {activeImage && (
-        <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 p-4 sm:p-8"
-          onClick={closePreview}
-          role="dialog"
-          aria-modal="true"
-          aria-label={`${name} image preview`}
-        >
-          <div className="absolute left-4 right-4 top-4 z-10 flex items-center justify-between sm:left-8 sm:right-8">
-            <div className="max-w-[70%]">
-              <p className="truncate text-sm font-medium text-white">
-                {name}
-              </p>
-
-              <p className="mt-1 text-xs text-white/60">
-                {currentIndex + 1} of {galleryImages.length}
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={closePreview}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-xl text-white hover:bg-white/20"
-              aria-label="Close preview"
+      {/* Google-style image viewer rendered outside the page */}
+      {activeImage &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/45 p-3 backdrop-blur-[2px] sm:p-6"
+            onClick={closePreview}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${name} image viewer`}
+          >
+            {/* Viewer controls */}
+            <div
+              className="relative flex max-h-[94vh] max-w-[94vw] flex-col items-center"
+              onClick={(event) => event.stopPropagation()}
             >
-              ×
-            </button>
-          </div>
+              {/* Top toolbar */}
+              <div className="mb-3 flex w-full items-center justify-between gap-4 text-white">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium">
+                    {name}
+                  </p>
 
-          <img
-            src={activeImage.url}
-            alt={activeImage.title}
-            onClick={(event) => event.stopPropagation()}
-            className="max-h-[75vh] max-w-[80vw] rounded-lg object-contain shadow-2xl"
-          />
+                  <p className="mt-1 text-xs text-white/75">
+                    {currentIndex + 1} of {galleryImages.length}
+                  </p>
+                </div>
 
-          {galleryImages.length > 1 && (
-            <>
-              <button
-                type="button"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  showPrevious();
-                }}
-                className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-xl text-white hover:bg-white/25 sm:left-8"
-                aria-label="Previous image"
-              >
-                ‹
-              </button>
+                <button
+                  type="button"
+                  onClick={closePreview}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/15 text-2xl text-white transition hover:bg-white/30"
+                  aria-label="Close image"
+                >
+                  ×
+                </button>
+              </div>
 
-              <button
-                type="button"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  showNext();
-                }}
-                className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-xl text-white hover:bg-white/25 sm:right-8"
-                aria-label="Next image"
-              >
-                ›
-              </button>
-            </>
-          )}
-        </div>
-      )}
+              {/* Actual image - no oversized canvas */}
+              <div className="flex max-h-[85vh] max-w-[94vw] items-center justify-center">
+                <img
+                  src={activeImage.url}
+                  alt={activeImage.title}
+                  className="block max-h-[85vh] max-w-[94vw] rounded-lg object-contain shadow-2xl"
+                />
+              </div>
+
+              {/* Image navigation */}
+              {galleryImages.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={showPrevious}
+                    className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-2xl text-[#183b32] shadow-lg transition hover:bg-white sm:-left-14"
+                    aria-label="Previous image"
+                  >
+                    ‹
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={showNext}
+                    className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-2xl text-[#183b32] shadow-lg transition hover:bg-white sm:-right-14"
+                    aria-label="Next image"
+                  >
+                    ›
+                  </button>
+                </>
+              )}
+            </div>
+          </div>,
+          document.body
+        )}
     </>
   );
 }

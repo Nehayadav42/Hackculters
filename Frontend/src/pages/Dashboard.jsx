@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/useAuth.js";
-import { getMonuments, uploadArchiveFile } from "../services/api.js";
+import {
+  getMonuments,
+  getMonumentImages,
+  uploadArchiveFile,
+} from "../services/api.js";
 import "../styles/dashboard.css";
 import OcrViewer from "../components/OcrViewer.jsx";
 
@@ -56,42 +60,88 @@ function SectionHeading({ eyebrow, title, description, action }) {
   );
 }
 
+
+
+
 function MonumentCard({ monument, index }) {
-  const image =
+  const fallbackImage =
     monument.thumbnail_url ||
     monument.image_url ||
     monument.cover_image ||
-    monument.image;
-  const location = [monument.city, monument.state].filter(Boolean).join(", ");
+    monument.image ||
+    null;
+
+  const [image, setImage] = useState(fallbackImage);
+  const [imageFailed, setImageFailed] = useState(false);
+
+  const location = [monument.city, monument.state]
+    .filter(Boolean)
+    .join(", ");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadCoverFromGallery() {
+      try {
+        const response = await getMonumentImages(monument.id);
+        const images = Array.isArray(response?.data)
+          ? response.data
+          : [];
+
+        const selected =
+          images.find((item) => item.is_cover) ||
+          images[0];
+
+        if (!cancelled && selected?.image_url) {
+          setImage(selected.image_url);
+          setImageFailed(false);
+        }
+      } catch (error) {
+        console.error(
+          `Unable to load gallery for ${monument.name}:`,
+          error
+        );
+      }
+    }
+
+    loadCoverFromGallery();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [monument.id, monument.name]);
 
   return (
     <Link
       to={`/monuments/${monument.id}`}
-      className="dashboard-card group block overflow-hidden rounded-xl border border-[#e5dfd1] bg-[#fffdf7] transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+      className="dashboard-card group flex h-full flex-col overflow-hidden rounded-xl border border-[#e5dfd1] bg-[#fffdf7] transition duration-300 hover:-translate-y-1 hover:shadow-xl"
     >
-      <div className="relative aspect-[16/10] overflow-hidden bg-[#d8d0bd]">
-        {image ? (
+      <div className="relative aspect-[16/10] overflow-hidden bg-[#eee9df]">
+        {image && !imageFailed ? (
           <img
             src={image}
             alt={monument.name || "Heritage site"}
             loading="lazy"
-            className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+            onError={() => setImageFailed(true)}
+            className="absolute inset-0 h-full w-full object-contain p-2 transition-transform duration-500 group-hover:scale-[1.02]"
           />
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-[#31594b] via-[#9b8968] to-[#d4c19b]" />
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#eae5da]">
+            <span className="font-serif text-5xl text-[#b9ab90]">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <span className="mt-3 text-xs text-[#77796f]">
+              Photograph unavailable
+            </span>
+          </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#142b25]/75 via-transparent to-transparent" />
-        <span className="absolute bottom-4 left-4 rounded-full border border-white/30 bg-black/20 px-3 py-1 text-[9px] tracking-[0.16em] text-white backdrop-blur">
-          {monument.category || "HERITAGE SITE"}
+
+        <span className="absolute bottom-3 left-3 rounded-full border border-[#d6cbb9] bg-[#fffdf7]/95 px-3 py-1 text-[10px] font-medium tracking-wide text-[#183b32] shadow-sm">
+          {monument.category || "Heritage site"}
         </span>
-        {!image && (
-          <span className="absolute right-4 top-1 font-serif text-6xl text-white/30">
-            {String(index + 1).padStart(2, "0")}
-          </span>
-        )}
       </div>
 
-      <div className="p-5">
+      <div className="flex flex-1 flex-col p-5">
         <p className="text-[10px] font-semibold tracking-[0.15em] text-[#a17b43]">
           {monument.architectural_period || "HISTORICAL RECORD"}
         </p>
@@ -109,8 +159,8 @@ function MonumentCard({ monument, index }) {
             "Explore the historical and architectural record of this heritage site."}
         </p>
 
-        <div className="mt-4 border-t border-[#e9e3d7] pt-4">
-          <span className="text-xs font-semibold text-[#98713e]">
+        <div className="mt-auto border-t border-[#e9e3d7] pt-4">
+          <span className="text-xs font-semibold text-[#98713e] transition-colors group-hover:text-[#183b32]">
             Explore details ↗
           </span>
         </div>
@@ -118,6 +168,8 @@ function MonumentCard({ monument, index }) {
     </Link>
   );
 }
+
+
 
 function Overview({
   user,
