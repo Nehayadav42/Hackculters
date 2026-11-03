@@ -1,5 +1,8 @@
-
-import * as monumentService from '../services/monument.service.js';
+import * as monumentService from "../services/monument.service.js";
+import {
+    fetchMonumentImages,
+    uploadMonumentImage
+} from "../services/monument.service.js";
 import { supabase } from '../config/supabaseClient.js';
 import { ocrQueue } from '../workers/ocrWorker.js';
 
@@ -256,6 +259,45 @@ export const searchArchives = async (req, res, next) => {
             }
         });
 
+    } catch (error) {
+        next(error);
+    }
+};
+
+
+export const getMonumentImages = async (req, res, next) => {
+    try {
+        const images = await fetchMonumentImages(req.params.id);
+
+        res.status(200).json({
+            success: true,
+            data: images,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const addMonumentImage = async (req, res, next) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: "Please select an image.",
+            });
+        }
+
+        const image = await uploadMonumentImage({
+            siteId: req.params.id,
+            file: req.file,
+            title: req.body.title,
+        });
+
+        res.status(201).json({
+            success: true,
+            message: "Image uploaded successfully.",
+            data: image,
+        });
     } catch (error) {
         next(error);
     }

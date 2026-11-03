@@ -6,6 +6,53 @@ import { getMonuments } from "../services/api.js";
 const getUniqueValues = (items, key) =>
   [...new Set(items.map((item) => item[key]).filter(Boolean))].sort();
 
+const getMonumentImage = (monument) =>
+  monument.thumbnail_url ||
+  monument.image_url ||
+  monument.cover_image ||
+  monument.image ||
+  "";
+
+function MonumentImage({ monument }) {
+  const image = getMonumentImage(monument);
+  const [failed, setFailed] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  if (!image || failed) {
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-[#e8e5df]">
+        <div className="text-center">
+          <span className="font-serif text-5xl text-[#183b32]/30">
+            {monument.name?.charAt(0)?.toUpperCase() || "H"}
+          </span>
+          <p className="mt-2 text-xs text-[#77796f]">
+            Image unavailable
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative flex h-full w-full items-center justify-center bg-[#e8e5df]">
+      {!loaded && (
+        <div className="absolute inset-0 animate-pulse bg-[#e8e5df]" />
+      )}
+
+      <img
+        src={image}
+        alt={monument.name || "Heritage monument"}
+        loading="lazy"
+        onLoad={() => setLoaded(true)}
+        onError={() => setFailed(true)}
+        className={`h-full w-full object-contain transition-opacity duration-300 ${
+          loaded ? "opacity-100" : "opacity-0"
+        }`}
+      />
+    </div>
+  );
+}
+
 export default function MonumentsPage() {
   const [monuments, setMonuments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -297,13 +344,7 @@ export default function MonumentsPage() {
           </div>
         ) : filteredMonuments.length > 0 ? (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredMonuments.map((monument, index) => {
-              const image =
-                monument.thumbnail_url ||
-                monument.image_url ||
-                monument.cover_image ||
-                monument.image;
-
+            {filteredMonuments.map((monument) => {
               const location = [monument.city, monument.state]
                 .filter(Boolean)
                 .join(", ");
@@ -314,21 +355,8 @@ export default function MonumentsPage() {
                   key={monument.id}
                   className="group overflow-hidden border border-[#ded8ca] bg-white/50 transition duration-300 hover:-translate-y-1 hover:border-[#b9955b] hover:shadow-xl hover:shadow-[#183b32]/10"
                 >
-                  <div className="relative aspect-[4/3] overflow-hidden bg-[#d9d5c8]">
-                    {image ? (
-                      <img
-                        src={image}
-                        alt={monument.name || "Heritage monument"}
-                        loading="lazy"
-                        className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center bg-gradient-to-br from-[#d9d5c8] via-[#b8b5a5] to-[#8e9987]">
-                        <span className="font-serif text-5xl text-[#183b32]/40">
-                          {String(index + 1).padStart(2, "0")}
-                        </span>
-                      </div>
-                    )}
+                  <div className="relative aspect-[4/3] overflow-hidden bg-[#e8e5df]">
+                    <MonumentImage monument={monument} />
 
                     <span className="absolute left-4 top-4 bg-[#f5f2e9] px-3 py-2 text-[9px] font-semibold uppercase tracking-widest text-[#183b32]">
                       {monument.category || "HERITAGE SITE"}

@@ -85,3 +85,36 @@ export async function uploadArchiveFile({
 
   return result;
 }
+
+
+export const getMonumentImages = (id) =>
+  request(`/monuments/${encodeURIComponent(id)}/images`);
+
+export async function uploadMonumentImage({ monumentId, file, title }) {
+  const formData = new FormData();
+
+  formData.append("image", file);
+  formData.append("title", title || file.name);
+
+  const response = await fetch(
+    `${API_BASE_URL}/monuments/${encodeURIComponent(monumentId)}/images`,
+    {
+      method: "POST",
+      body: formData,
+    }
+  );
+
+  let result;
+
+  try {
+    result = await response.json();
+  } catch {
+    throw new Error("Invalid response received from server.");
+  }
+
+  if (!response.ok || result?.success === false) {
+    throw new Error(result?.message || "Image upload failed.");
+  }
+
+  return result;
+}
