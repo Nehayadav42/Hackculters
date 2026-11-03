@@ -225,28 +225,48 @@ export default function MonumentGallery({
 
   // Keyboard controls
   useEffect(() => {
-    if (!activeImage) return;
+  if (!activeImage) return;
 
-    const handleKeyDown = (event) => {
-      if (event.key === "Escape") {
-        closePreview();
-      }
+  const handleKeyDown = (event) => {
+    if (event.key === "Escape") {
+      setActiveImage(null);
+    }
 
-      if (event.key === "ArrowLeft") {
-        showPrevious();
-      }
+    if (event.key === "ArrowLeft") {
+      setActiveImage((current) => {
+        const index = galleryImages.findIndex(
+          (image) => image.id === current?.id
+        );
 
-      if (event.key === "ArrowRight") {
-        showNext();
-      }
-    };
+        if (index === -1) return current;
 
-    window.addEventListener("keydown", handleKeyDown);
+        return galleryImages[
+          (index - 1 + galleryImages.length) % galleryImages.length
+        ];
+      });
+    }
 
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [activeImage, galleryImages]);
+    if (event.key === "ArrowRight") {
+      setActiveImage((current) => {
+        const index = galleryImages.findIndex(
+          (image) => image.id === current?.id
+        );
+
+        if (index === -1) return current;
+
+        return galleryImages[
+          (index + 1) % galleryImages.length
+        ];
+      });
+    }
+  };
+
+  window.addEventListener("keydown", handleKeyDown);
+
+  return () => {
+    window.removeEventListener("keydown", handleKeyDown);
+  };
+}, [activeImage, galleryImages]);
 
   return (
     <>
