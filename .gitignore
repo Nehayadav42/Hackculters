@@ -37,6 +37,10 @@ htmlcov/
 # Jupyter Notebook
 .ipynb_checkpoints/
 
+# Google Cloud credentials
+google-credentials.json
+**/google-credentials.json
+
 # ==============================
 # Environment Variables
 # ==============================
