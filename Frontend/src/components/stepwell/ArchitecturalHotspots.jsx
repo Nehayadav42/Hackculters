@@ -60,7 +60,7 @@ function NumberMarker({ number, position, active, onClick }) {
         >
           <circleGeometry args={[0.205, 32]} />
           <meshBasicMaterial
-            color={active ? "#c49a58" : "#98713e"}
+            color={active ? "#bf6548" : "#a95037"}
             depthTest={false}
           />
         </mesh>

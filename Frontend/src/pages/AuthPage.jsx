@@ -45,7 +45,7 @@ function InputField({
 }) {
   return (
     <div className="min-w-0 space-y-1.5">
-      <label className="block text-xs font-semibold text-[#e8e2d4] sm:text-sm">
+      <label className="block text-xs font-semibold text-[#d9e1e6] sm:text-sm">
         {label}
       </label>
 
@@ -64,7 +64,7 @@ function InputField({
           autoComplete={autoComplete}
           required={required}
           minLength={minLength}
-          className="h-11 w-full min-w-0 rounded-xl border border-[#454438] bg-[#22231e] px-4 pr-12 text-sm text-[#f2eee4] placeholder:text-[#777568] outline-none transition focus:border-[#c7a96b] focus:ring-2 focus:ring-[#c7a96b]/20"
+          className="h-11 w-full min-w-0 rounded-xl border border-[#3a4b59] bg-[#26333f] px-4 pr-12 text-sm text-[#f3f5f6] placeholder:text-[#71808b] outline-none transition focus:border-[#e1a080] focus:ring-2 focus:ring-[#e1a080]/20"
         />
 
         {onTogglePassword && (
@@ -74,7 +74,7 @@ function InputField({
             aria-label={
               showPassword ? "Hide password" : "Show password"
             }
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#aaa797] transition hover:text-[#c7a96b]"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#aeb9c1] transition hover:text-[#e1a080]"
           >
             <EyeIcon visible={showPassword} />
           </button>
@@ -232,7 +232,7 @@ export default function AuthPage({ onBack, onAuthSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[200] flex min-h-[100svh] w-full items-center justify-center overflow-x-hidden overflow-y-auto bg-[#11120f] px-4 py-3 text-[#f2eee4] sm:px-6">
+    <div className="fixed inset-0 z-[200] flex min-h-[100svh] w-full items-center justify-center overflow-x-hidden overflow-y-auto bg-[#0f1822] px-4 py-3 text-[#f3f5f6] sm:px-6">
 
       <div className="my-auto w-full max-w-[460px]">
 
@@ -240,35 +240,35 @@ export default function AuthPage({ onBack, onAuthSuccess }) {
         <button
           type="button"
           onClick={onBack}
-          className="mb-3 inline-flex items-center gap-2 text-xs text-[#aaa797] transition hover:text-[#c7a96b] sm:text-sm"
+          className="mb-3 inline-flex items-center gap-2 text-xs text-[#aeb9c1] transition hover:text-[#e1a080] sm:text-sm"
         >
           <span>←</span>
-          Back to HeritageVerse
+          Back
         </button>
 
         {/* Authentication Card */}
-        <section className="w-full rounded-2xl border border-[#454438] bg-[#1b1c17] px-5 py-5 shadow-2xl sm:px-8 sm:py-6">
+        <section className="w-full rounded-2xl border border-[#3a4b59] bg-[#18232e] px-5 py-5 shadow-2xl sm:px-8 sm:py-6">
 
           {/* Brand */}
           <div className="mb-5">
             <div className="mb-1 flex items-center gap-3">
-              <div className="grid h-9 w-8 shrink-0 place-items-center border border-[#c7a96b] font-serif text-xl text-[#c7a96b]">
+              <div className="grid h-9 w-8 shrink-0 place-items-center border border-[#e1a080] font-serif text-xl text-[#e1a080]">
                 H
               </div>
 
               <h2 className="!mb-0 !text-[27px] !leading-tight font-serif font-medium tracking-tight">
-                Heritage<span className="text-[#c7a96b]">Verse</span>
+                Heritage<span className="text-[#e1a080]">Verse</span>
               </h2>
             </div>
 
-            <p className="!mb-0 ml-11 text-[9px] tracking-[0.16em] text-[#aaa797]">
+            <p className="!mb-0 ml-11 text-[9px] tracking-[0.16em] text-[#aeb9c1]">
               PRESERVING OUR PAST
             </p>
           </div>
 
           {/* Heading */}
           <div className="mb-5">
-            <p className="!mb-1 text-[10px] font-bold tracking-[0.25em] text-[#c7a96b] sm:text-xs">
+            <p className="!mb-1 text-[10px] font-bold tracking-[0.25em] text-[#e1a080] sm:text-xs">
               {isSignup
                 ? "GET STARTED"
                 : isSignin
@@ -280,7 +280,7 @@ export default function AuthPage({ onBack, onAuthSuccess }) {
               {titles[mode]}
             </h1>
 
-            <p className="!mb-0 mt-2 text-xs leading-5 text-[#aaa797] sm:text-sm">
+            <p className="!mb-0 mt-2 text-xs leading-5 text-[#aeb9c1] sm:text-sm">
               {descriptions[mode]}
             </p>
           </div>
@@ -386,7 +386,7 @@ export default function AuthPage({ onBack, onAuthSuccess }) {
               <button
                 type="submit"
                 disabled={loading}
-                className="mt-1 flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#c7a96b] px-5 text-sm font-bold text-[#171710] transition duration-300 hover:-translate-y-0.5 hover:bg-[#d7bb82] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
+                className="mt-1 flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#e1a080] px-5 text-sm font-bold text-[#111a23] transition duration-300 hover:-translate-y-0.5 hover:bg-[#f0b395] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {loading
                   ? "Please wait..."
@@ -399,10 +399,10 @@ export default function AuthPage({ onBack, onAuthSuccess }) {
           )}
 
           {/* Bottom Navigation */}
-          <div className="mt-4 border-t border-[#454438] pt-4 text-center">
+          <div className="mt-4 border-t border-[#3a4b59] pt-4 text-center">
 
             {(isSignin || isSignup) && (
-              <p className="!mb-0 text-xs text-[#aaa797] sm:text-sm">
+              <p className="!mb-0 text-xs text-[#aeb9c1] sm:text-sm">
                 {isSignin
                   ? "Don't have an account?"
                   : "Already have an account?"}
@@ -412,7 +412,7 @@ export default function AuthPage({ onBack, onAuthSuccess }) {
                   onClick={() =>
                     changeMode(isSignin ? "signup" : "signin")
                   }
-                  className="ml-2 font-semibold text-[#c7a96b] transition hover:text-[#e0c58f]"
+                  className="ml-2 font-semibold text-[#e1a080] transition hover:text-[#f0b395]"
                 >
                   {isSignin ? "Sign Up" : "Sign In"}
                 </button>
@@ -423,7 +423,7 @@ export default function AuthPage({ onBack, onAuthSuccess }) {
               <button
                 type="button"
                 onClick={() => changeMode("signin")}
-                className="text-xs font-semibold text-[#c7a96b] transition hover:text-[#e0c58f] sm:text-sm"
+                className="text-xs font-semibold text-[#e1a080] transition hover:text-[#f0b395] sm:text-sm"
               >
                 ← Back to Sign In
               </button>
@@ -433,7 +433,7 @@ export default function AuthPage({ onBack, onAuthSuccess }) {
         </section>
 
         {/* Footer */}
-        <p className="!mb-0 mt-2 text-center text-[10px] text-[#777568]">
+        <p className="!mb-0 mt-2 text-center text-[10px] text-[#71808b]">
           © 2026 HeritageVerse. Preserving cultural heritage.
         </p>
 

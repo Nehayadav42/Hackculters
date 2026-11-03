@@ -1,19 +1,10 @@
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from document_parser import parse_document
 from ocr_engine import detect_language
-from fastapi.middleware.cors import CORSMiddleware
 from nlp_engine import run_translation, run_transliteration
 import uvicorn
 
 app = FastAPI(title="Multilingual OCR & NLP Microservice")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins for development
-    allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods (POST, GET, etc.)
-    allow_headers=["*"],  # Allows all headers
-)
 
 @app.get("/health")
 def health_check():

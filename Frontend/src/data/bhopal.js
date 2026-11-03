@@ -3,8 +3,10 @@ export const BHOPAL_STATE = "Madhya Pradesh";
 
 export const BHOPAL_COLLECTION = [
   { name: "Taj-ul-Masajid", place: "Bhopal", period: "19th c.", kind: "Mosque", lon: 77.395, lat: 23.266,
+    external3dUrl: "https://bhopali.in/en/3d-map/#taj-ul-masajid",
     text: "One of the largest mosques in India, with two tall minarets and a wide prayer hall. Its building stretched across the reigns of several rulers of Bhopal." },
   { name: "Gohar Mahal", place: "Bhopal", period: "19th c.", kind: "Palace", lon: 77.392, lat: 23.256,
+    external3dUrl: "https://bhopali.in/en/3d-map/#gohar-mahal",
     text: "A palace beside the Upper Lake, built under Qudsia Begum. Mughal arches sit alongside European detailing." },
   { name: "Moti Masjid", place: "Bhopal", period: "19th c.", kind: "Mosque", lon: 77.403, lat: 23.261,
     text: "A compact mosque built by Sikandar Begum, said to echo the Jama Masjid in Delhi." },

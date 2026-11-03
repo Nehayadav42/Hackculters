@@ -1,3 +1,4 @@
+@layer components {
 /* Architecture section */
 
 .architecture {
@@ -193,4 +194,5 @@
   .architecture-note {
     align-items: flex-start;
   }
+}
 }

@@ -1,5 +1,22 @@
 
+import { supabase } from "../lib/supabase.js";
+
 const API_BASE_URL = "/api/v1";
+
+async function getAuthorizationHeader() {
+  const { data, error } = await supabase.auth.getSession();
+
+  if (error) {
+    throw new Error(`Unable to verify your sign-in session: ${error.message}`);
+  }
+
+  const token = data.session?.access_token;
+  if (!token) {
+    throw new Error("Please sign in before submitting a contribution.");
+  }
+
+  return { Authorization: `Bearer ${token}` };
+}
 
 async function request(endpoint, options = {}) {
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -52,12 +69,25 @@ export const getMapData = () => request("/monuments/map-data");
 export const searchArchives = (query) =>
   request(`/monuments/search/all?q=${encodeURIComponent(query)}`);
 
+export const chatWithArchive = ({ monumentId, question }) =>
+  request("/ai/chat", {
+    method: "POST",
+    body: JSON.stringify({ monumentId, question }),
+  });
+
+export const summarizeDocument = ({ documentId }) =>
+  request("/ai/summarize", {
+    method: "POST",
+    body: JSON.stringify({ documentId }),
+  });
+
 export async function uploadArchiveFile({
   file,
   monumentId,
   title,
   category,
 }) {
+  const authorization = await getAuthorizationHeader();
   const formData = new FormData();
   formData.append("archive_file", file);
   formData.append("monument_id", monumentId);
@@ -66,6 +96,7 @@ export async function uploadArchiveFile({
 
   const response = await fetch(`${API_BASE_URL}/monuments/upload`, {
     method: "POST",
+    headers: authorization,
     body: formData,
   });
 
@@ -91,6 +122,7 @@ export const getMonumentImages = (id) =>
   request(`/monuments/${encodeURIComponent(id)}/images`);
 
 export async function uploadMonumentImage({ monumentId, file, title }) {
+  const authorization = await getAuthorizationHeader();
   const formData = new FormData();
 
   formData.append("image", file);
@@ -100,6 +132,7 @@ export async function uploadMonumentImage({ monumentId, file, title }) {
     `${API_BASE_URL}/monuments/${encodeURIComponent(monumentId)}/images`,
     {
       method: "POST",
+      headers: authorization,
       body: formData,
     }
   );
@@ -114,6 +147,45 @@ export async function uploadMonumentImage({ monumentId, file, title }) {
 
   if (!response.ok || result?.success === false) {
     throw new Error(result?.message || "Image upload failed.");
+  }
+
+  return result;
+}
+
+export async function processOcrDocument({
+  file,
+  sourceLanguage,
+  targetLanguage,
+  documentType,
+  monumentId,
+}) {
+  const authorization = await getAuthorizationHeader();
+  const formData = new FormData();
+  formData.append("document", file);
+  formData.append("source_language", sourceLanguage);
+  formData.append("output_language", targetLanguage);
+  formData.append("document_type", documentType);
+
+  if (monumentId) {
+    formData.append("site_id", monumentId);
+  }
+
+  const response = await fetch(`${API_BASE_URL}/ai/ocr`, {
+    method: "POST",
+    headers: authorization,
+    body: formData,
+  });
+
+  let result;
+
+  try {
+    result = await response.json();
+  } catch {
+    throw new Error("Invalid response received from server.");
+  }
+
+  if (!response.ok || result?.success === false) {
+    throw new Error(result?.message || "OCR processing failed.");
   }
 
   return result;

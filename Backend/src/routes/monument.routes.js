@@ -2,7 +2,9 @@
 import express from "express";
 import multer from "multer";
 import * as monumentController from "../controllers/monument.controller.js";
-import upload from "../config/storage.js";
+import upload, { requireCloudinary } from "../config/storage.js";
+import { requireSupabase } from "../middlewares/requireSupabase.js";
+import { requireAuthenticatedUser } from "../middlewares/requireAuthenticatedUser.js";
 
 const router = express.Router();
 
@@ -28,6 +30,8 @@ const imageUpload = multer({
     },
 });
 
+router.use(requireSupabase);
+
 // Static routes first
 router.get("/map-data", monumentController.getMapData);
 router.get("/search/all", monumentController.searchArchives);
@@ -36,6 +40,8 @@ router.get("/manuscript/:word", monumentController.getManuscriptTranslation);
 // Existing document upload — unchanged
 router.post(
     "/upload",
+    requireAuthenticatedUser,
+    requireCloudinary,
     upload.single("archive_file"),
     monumentController.uploadArchiveFile
 );
@@ -48,13 +54,13 @@ router.get(
 
 router.post(
     "/:id/images",
+    requireAuthenticatedUser,
     imageUpload.single("image"),
     monumentController.addMonumentImage
 );
 
 // General monument routes
 router.get("/", monumentController.getMonuments);
-router.get("/:id/3d-model", monumentController.get3DModelData);
 router.get("/:id", monumentController.getMonumentById);
 
 export default router;

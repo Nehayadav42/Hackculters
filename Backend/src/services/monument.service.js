@@ -53,11 +53,15 @@ function attachDocumentUrls(documents = []) {
         let fileUrl = null;
 
         if (document.file_path) {
-            const { data } = supabase.storage
-                .from("heritage-archives")
-                .getPublicUrl(document.file_path);
+            if (/^https?:\/\//i.test(document.file_path)) {
+                fileUrl = document.file_path;
+            } else {
+                const { data } = supabase.storage
+                    .from("heritage-archives")
+                    .getPublicUrl(document.file_path);
 
-            fileUrl = data.publicUrl;
+                fileUrl = data.publicUrl;
+            }
         }
 
         return {
@@ -71,7 +75,7 @@ function attachDocumentUrls(documents = []) {
 export const fetchMapPins = async () => {
     const { data, error } = await supabase
         .from("heritage_sites")
-        .select("*");
+        .select("id, name, city, state, latitude, longitude");
 
     if (error) {
         throw new AppError(error.message, 500);
@@ -84,7 +88,7 @@ export const fetchMapPins = async () => {
 export const fetchMonumentsList = async (filters = {}) => {
     let query = supabase
         .from("heritage_sites")
-        .select("*");
+        .select("id, name, city, state, category, architectural_period, description, latitude, longitude");
 
     if (filters.state) {
         query = query.eq("state", filters.state);
@@ -136,7 +140,10 @@ export const fetchMonumentDetails = async (monumentId) => {
         throw new AppError(error.message, 404);
     }
 
-    return data;
+    return {
+        ...data,
+        documents: attachDocumentUrls(data.documents || [])
+    };
 };
 
 // Fetch all public images belonging to one monument
@@ -169,8 +176,9 @@ export const uploadMonumentImage = async ({
     siteId,
     file,
     title,
+    supabaseClient = supabase,
 }) => {
-    const { data: site, error: siteError } = await supabase
+    const { data: site, error: siteError } = await supabaseClient
         .from("heritage_sites")
         .select("id, name")
         .eq("id", siteId)
@@ -197,7 +205,7 @@ export const uploadMonumentImage = async ({
 
     const filePath = `${siteId}/${randomUUID()}.${extension}`;
 
-    const { error: storageError } = await supabase.storage
+    const { error: storageError } = await supabaseClient.storage
         .from("heritage-archives")
         .upload(filePath, file.buffer, {
             contentType: file.mimetype,
@@ -209,7 +217,7 @@ export const uploadMonumentImage = async ({
         throw new AppError(storageError.message, 500);
     }
 
-    const { data: mediaRecord, error: mediaError } = await supabase
+    const { data: mediaRecord, error: mediaError } = await supabaseClient
         .from("media")
         .insert({
             site_id: siteId,
@@ -222,14 +230,14 @@ export const uploadMonumentImage = async ({
         .single();
 
     if (mediaError) {
-        await supabase.storage
+        await supabaseClient.storage
             .from("heritage-archives")
             .remove([filePath]);
 
         throw new AppError(mediaError.message, 500);
     }
 
-    const { data: publicData } = supabase.storage
+    const { data: publicData } = supabaseClient.storage
         .from("heritage-archives")
         .getPublicUrl(filePath);
 

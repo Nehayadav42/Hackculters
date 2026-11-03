@@ -1,5 +1,6 @@
 
-import React, { useState } from "react";
+import { useState } from "react";
+import { processOcrDocument } from "../services/api.js";
 
 export default function OcrViewer() {
   const [file, setFile] = useState(null);
@@ -24,31 +25,17 @@ export default function OcrViewer() {
     setLoading(true);
 
     try {
-      const formData = new FormData();
-
-      formData.append("file", file);
-      formData.append("source_language", sourceLang);
-      formData.append("output_language", targetLang);
-      formData.append("document_type", docType);
-
-      const res = await fetch(
-        "http://localhost:8000/process-document",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(
-          data.detail || "OCR processing failed."
-        );
+      if (file.size > 10 * 1024 * 1024) {
+        throw new Error("Choose a file smaller than 10 MB.");
       }
 
-      setResult(data);
-
+      const response = await processOcrDocument({
+        file,
+        sourceLanguage: sourceLang,
+        targetLanguage: targetLang,
+        documentType: docType,
+      });
+      setResult(response.ai_metadata);
     } catch (err) {
       setError(err.message || "Something went wrong.");
     } finally {
@@ -68,9 +55,9 @@ export default function OcrViewer() {
 
   // Common dropdown styling
   const selectStyle = {
-    backgroundColor: "#101510",
-    color: "#FFFFFF",
-    border: "1px solid #8B754B",
+    backgroundColor: "#1a2835",
+    color: "#f3f5f6",
+    border: "1px solid #bf6548",
     borderRadius: "9px",
     padding: "12px",
     fontSize: "14px",
@@ -81,9 +68,9 @@ export default function OcrViewer() {
 
   // Common text area styling
   const textareaStyle = {
-    backgroundColor: "#080B09",
-    color: "#FFF0AD",
-    border: "1px solid #A58A52",
+    backgroundColor: "#141f2a",
+    color: "#ffe2cc",
+    border: "1px solid #bf6548",
     borderRadius: "9px",
     padding: "14px",
     fontSize: "14px",
@@ -94,14 +81,14 @@ export default function OcrViewer() {
     outline: "none",
     fontFamily: "monospace",
     colorScheme: "dark",
-    caretColor: "#FFF0AD",
+    caretColor: "#ffe2cc",
   };
 
   // Common label styling
   const labelStyle = {
     display: "block",
     fontSize: "13px",
-    color: "#FFFFFF",
+    color: "#f3f5f6",
     fontWeight: "600",
     marginBottom: "9px",
   };
@@ -125,17 +112,17 @@ export default function OcrViewer() {
   ];
 
   return (
-    <div className="w-full bg-[#121412] text-white p-6 rounded-xl border border-[#75613D]">
+    <div className="w-full bg-[#18232e] text-white p-6 rounded-xl border border-[#52697c]">
 
       {/* Heading */}
-      <h2 className="text-2xl font-serif mb-6 text-[#F0C36A]">
+      <h2 className="text-2xl font-serif mb-6 text-[#f0b395]">
         Digital Heritage Manuscript OCR Processor
       </h2>
 
       {/* Control Bar */}
       <form
         onSubmit={handleExtract}
-        className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 items-end bg-[#1C211C] p-5 rounded-xl mb-6 border border-[#625638]"
+        className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 items-end bg-[#223240] p-5 rounded-xl mb-6 border border-[#3f5261]"
       >
 
         {/* File Upload */}
@@ -153,41 +140,13 @@ export default function OcrViewer() {
             className="w-full text-sm"
             style={{
               color: "#FFFFFF",
-              backgroundColor: "#101510",
-              border: "1px solid #8B754B",
+              backgroundColor: "#1a2835",
+              border: "1px solid #bf6548",
               borderRadius: "9px",
               padding: "8px",
             }}
           />
 
-          <style>
-            {`
-              input[type="file"]::file-selector-button {
-                background: #D8B36A;
-                color: #171717;
-                border: none;
-                border-radius: 6px;
-                padding: 9px 14px;
-                margin-right: 10px;
-                font-weight: 600;
-                cursor: pointer;
-              }
-
-              input[type="file"]::file-selector-button:hover {
-                background: #F0D18B;
-              }
-
-              select option {
-                background: #101510;
-                color: #FFFFFF;
-              }
-
-              textarea::placeholder {
-                color: #BDBDBD;
-                opacity: 1;
-              }
-            `}
-          </style>
         </div>
 
         {/* Source Language */}
@@ -243,7 +202,7 @@ export default function OcrViewer() {
           <button
             type="submit"
             disabled={loading}
-            className="bg-[#D8B36A] text-[#171717] font-bold px-8 py-3 rounded-lg text-sm transition hover:bg-[#F0D18B] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-[#bf6548] text-[#171717] font-bold px-8 py-3 rounded-lg text-sm transition hover:bg-[#d87d5c] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading
               ? "Processing OCR..."
@@ -256,7 +215,7 @@ export default function OcrViewer() {
       {file && (
         <p className="text-sm text-white mb-4">
           Selected File:{" "}
-          <span className="text-[#FFE5A0] font-semibold">
+          <span className="text-[#f0b395] font-semibold">
             {file.name}
           </span>
         </p>
@@ -269,19 +228,45 @@ export default function OcrViewer() {
         </div>
       )}
 
+      {result && (
+        <div
+          role="status"
+          className="mb-5 rounded-lg border border-[#bf6548]/35 bg-[#bf6548]/10 p-4 text-sm text-white/90"
+        >
+          <p>
+            Translation:{" "}
+            <strong className="text-[#f0b395]">
+              {result.translation_status === "completed"
+                ? "Complete"
+                : result.translation_status === "not_required"
+                  ? "Not needed"
+                  : "Unavailable"}
+            </strong>
+            {result.translation_status === "failed" &&
+              ` — ${result.translation_message || "The translation service did not return a result."}`}
+          </p>
+          {result.transliteration_status === "failed" &&
+            result.transliteration_message && (
+              <p className="mt-1">
+                Transliteration unavailable: {result.transliteration_message}
+              </p>
+            )}
+        </div>
+      )}
+
       {/* Output Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
         {outputCards.map((item, index) => (
           <div
             key={index}
-            className="bg-[#1C211C] border border-[#625638] rounded-xl p-4 flex flex-col"
+            className="bg-[#223240] border border-[#3f5261] rounded-xl p-4 flex flex-col"
           >
 
             {/* Card Heading */}
             <div className="flex justify-between items-center gap-2 mb-3">
 
-              <h3 className="text-sm font-bold text-[#F0C36A]">
+              <h3 className="text-sm font-bold text-[#f0b395]">
                 {item.title}
               </h3>
 
@@ -289,7 +274,7 @@ export default function OcrViewer() {
                 <button
                   type="button"
                   onClick={() => copyText(item.value)}
-                  className="text-xs text-white bg-[#454545] hover:bg-[#666666] px-3 py-1.5 rounded-md transition"
+                  className="text-xs text-white bg-[#3a4b59] hover:bg-[#666666] px-3 py-1.5 rounded-md transition"
                 >
                   Copy
                 </button>
@@ -311,21 +296,27 @@ export default function OcrViewer() {
 
       {/* OCR Information */}
       {result && (
-        <div className="mt-5 p-4 rounded-lg bg-[#1C211C] border border-[#625638] flex flex-wrap gap-5 text-sm">
+        <div className="mt-5 p-4 rounded-lg bg-[#223240] border border-[#3f5261] flex flex-wrap gap-5 text-sm">
 
           <span className="text-white">
             Engine:{" "}
-            <span className="text-[#FFE5A0]">
+            <span className="text-[#f0b395]">
               {result.ocr_engine || "N/A"}
             </span>
           </span>
 
           <span className="text-white">
             Confidence:{" "}
-            <span className="text-[#FFE5A0]">
+            <span className="text-[#f0b395]">
               {result.ocr_confidence != null
                 ? `${(result.ocr_confidence * 100).toFixed(1)}%`
                 : "N/A"}
+            </span>
+          </span>
+          <span className="text-white">
+            Language:{" "}
+            <span className="text-[#f0b395]">
+              {result.detected_source_language || "Not detected"}
             </span>
           </span>
 

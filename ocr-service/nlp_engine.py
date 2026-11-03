@@ -3,7 +3,6 @@ import json
 import html
 import urllib.request
 import urllib.parse
-import urllib.error
 
 from indic_transliteration import sanscript
 from indic_transliteration.sanscript import transliterate
@@ -83,7 +82,7 @@ def translate_chunk(text: str, source_lang: str, target_lang: str) -> str:
 
     translated = html.unescape(translated).strip()
 
-    if translated:
+    if translated and translated != text.strip():
         return translated
 
     # Second: Search API matches for a usable translation.
@@ -94,7 +93,6 @@ def translate_chunk(text: str, source_lang: str, target_lang: str) -> str:
             match.get("translation", "")
         ).strip()
 
-        match_source = match.get("source", "").lower()
         match_target = match.get("target", "").lower()
 
         if not candidate:
@@ -109,57 +107,7 @@ def translate_chunk(text: str, source_lang: str, target_lang: str) -> str:
 
         return candidate
 
-    raise RuntimeError(
-        "MyMemory did not return a usable translation."
-    )
-
-    """
-    Translate one text chunk using MyMemory.
-    Raises an error if translation is unsuccessful.
-    """
-
-    query_params = {
-        "q": text,
-        "langpair": f"{source_lang}|{target_lang}"
-    }
-
-    url = (
-        "https://api.mymemory.translated.net/get?"
-        + urllib.parse.urlencode(query_params)
-    )
-
-    request = urllib.request.Request(
-        url,
-        headers={
-            "User-Agent": "HeritageOCR/1.0"
-        }
-    )
-
-    with urllib.request.urlopen(request, timeout=15) as response:
-        data = json.loads(response.read().decode("utf-8"))
-
-        print("\n========== MYMEMORY DEBUG ==========")
-        print("Response Status:", data.get("responseStatus"))
-        print("Response Details:", data.get("responseDetails"))
-        print("Response Data:", data.get("responseData"))
-        print("Matches:", data.get("matches"))
-        print("===================================\n")
-
-    if data.get("responseStatus") != 200:
-        raise RuntimeError(
-            data.get("responseDetails", "Translation API failed.")
-        )
-
-    translated = (
-        data.get("responseData", {}).get("translatedText", "")
-    )
-
-    translated = html.unescape(translated).strip()
-
-    if not translated:
-        raise RuntimeError("Translation API returned empty text.")
-
-    return translated
+    raise RuntimeError("MyMemory did not return a usable translated result.")
 
 
 def run_translation(

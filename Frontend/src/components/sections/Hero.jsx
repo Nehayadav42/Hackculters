@@ -19,7 +19,7 @@ export default function Hero({ bhopalEntries, onOpenBhopal }) {
 
           <h1 className="name intro" style={delay(".1s")}>
             Heritage
-            <span className="name-accent">, reimagined.</span>
+            <span className="name-accent">Reimagined.</span>
           </h1>
 
           <StepsDiagram style={delay(".2s")} />

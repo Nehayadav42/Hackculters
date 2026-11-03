@@ -3,8 +3,23 @@ import SearchBar from "../archive/SearchBar.jsx";
 import StateChips from "../archive/StateChips.jsx";
 import EntryList from "../archive/EntryList.jsx";
 import EntryDetail from "../archive/EntryDetail.jsx";
-import EntryMap from "../archive/EntryMap.jsx";
+import OpenStreetMapFrame from "../archive/OpenStreetMapFrame.jsx";
 import { Link } from "react-router-dom";
+
+function hasCoordinates(entry) {
+  const latitude = entry.lat ?? entry.latitude;
+  const longitude = entry.lon ?? entry.longitude;
+  return (
+    latitude !== null &&
+    latitude !== undefined &&
+    longitude !== null &&
+    longitude !== undefined &&
+    Number.isFinite(Number(latitude)) &&
+    Number.isFinite(Number(longitude)) &&
+    Math.abs(Number(latitude)) <= 90 &&
+    Math.abs(Number(longitude)) <= 180
+  );
+}
 
 export default function ArchiveSearch({ archive }) {
   const {
@@ -21,6 +36,12 @@ export default function ArchiveSearch({ archive }) {
 } = archive;
 
   const selectedId = selected?.id ?? null;
+  const mapEntry =
+    selected && hasCoordinates(selected)
+      ? selected
+      : visible.find(hasCoordinates);
+  const mapLatitude = mapEntry?.lat ?? mapEntry?.latitude;
+  const mapLongitude = mapEntry?.lon ?? mapEntry?.longitude;
 
   return (
     <Section id="walk" tone="s1">
@@ -46,7 +67,7 @@ export default function ArchiveSearch({ archive }) {
         <div className="mt-6 flex justify-end">
   <Link
     to="/monuments"
-    className="inline-flex items-center gap-3 bg-[#183b32] px-5 py-3 text-xs font-semibold uppercase tracking-widest text-[#f5f2e9] transition hover:bg-[#285548]"
+    className="inline-flex items-center gap-3 bg-[#1a2c3b] px-5 py-3 text-xs font-semibold uppercase tracking-widest text-[#f3f5f6] transition hover:bg-[#344d61]"
   >
     Explore all monuments
     <span>↗</span>
@@ -124,24 +145,31 @@ export default function ArchiveSearch({ archive }) {
           <div className="archive-map-panel">
             <div className="archive-map-heading">
               <div>
-                <span className="archive-label">GEOGRAPHICAL INDEX</span>
-                <h3>Explore by location</h3>
+                <span className="archive-label">RECORD LOCATION</span>
+                <h3>{mapEntry?.name || "Map preview"}</h3>
               </div>
 
-              <span className="map-indicator">● LIVE INDEX</span>
+              <span className="map-indicator">OPENSTREETMAP</span>
             </div>
 
             <div className="archive-map">
-              <EntryMap
-                entries={visible}
-                selectedId={selectedId}
-                onSelect={select}
+              <OpenStreetMapFrame
+                latitude={mapLatitude}
+                longitude={mapLongitude}
+                title={mapEntry?.name}
+                height={390}
               />
             </div>
 
             <div className="archive-map-footer">
-              <span>Select a point to explore its record</span>
-              <span>INTERACTIVE MAP</span>
+              <span>
+                {mapEntry
+                  ? `${mapEntry.place || mapEntry.state || "Heritage location"}`
+                  : "Select a record with coordinates"}
+              </span>
+              <Link to="/map" className="font-semibold text-[#bf6548] hover:underline">
+                Open full map ↗
+              </Link>
             </div>
           </div>
 

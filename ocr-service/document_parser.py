@@ -144,7 +144,7 @@ def parse_document(
         )
 
     # 4. IMAGE FILES
-    elif ext in ["jpg", "jpeg", "png"]:
+    elif ext in ["jpg", "jpeg", "png", "webp"]:
 
         ocr_result = process_image_ocr(
             file_bytes,
