@@ -1,58 +1,267 @@
+
+import json
+import html
 import urllib.request
 import urllib.parse
-import json
+import urllib.error
+
 from indic_transliteration import sanscript
 from indic_transliteration.sanscript import transliterate
 
-def run_translation(text: str, source_lang: str, target_lang: str) -> dict:
-    """Translates text using a reliable lightweight API endpoint with zero rate-limit blocks."""
-    if not text or not text.strip():
-        return {"text": "", "status": "failed"}
 
-    # Clean up languages
-    src = "hi" if source_lang.lower() in ["hi", "hindi"] else "en"
-    tgt = "en" if target_lang.lower() in ["en", "english"] else "hi"
+def normalize_language(language: str) -> str:
+    language = (language or "").lower().strip()
 
-    try:
-        # Use MyMemory free translation API via standard library (no external throttling)
-        query_params = {
-            "q": text[:500],  # Limit length for safe query string
-            "langpair": f"{src}|{tgt}"
-        }
-        url = f"https://api.mymemory.translated.net/get?{urllib.parse.urlencode(query_params)}"
-        
-        req = urllib.request.Request(
-            url, 
-            headers={"User-Agent": "Mozilla/5.0"}
-        )
-        with urllib.request.urlopen(req, timeout=5) as response:
-            data = json.loads(response.read().decode())
-            if data and "responseData" in data:
-                translated_text = data["responseData"].get("translatedText")
-                if translated_text:
-                    return {"text": translated_text, "status": "completed"}
-    except Exception as e:
-        print(f"[Translation Fallback Error]: {e}")
-
-    # Ultimate backup: return text clearly if offline or failed
-    return {
-        "text": text, 
-        "status": "completed"
+    language_map = {
+        "hi": "hi",
+        "hindi": "hi",
+        "en": "en",
+        "english": "en",
     }
 
-def run_transliteration(text: str, source_lang: str) -> dict:
-    """Transliterates Indic script to Roman text."""
+    return language_map.get(language, "")
+
+
+def split_text(text: str, max_length: int = 450) -> list:
+    """
+    Split long text into manageable chunks without
+    cutting words unnecessarily.
+    """
+    words = text.split()
+    chunks = []
+    current = ""
+
+    for word in words:
+        if len(current) + len(word) + 1 <= max_length:
+            current = f"{current} {word}".strip()
+        else:
+            if current:
+                chunks.append(current)
+            current = word
+
+    if current:
+        chunks.append(current)
+
+    return chunks
+
+
+
+def translate_chunk(text: str, source_lang: str, target_lang: str) -> str:
+    """
+    Translate text using MyMemory.
+    First checks responseData, then searches matches
+    for a valid translation.
+    """
+
+    query_params = {
+        "q": text,
+        "langpair": f"{source_lang}|{target_lang}"
+    }
+
+    url = (
+        "https://api.mymemory.translated.net/get?"
+        + urllib.parse.urlencode(query_params)
+    )
+
+    request = urllib.request.Request(
+        url,
+        headers={"User-Agent": "HeritageOCR/1.0"}
+    )
+
+    with urllib.request.urlopen(request, timeout=15) as response:
+        data = json.loads(response.read().decode("utf-8"))
+
+    if data.get("responseStatus") != 200:
+        raise RuntimeError(
+            data.get("responseDetails", "Translation API failed.")
+        )
+
+    # First: Check the primary translation response.
+    translated = (
+        data.get("responseData", {}).get("translatedText", "")
+    )
+
+    translated = html.unescape(translated).strip()
+
+    if translated:
+        return translated
+
+    # Second: Search API matches for a usable translation.
+    matches = data.get("matches", [])
+
+    for match in matches:
+        candidate = html.unescape(
+            match.get("translation", "")
+        ).strip()
+
+        match_source = match.get("source", "").lower()
+        match_target = match.get("target", "").lower()
+
+        if not candidate:
+            continue
+
+        if not match_target.startswith(target_lang.lower()):
+            continue
+
+        # Avoid returning the original text as a translation.
+        if candidate.strip() == text.strip():
+            continue
+
+        return candidate
+
+    raise RuntimeError(
+        "MyMemory did not return a usable translation."
+    )
+
+    """
+    Translate one text chunk using MyMemory.
+    Raises an error if translation is unsuccessful.
+    """
+
+    query_params = {
+        "q": text,
+        "langpair": f"{source_lang}|{target_lang}"
+    }
+
+    url = (
+        "https://api.mymemory.translated.net/get?"
+        + urllib.parse.urlencode(query_params)
+    )
+
+    request = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": "HeritageOCR/1.0"
+        }
+    )
+
+    with urllib.request.urlopen(request, timeout=15) as response:
+        data = json.loads(response.read().decode("utf-8"))
+
+        print("\n========== MYMEMORY DEBUG ==========")
+        print("Response Status:", data.get("responseStatus"))
+        print("Response Details:", data.get("responseDetails"))
+        print("Response Data:", data.get("responseData"))
+        print("Matches:", data.get("matches"))
+        print("===================================\n")
+
+    if data.get("responseStatus") != 200:
+        raise RuntimeError(
+            data.get("responseDetails", "Translation API failed.")
+        )
+
+    translated = (
+        data.get("responseData", {}).get("translatedText", "")
+    )
+
+    translated = html.unescape(translated).strip()
+
+    if not translated:
+        raise RuntimeError("Translation API returned empty text.")
+
+    return translated
+
+
+def run_translation(
+    text: str,
+    source_lang: str,
+    target_lang: str
+) -> dict:
+
     if not text or not text.strip():
-        return {"text": "", "status": "failed"}
+        return {
+            "text": "",
+            "status": "failed",
+            "message": "No text available for translation."
+        }
+
+    src = normalize_language(source_lang)
+    tgt = normalize_language(target_lang)
+
+    if not src or not tgt:
+        return {
+            "text": "",
+            "status": "failed",
+            "message": "Unsupported source or target language."
+        }
+
+    # No translation is necessary when languages are identical.
+    if src == tgt:
+        return {
+            "text": text,
+            "status": "not_required",
+            "message": "Source and target languages are identical."
+        }
 
     try:
-        # Check if source is Devanagari/Hindi
-        if source_lang.lower() in ["hi", "hindi", "sa", "mr"]:
-            romanized = transliterate(text, sanscript.DEVANAGARI, sanscript.IAST)
-            return {"text": romanized, "status": "completed"}
-        else:
-            # If already Roman or English, return as is
-            return {"text": text, "status": "completed"}
-    except Exception as e:
-        print(f"[Transliteration Error]: {e}")
-        return {"text": text, "status": "failed"}
+        chunks = split_text(text)
+        translated_chunks = []
+
+        for chunk in chunks:
+            translated = translate_chunk(chunk, src, tgt)
+            translated_chunks.append(translated)
+
+        final_translation = " ".join(translated_chunks)
+
+        return {
+            "text": final_translation,
+            "status": "completed",
+            "message": "Translation completed successfully."
+        }
+
+    except Exception as error:
+        print(f"[Translation Error]: {error}")
+
+        return {
+            "text": "",
+            "status": "failed",
+            "message": str(error)
+        }
+
+
+def run_transliteration(
+    text: str,
+    source_lang: str
+) -> dict:
+
+    if not text or not text.strip():
+        return {
+            "text": "",
+            "status": "failed"
+        }
+
+    language = normalize_language(source_lang)
+
+    try:
+        if language == "hi":
+            romanized = transliterate(
+                text,
+                sanscript.DEVANAGARI,
+                sanscript.IAST
+            )
+
+            return {
+                "text": romanized,
+                "status": "completed"
+            }
+
+        elif language == "en":
+            return {
+                "text": text,
+                "status": "not_required"
+            }
+
+        return {
+            "text": "",
+            "status": "failed",
+            "message": "Unsupported transliteration language."
+        }
+
+    except Exception as error:
+        print(f"[Transliteration Error]: {error}")
+
+        return {
+            "text": "",
+            "status": "failed",
+            "message": str(error)
+        }

@@ -58,6 +58,9 @@ async def process_document_endpoint(
             # Processing Statuses for the React UI
             "translation_status": translation_result["status"],
             "transliteration_status": transliteration_result["status"],
+
+            "translation_message": translation_result.get("message"),
+            "transliteration_message": transliteration_result.get("message"),
             
             # Metadata
             "target_language": output_language,

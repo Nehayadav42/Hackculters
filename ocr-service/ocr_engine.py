@@ -5,6 +5,7 @@ from functools import lru_cache
 
 import cv2
 import numpy as np
+
 from dotenv import load_dotenv
 from paddleocr import PaddleOCR
 from google.cloud import vision
@@ -13,29 +14,40 @@ from langdetect import detect, LangDetectException
 from preprocessing import preprocess_image
 
 
-# Load environment variables
+# =========================================================
+# 1. LOAD ENVIRONMENT VARIABLES
+# =========================================================
+
 load_dotenv(Path(__file__).parent / ".env")
 
 
-# Configure Google credentials if available
+# =========================================================
+# 2. CONFIGURE GOOGLE CLOUD CREDENTIALS
+# =========================================================
+
 credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
 if credentials_path:
+
     credentials_path = Path(credentials_path)
 
     if not credentials_path.is_absolute():
         credentials_path = Path(__file__).parent / credentials_path
 
     if credentials_path.exists():
+
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(
             credentials_path.resolve()
         )
 
 
-# Load OCR models only when required.
-# Keep at most two models cached to limit memory usage.
+# =========================================================
+# 3. LOAD PADDLE OCR MODEL
+# =========================================================
+
 @lru_cache(maxsize=2)
 def get_paddle_ocr(language: str):
+
     print(f"Loading PaddleOCR model: {language}")
 
     return PaddleOCR(
@@ -46,23 +58,12 @@ def get_paddle_ocr(language: str):
     )
 
 
+# =========================================================
+# 4. NORMALIZE SOURCE LANGUAGE
+# =========================================================
+
 def normalize_ocr_language(source_language: str) -> str:
-    language = (source_language or "en").lower().strip()
 
-    language_map = {
-        "english": "en",
-        "en": "en",
-        "hindi": "hi",
-        "hi": "hi",
-        "sanskrit": "sa",
-        "sa": "sa",
-        "marathi": "mr",
-        "mr": "mr",
-        "bengali": "bn",
-        "bn": "bn"
-    }
-
-    return language_map.get(language, "hi" if language in ["hi", "hindi"] else "en")
     language = (source_language or "en").lower().strip()
 
     language_map = {
@@ -72,32 +73,47 @@ def normalize_ocr_language(source_language: str) -> str:
         "hi": "hi"
     }
 
-    # Until additional models are tested, use English as fallback.
     return language_map.get(language, "en")
 
 
+# =========================================================
+# 5. DETECT LANGUAGE
+# =========================================================
+
 def detect_language(text: str) -> str:
+
     if not text or not text.strip():
         return "unknown"
 
     try:
         return detect(text)
+
     except LangDetectException:
         return "unknown"
 
 
+# =========================================================
+# 6. TEMPORARY TRANSLATION PLACEHOLDER
+# =========================================================
+
 def translate_text(text: str, target_language: str) -> str:
+
     """
-    Temporary placeholder.
-    Actual translation will be implemented separately.
+    Translation is handled separately by nlp_engine.py.
     """
+
     return text
 
 
+# =========================================================
+# 7. RECONSTRUCT OCR TEXT
+# =========================================================
+
 def reconstruct_text(results):
+
     """
-    Group detected text regions into lines and sort
-    each line from left to right.
+    Group detected text regions into lines
+    and sort each line from left to right.
     """
 
     detected_words = []
@@ -106,10 +122,12 @@ def reconstruct_text(results):
         return "", []
 
     for item in results[0]:
+
         if not item or len(item) < 2:
             continue
 
         box = item[0]
+
         recognized_text = item[1][0]
         confidence = float(item[1][1])
 
@@ -118,6 +136,7 @@ def reconstruct_text(results):
 
         x_center = sum(x_positions) / len(x_positions)
         y_center = sum(y_positions) / len(y_positions)
+
         box_height = max(y_positions) - min(y_positions)
 
         detected_words.append({
@@ -128,41 +147,69 @@ def reconstruct_text(results):
             "height": box_height
         })
 
-    # Sort approximately from top to bottom
-    detected_words.sort(key=lambda word: word["y"])
+    # Sort detected regions from top to bottom
+
+    detected_words.sort(
+        key=lambda word: word["y"]
+    )
 
     rows = []
 
     for word in detected_words:
+
         matching_row = None
 
         for row in rows:
-            row_y = np.mean([item["y"] for item in row])
-            tolerance = max(10, word["height"] * 0.6)
+
+            row_y = np.mean([
+                item["y"] for item in row
+            ])
+
+            tolerance = max(
+                10,
+                word["height"] * 0.6
+            )
 
             if abs(word["y"] - row_y) <= tolerance:
+
                 matching_row = row
                 break
 
         if matching_row is None:
+
             rows.append([word])
+
         else:
+
             matching_row.append(word)
+
+    # Sort each row from left to right
 
     lines = []
 
     for row in rows:
-        row.sort(key=lambda word: word["x"])
-        lines.append(" ".join(word["text"] for word in row))
+
+        row.sort(
+            key=lambda word: word["x"]
+        )
+
+        lines.append(
+            " ".join(word["text"] for word in row)
+        )
 
     full_text = "\n".join(lines)
 
     confidences = [
-        word["confidence"] for word in detected_words
+        word["confidence"]
+        for word in detected_words
     ]
 
     return full_text, confidences
 
+
+# =========================================================
+# 8. RUN PADDLE OCR
+# =========================================================
 
 def run_paddle_ocr(
     img_array: np.ndarray,
@@ -172,67 +219,137 @@ def run_paddle_ocr(
     if img_array is None:
         raise ValueError("Could not decode the uploaded image.")
 
+    # Normalize selected language
+
     language = normalize_ocr_language(source_language)
+
+    # Load the appropriate OCR model
+
     ocr_model = get_paddle_ocr(language)
 
-    # Disable angle classification restriction if text is skewed, 
-    # and lower the threshold to catch all handwritten lines
-    results = ocr_model.ocr(img_array, cls=True)
+    # Run OCR
+
+    results = ocr_model.ocr(
+        img_array,
+        cls=True
+    )
+
+    # DEBUG: Display raw PaddleOCR recognition
+
+    print("\n========== RAW PADDLE OCR OUTPUT ==========")
+
+    if results and results[0]:
+
+        for item in results[0]:
+
+            print(
+                "Recognized:",
+                repr(item[1][0]),
+                "| Confidence:",
+                item[1][1]
+            )
+
+    else:
+
+        print("No text detected.")
+
+    print("===========================================\n")
+
+    # Reconstruct recognized text
 
     full_text, confidences = reconstruct_text(results)
 
     average_confidence = (
-        float(np.mean(confidences)) if confidences else None
+        float(np.mean(confidences))
+        if confidences
+        else None
     )
 
     return {
         "text": full_text,
+
         "confidence": (
             round(average_confidence, 4)
-            if average_confidence is not None else None
+            if average_confidence is not None
+            else None
         ),
+
         "engine": f"PaddleOCR 2.7.3 ({language})"
     }
 
 
+# =========================================================
+# 9. GOOGLE CLOUD VISION OCR
+# =========================================================
+
 def run_google_vision_ocr(image_bytes: bytes) -> dict:
-    """Optional handwriting OCR using Google Cloud Vision."""
+
+    """
+    Optional handwriting OCR using Google Cloud Vision.
+    Requires valid Google Cloud credentials and API access.
+    """
 
     client = vision.ImageAnnotatorClient()
-    image = vision.Image(content=image_bytes)
 
-    response = client.document_text_detection(image=image)
+    image = vision.Image(
+        content=image_bytes
+    )
+
+    response = client.document_text_detection(
+        image=image
+    )
 
     if response.error.message:
         raise RuntimeError(response.error.message)
 
     annotation = response.full_text_annotation
-    extracted_text = annotation.text if annotation else ""
+
+    extracted_text = (
+        annotation.text
+        if annotation
+        else ""
+    )
 
     word_confidences = []
 
     if annotation:
+
         for page in annotation.pages:
+
             for block in page.blocks:
+
                 for paragraph in block.paragraphs:
+
                     for word in paragraph.words:
+
                         if word.confidence > 0:
-                            word_confidences.append(word.confidence)
+
+                            word_confidences.append(
+                                word.confidence
+                            )
 
     average_confidence = (
         float(np.mean(word_confidences))
-        if word_confidences else None
+        if word_confidences
+        else None
     )
 
     return {
         "text": extracted_text,
+
         "confidence": (
             round(average_confidence, 4)
-            if average_confidence is not None else None
+            if average_confidence is not None
+            else None
         ),
+
         "engine": "Google Cloud Vision"
     }
 
+
+# =========================================================
+# 10. MAIN IMAGE OCR PROCESSOR
+# =========================================================
 
 def process_image_ocr(
     image_bytes: bytes,
@@ -243,17 +360,29 @@ def process_image_ocr(
     if not image_bytes:
         raise ValueError("Uploaded image is empty.")
 
-    # Keep Google Vision as the optional handwriting provider.
+    # Optional Google Vision for handwriting
+
     if doc_type == "handwritten":
+
         try:
+
             return run_google_vision_ocr(image_bytes)
 
         except Exception as error:
-            print(f"[Google Vision unavailable] {error}")
-            print("[OCR fallback] Using local PaddleOCR.")
 
-    # Apply preprocessing for local OCR.
+            print(
+                f"[Google Vision unavailable] {error}"
+            )
+
+            print(
+                "[OCR fallback] Using local PaddleOCR."
+            )
+
+    # Preprocess image for local OCR
+
     image_array = preprocess_image(image_bytes)
+
+    # Run PaddleOCR
 
     result = run_paddle_ocr(
         image_array,
@@ -261,6 +390,7 @@ def process_image_ocr(
     )
 
     if doc_type == "handwritten":
+
         result["engine"] += " (handwriting fallback)"
 
     return result
