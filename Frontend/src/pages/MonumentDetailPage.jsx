@@ -18,7 +18,11 @@ function DetailSection({ title, children }) {
 }
 
 function DetailText({ value }) {
-  if (!value) {
+  if (
+    value === null ||
+    value === undefined ||
+    (typeof value === "string" && !value.trim())
+  ) {
     return (
       <p className="text-sm text-[#625e51]">
         Information is not available yet.
@@ -45,11 +49,14 @@ function getImages(monument) {
     monument.image,
   ];
 
-  return [...new Set(
-    images.filter(
-      (image) => typeof image === "string" && image.trim()
-    )
-  )];
+  return [
+    ...new Set(
+      images.filter(
+        (image) =>
+          typeof image === "string" && image.trim().length > 0
+      )
+    ),
+  ];
 }
 
 export default function MonumentDetailPage() {
@@ -68,12 +75,15 @@ export default function MonumentDetailPage() {
         setError("");
 
         const response = await getMonumentById(id);
+
         const data =
+          response?.data?.data ||
+          response?.data?.monument ||
           response?.data ||
           response?.monument ||
           response;
 
-        if (!data || typeof data !== "object") {
+        if (!data || typeof data !== "object" || Array.isArray(data)) {
           throw new Error("Monument details not found.");
         }
 
@@ -85,6 +95,7 @@ export default function MonumentDetailPage() {
           setError(
             err.message || "Unable to load monument details."
           );
+          setMonument(null);
         }
       } finally {
         if (active) {
@@ -93,7 +104,9 @@ export default function MonumentDetailPage() {
       }
     }
 
-    loadMonument();
+    if (id) {
+      loadMonument();
+    }
 
     return () => {
       active = false;
@@ -234,7 +247,9 @@ export default function MonumentDetailPage() {
           )}
         </div>
 
+        {/* Monument image and full-screen preview */}
         <MonumentGallery
+          monumentId={id}
           name={name}
           images={images}
         />
@@ -245,9 +260,11 @@ export default function MonumentDetailPage() {
               <DetailText value={overview} />
             </DetailSection>
 
-            <DetailSection title="Historical Significance">
-              <DetailText value={history} />
-            </DetailSection>
+            {history && (
+              <DetailSection title="Historical Significance">
+                <DetailText value={history} />
+              </DetailSection>
+            )}
 
             <DetailSection title="Architecture">
               <DetailText value={architecture} />
