@@ -1,121 +1,72 @@
-
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
-from dotenv import load_dotenv
-from pathlib import Path
-import uvicorn
-
 from document_parser import parse_document
 from ocr_engine import detect_language
+from fastapi.middleware.cors import CORSMiddleware
+from nlp_engine import run_translation, run_transliteration
+import uvicorn
 
-# Load environment variables
-load_dotenv(Path(__file__).parent / ".env")
+app = FastAPI(title="Multilingual OCR & NLP Microservice")
 
-app = FastAPI(title="Multilingual OCR Microservice")
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins for development
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods (POST, GET, etc.)
+    allow_headers=["*"],  # Allows all headers
+)
 
 @app.get("/health")
-async def health_check():
-    return {
-        "success": True,
-        "message": "OCR service is running"
-    }
-
+def health_check():
+    return {"status": "healthy", "service": "OCR-NLP-Microservice"}
 
 @app.post("/process-document")
 async def process_document_endpoint(
     file: UploadFile = File(...),
     output_language: str = Form("en"),
-    source_language: str = Form("auto"),
-    document_type: str = Form("auto")
+    source_language: str = Form("hi"),
+    document_type: str = Form("auto") 
 ):
     try:
-        if not file.filename:
-            raise HTTPException(
-                status_code=400,
-                detail="Filename is missing."
-            )
-
         file_bytes = await file.read()
-
-        if not file_bytes:
-            raise HTTPException(
-                status_code=400,
-                detail="Uploaded file is empty."
-            )
-
-        # 1. Extract document text using the selected OCR language
-        doc_result = parse_document(
-            file_bytes=file_bytes,
-            filename=file.filename,
-            doc_type=document_type,
-            source_language=source_language
-        )
-
-        original_text = doc_result.get("text", "")
-
-        if not original_text.strip():
-            raise HTTPException(
-                status_code=422,
-                detail="No readable text was detected in the document."
-            )
-
-        # 2. Detect original language
-        detected_lang = (
-            source_language
-            if source_language != "auto"
-            else detect_language(original_text)
-        )
-
-        # 3. Translation placeholder
-        translated_text = None
-        translation_status = "not_configured"
-
-        if output_language == "auto":
-            translated_text = original_text
-            translation_status = "not_required"
-
-        # 4. Transliteration placeholder
-        romanized_text = None
-        transliteration_status = "not_configured"
-
+        filename = file.filename
+        
+       # 1. OCR / Text Extraction (Pass source_language here)
+        doc_result = parse_document(file_bytes, filename, document_type, source_language=source_language)
+        original_text = doc_result["text"]
+        
+        # 2. Language Detection
+        detected_lang = source_language if source_language != "auto" else detect_language(original_text)
+        
+        # 3. Independent Translation (Original -> Translation)
+        translation_result = run_translation(original_text, detected_lang, output_language)
+        
+        # 4. Independent Transliteration (Original -> Roman)
+        transliteration_result = run_transliteration(original_text, detected_lang)
+        
         return {
             "success": True,
-            "filename": file.filename,
-
+            "filename": filename,
             "detected_source_language": detected_lang,
             "selected_source_language": source_language,
-
             "document_type": document_type,
-
+            
+            # The Three Independent Outputs
             "original_text": original_text,
-
-            "translated_text": translated_text,
+            "translated_text": translation_result["text"],
+            "romanized_text": transliteration_result["text"],
+            
+            # Processing Statuses for the React UI
+            "translation_status": translation_result["status"],
+            "transliteration_status": transliteration_result["status"],
+            
+            # Metadata
             "target_language": output_language,
-            "translation_status": translation_status,
-
-            "romanized_text": romanized_text,
-            "transliteration_status": transliteration_status,
-
-            "ocr_engine": doc_result.get("engine"),
-            "ocr_confidence": doc_result.get("confidence"),
-            "page_wise_text": doc_result.get("pages", [])
+            "ocr_engine": doc_result["engine"],
+            "ocr_confidence": doc_result["confidence"],
+            "page_wise_text": doc_result["pages"]
         }
-
-    except HTTPException:
-        raise
-
-    except Exception as error:
-        print(f"[Document Processing Error] {error}")
-
-        raise HTTPException(
-            status_code=500,
-            detail=str(error)
-        )
-
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
-    uvicorn.run(
-        app,
-        host="0.0.0.0",
-        port=8000
-    )
+    uvicorn.run(app, host="0.0.0.0", port=8000)

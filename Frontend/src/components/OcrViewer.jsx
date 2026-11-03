@@ -1,357 +1,337 @@
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-export default function OcrViewer({ siteId }) {
-    const [file, setFile] = useState(null);
-    const [language, setLanguage] = useState('hindi');
-    const [docType, setDocType] = useState('auto');
-    const [targetLang, setTargetLang] = useState('en');
+export default function OcrViewer() {
+  const [file, setFile] = useState(null);
+  const [sourceLang, setSourceLang] = useState("hi");
+  const [docType, setDocType] = useState("auto");
+  const [targetLang, setTargetLang] = useState("en");
 
-    const [loading, setLoading] = useState(false);
-    const [ocrResult, setOcrResult] = useState(null);
-    const [editableText, setEditableText] = useState('');
-    const [copied, setCopied] = useState(false);
-    const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [result, setResult] = useState(null);
 
-    const handleFileChange = (e) => {
-        const selectedFile = e.target.files[0];
+  async function handleExtract(e) {
+    e.preventDefault();
 
-        if (selectedFile) {
-            setFile(selectedFile);
-            setOcrResult(null);
-            setEditableText('');
-            setError('');
+    if (!file) {
+      setError("Please choose a file first.");
+      return;
+    }
+
+    setError("");
+    setResult(null);
+    setLoading(true);
+
+    try {
+      const formData = new FormData();
+
+      formData.append("file", file);
+      formData.append("source_language", sourceLang);
+      formData.append("output_language", targetLang);
+      formData.append("document_type", docType);
+
+      const res = await fetch(
+        "http://localhost:8000/process-document",
+        {
+          method: "POST",
+          body: formData,
         }
-    };
+      );
 
-    const handleUploadAndExtract = async () => {
-        if (!file) {
-            setError('Please select an image or document file.');
-            return;
-        }
+      const data = await res.json();
 
-        setLoading(true);
-        setError('');
+      if (!res.ok) {
+        throw new Error(
+          data.detail || "OCR processing failed."
+        );
+      }
 
-        const formData = new FormData();
+      setResult(data);
 
-        formData.append('document', file);
+    } catch (err) {
+      setError(err.message || "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
-        // Source language
-        formData.append('language', language);
-        formData.append('source_language', language);
+  const copyText = async (text) => {
+    if (!text) return;
 
-        // Translation language
-        formData.append('output_language', targetLang);
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      setError("Unable to copy text. Please check clipboard permissions.");
+    }
+  };
 
-        // Document type
-        formData.append('document_type', docType);
+  // Common dropdown styling
+  const selectStyle = {
+    backgroundColor: "#101510",
+    color: "#FFFFFF",
+    border: "1px solid #8B754B",
+    borderRadius: "9px",
+    padding: "12px",
+    fontSize: "14px",
+    width: "100%",
+    outline: "none",
+    colorScheme: "dark",
+  };
 
-        if (siteId) {
-            formData.append('site_id', siteId);
-        }
+  // Common text area styling
+  const textareaStyle = {
+    backgroundColor: "#080B09",
+    color: "#FFF0AD",
+    border: "1px solid #A58A52",
+    borderRadius: "9px",
+    padding: "14px",
+    fontSize: "14px",
+    lineHeight: "1.7",
+    width: "100%",
+    height: "260px",
+    resize: "vertical",
+    outline: "none",
+    fontFamily: "monospace",
+    colorScheme: "dark",
+    caretColor: "#FFF0AD",
+  };
 
-        try {
-            const response = await fetch(
-                'http://localhost:5000/api/v1/ai/ocr',
-                {
-                    method: 'POST',
-                    body: formData,
-                }
-            );
+  // Common label styling
+  const labelStyle = {
+    display: "block",
+    fontSize: "13px",
+    color: "#FFFFFF",
+    fontWeight: "600",
+    marginBottom: "9px",
+  };
 
-            const result = await response.json();
+  const outputCards = [
+    {
+      title: "Original Extracted Text",
+      value: result?.original_text,
+      placeholder: "Extracted text will appear here...",
+    },
+    {
+      title: `Translated Text (${targetLang})`,
+      value: result?.translated_text,
+      placeholder: "Translated text will appear here...",
+    },
+    {
+      title: "Roman Transliteration",
+      value: result?.romanized_text,
+      placeholder: "Roman transliteration will appear here...",
+    },
+  ];
 
-            if (!response.ok) {
-                throw new Error(
-                    result.message || 'Failed to process document.'
-                );
+  return (
+    <div className="w-full bg-[#121412] text-white p-6 rounded-xl border border-[#75613D]">
+
+      {/* Heading */}
+      <h2 className="text-2xl font-serif mb-6 text-[#F0C36A]">
+        Digital Heritage Manuscript OCR Processor
+      </h2>
+
+      {/* Control Bar */}
+      <form
+        onSubmit={handleExtract}
+        className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 items-end bg-[#1C211C] p-5 rounded-xl mb-6 border border-[#625638]"
+      >
+
+        {/* File Upload */}
+        <div>
+          <label style={labelStyle}>
+            Choose File
+          </label>
+
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png,.pdf,.txt,.docx"
+            onChange={(e) =>
+              setFile(e.target.files?.[0] || null)
             }
-
-            if (result.success) {
-                setOcrResult(result.data);
-                setEditableText(result.data.ocr_text || '');
-            } else {
-                setError(
-                    result.message || 'Failed to process document OCR.'
-                );
-            }
-        } catch (err) {
-            console.error('OCR Error:', err);
-
-            setError(
-                err.message || 'Server error connecting to backend OCR API.'
-            );
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleCopy = async () => {
-        try {
-            await navigator.clipboard.writeText(editableText);
-            setCopied(true);
-
-            setTimeout(() => {
-                setCopied(false);
-            }, 2000);
-        } catch (err) {
-            setError('Unable to copy text. Please copy it manually.');
-        }
-    };
-
-    return (
-        <div
+            className="w-full text-sm"
             style={{
-                padding: '20px',
-                backgroundColor: '#1a1a1a',
-                color: '#fff',
-                borderRadius: '8px',
+              color: "#FFFFFF",
+              backgroundColor: "#101510",
+              border: "1px solid #8B754B",
+              borderRadius: "9px",
+              padding: "8px",
             }}
-        >
-            <h2>Digital Heritage Manuscript OCR Processor</h2>
+          />
 
-            {/* Control Panel */}
-            <div
-                style={{
-                    display: 'flex',
-                    gap: '15px',
-                    marginBottom: '20px',
-                    alignItems: 'center',
-                    flexWrap: 'wrap',
-                }}
-            >
-                {/* File Upload */}
-                <input
-                    type="file"
-                    accept=".jpg,.jpeg,.png,.pdf,.docx,.txt"
-                    onChange={handleFileChange}
-                    style={{ color: '#fff' }}
-                />
+          <style>
+            {`
+              input[type="file"]::file-selector-button {
+                background: #D8B36A;
+                color: #171717;
+                border: none;
+                border-radius: 6px;
+                padding: 9px 14px;
+                margin-right: 10px;
+                font-weight: 600;
+                cursor: pointer;
+              }
 
-                {/* Source Language */}
-                <select
-                    value={language}
-                    onChange={(e) => setLanguage(e.target.value)}
-                    style={{
-                        padding: '8px',
-                        background: '#333',
-                        color: '#fff',
-                        border: '1px solid #555',
-                    }}
-                >
-                    <option value="hindi">Hindi (Devanagari)</option>
-                    <option value="sanskrit">Sanskrit</option>
-                    <option value="marathi">Marathi</option>
-                    <option value="gujarati">Gujarati</option>
-                    <option value="bengali">Bengali</option>
-                    <option value="english">English</option>
-                </select>
+              input[type="file"]::file-selector-button:hover {
+                background: #F0D18B;
+              }
 
-                {/* Document Type */}
-                <select
-                    value={docType}
-                    onChange={(e) => setDocType(e.target.value)}
-                    style={{
-                        padding: '8px',
-                        background: '#333',
-                        color: '#fff',
-                        border: '1px solid #555',
-                    }}
-                >
-                    <option value="auto">Auto-Detect / Printed</option>
-                    <option value="handwritten">
-                        Handwritten (Google Vision)
-                    </option>
-                </select>
+              select option {
+                background: #101510;
+                color: #FFFFFF;
+              }
 
-                {/* Output / Translation Language */}
-                <select
-                    value={targetLang}
-                    onChange={(e) => setTargetLang(e.target.value)}
-                    style={{
-                        padding: '8px',
-                        background: '#333',
-                        color: '#fff',
-                        border: '1px solid #555',
-                    }}
-                >
-                    <option value="en">Translate to English</option>
-                    <option value="hi">Translate to Hindi</option>
-                    <option value="mr">Translate to Marathi</option>
-                </select>
+              textarea::placeholder {
+                color: #BDBDBD;
+                opacity: 1;
+              }
+            `}
+          </style>
+        </div>
 
-                {/* Extract Button */}
+        {/* Source Language */}
+        <div>
+          <label style={labelStyle}>
+            Source Language
+          </label>
+
+          <select
+            value={sourceLang}
+            onChange={(e) => setSourceLang(e.target.value)}
+            style={selectStyle}
+          >
+            <option value="hi">Hindi (Devanagari)</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+
+        {/* Document Type */}
+        <div>
+          <label style={labelStyle}>
+            Document Type
+          </label>
+
+          <select
+            value={docType}
+            onChange={(e) => setDocType(e.target.value)}
+            style={selectStyle}
+          >
+            <option value="auto">Auto-Detect / Printed</option>
+            <option value="handwritten">Handwritten</option>
+          </select>
+        </div>
+
+        {/* Target Language */}
+        <div>
+          <label style={labelStyle}>
+            Translate To
+          </label>
+
+          <select
+            value={targetLang}
+            onChange={(e) => setTargetLang(e.target.value)}
+            style={selectStyle}
+          >
+            <option value="en">English</option>
+            <option value="hi">Hindi</option>
+          </select>
+        </div>
+
+        {/* Extract Button */}
+        <div className="md:col-span-2 xl:col-span-4 flex justify-end">
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-[#D8B36A] text-[#171717] font-bold px-8 py-3 rounded-lg text-sm transition hover:bg-[#F0D18B] disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading
+              ? "Processing OCR..."
+              : "Extract Text"}
+          </button>
+        </div>
+      </form>
+
+      {/* Selected File */}
+      {file && (
+        <p className="text-sm text-white mb-4">
+          Selected File:{" "}
+          <span className="text-[#FFE5A0] font-semibold">
+            {file.name}
+          </span>
+        </p>
+      )}
+
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-950/40 border border-red-500/50 text-red-300 rounded-lg p-3 mb-5 text-sm">
+          {error}
+        </div>
+      )}
+
+      {/* Output Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+        {outputCards.map((item, index) => (
+          <div
+            key={index}
+            className="bg-[#1C211C] border border-[#625638] rounded-xl p-4 flex flex-col"
+          >
+
+            {/* Card Heading */}
+            <div className="flex justify-between items-center gap-2 mb-3">
+
+              <h3 className="text-sm font-bold text-[#F0C36A]">
+                {item.title}
+              </h3>
+
+              {item.value && (
                 <button
-                    onClick={handleUploadAndExtract}
-                    disabled={loading}
-                    style={{
-                        padding: '8px 16px',
-                        background: '#e0a96d',
-                        border: 'none',
-                        cursor: loading ? 'not-allowed' : 'pointer',
-                        fontWeight: 'bold',
-                        opacity: loading ? 0.6 : 1,
-                    }}
+                  type="button"
+                  onClick={() => copyText(item.value)}
+                  className="text-xs text-white bg-[#454545] hover:bg-[#666666] px-3 py-1.5 rounded-md transition"
                 >
-                    {loading
-                        ? 'Preprocessing & Extracting...'
-                        : 'Extract Text'}
+                  Copy
                 </button>
+              )}
             </div>
 
-            {file && (
-                <p style={{ color: '#aaa', fontSize: '0.9rem' }}>
-                    Selected file: {file.name}
-                </p>
-            )}
+            {/* Output Text Area */}
+            <textarea
+              readOnly
+              value={item.value || ""}
+              placeholder={item.placeholder}
+              style={textareaStyle}
+            />
 
-            {error && (
-                <p style={{ color: '#ff6b6b' }}>{error}</p>
-            )}
+          </div>
+        ))}
 
-            {/* OCR Results */}
-            {ocrResult && (
-                <div
-                    style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-                        gap: '20px',
-                        marginTop: '20px',
-                    }}
-                >
-                    {/* Original Document Preview */}
-                    <div
-                        style={{
-                            border: '1px solid #444',
-                            padding: '10px',
-                            borderRadius: '4px',
-                        }}
-                    >
-                        <h3>Original Archival Document</h3>
+      </div>
 
-                        {ocrResult.file_type?.includes('image') ? (
-                            <img
-                                src={ocrResult.file_path}
-                                alt="Document preview"
-                                style={{
-                                    width: '100%',
-                                    maxHeight: '450px',
-                                    objectFit: 'contain',
-                                }}
-                            />
-                        ) : (
-                            <iframe
-                                src={ocrResult.file_path}
-                                title="Document Preview"
-                                style={{
-                                    width: '100%',
-                                    height: '450px',
-                                    border: 'none',
-                                }}
-                            />
-                        )}
+      {/* OCR Information */}
+      {result && (
+        <div className="mt-5 p-4 rounded-lg bg-[#1C211C] border border-[#625638] flex flex-wrap gap-5 text-sm">
 
-                        <div
-                            style={{
-                                marginTop: '10px',
-                                fontSize: '0.85rem',
-                                color: '#aaa',
-                            }}
-                        >
-                            <p>
-                                Engine:{' '}
-                                <strong>{ocrResult.ocr_engine || 'N/A'}</strong>
-                            </p>
+          <span className="text-white">
+            Engine:{" "}
+            <span className="text-[#FFE5A0]">
+              {result.ocr_engine || "N/A"}
+            </span>
+          </span>
 
-                            <p>
-                                Confidence Score:{' '}
-                                <strong>
-                                    {typeof ocrResult.confidence_score === 'number'
-                                        ? `${(ocrResult.confidence_score * 100).toFixed(1)}%`
-                                        : 'N/A'}
-                                </strong>
-                            </p>
-                        </div>
-                    </div>
+          <span className="text-white">
+            Confidence:{" "}
+            <span className="text-[#FFE5A0]">
+              {result.ocr_confidence != null
+                ? `${(result.ocr_confidence * 100).toFixed(1)}%`
+                : "N/A"}
+            </span>
+          </span>
 
-                    {/* Extracted Text */}
-                    <div
-                        style={{
-                            border: '1px solid #444',
-                            padding: '10px',
-                            borderRadius: '4px',
-                        }}
-                    >
-                        <div
-                            style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                gap: '10px',
-                            }}
-                        >
-                            <h3>
-                                Extracted Text ({ocrResult.language || language})
-                            </h3>
-
-                            <button
-                                onClick={handleCopy}
-                                style={{
-                                    padding: '4px 8px',
-                                    background: '#444',
-                                    color: '#fff',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                }}
-                            >
-                                {copied ? 'Copied!' : 'Copy Text'}
-                            </button>
-                        </div>
-
-                        <textarea
-                            value={editableText}
-                            onChange={(e) =>
-                                setEditableText(e.target.value)
-                            }
-                            rows={18}
-                            style={{
-                                width: '100%',
-                                boxSizing: 'border-box',
-                                background: '#222',
-                                color: '#4af626',
-                                padding: '10px',
-                                fontFamily: 'monospace',
-                                border: '1px solid #555',
-                            }}
-                        />
-
-                        {/* Translated Text */}
-                        {ocrResult.translated_text && (
-                            <>
-                                <h3>
-                                    Translated Text ({targetLang})
-                                </h3>
-
-                                <textarea
-                                    value={ocrResult.translated_text}
-                                    readOnly
-                                    rows={10}
-                                    style={{
-                                        width: '100%',
-                                        boxSizing: 'border-box',
-                                        background: '#222',
-                                        color: '#fff',
-                                        padding: '10px',
-                                        fontFamily: 'monospace',
-                                        border: '1px solid #555',
-                                    }}
-                                />
-                            </>
-                        )}
-                    </div>
-                </div>
-            )}
         </div>
-    );
+      )}
+
+    </div>
+  );
 }

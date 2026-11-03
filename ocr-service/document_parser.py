@@ -1,7 +1,8 @@
 
+import io
+
 import fitz
 import docx
-import io
 
 from ocr_engine import process_image_ocr
 
@@ -16,6 +17,9 @@ def parse_document(
     if not file_bytes:
         raise ValueError("Uploaded document is empty.")
 
+    if not filename or "." not in filename:
+        raise ValueError("Invalid filename or missing file extension.")
+
     ext = filename.lower().rsplit(".", 1)[-1]
 
     original_text = ""
@@ -25,9 +29,11 @@ def parse_document(
 
     # 1. TXT FILE
     if ext == "txt":
-        text = file_bytes.decode("utf-8-sig", errors="replace")
 
-        original_text = text.strip()
+        original_text = file_bytes.decode(
+            "utf-8-sig",
+            errors="replace"
+        ).strip()
 
         pages_data.append({
             "page": 1,
@@ -39,17 +45,20 @@ def parse_document(
 
     # 2. DOCX FILE
     elif ext == "docx":
+
         document = docx.Document(io.BytesIO(file_bytes))
 
         content = []
 
+        # Extract paragraphs
         for paragraph in document.paragraphs:
             if paragraph.text.strip():
                 content.append(paragraph.text)
 
-        # Extract table content too
+        # Extract table content
         for table in document.tables:
             for row in table.rows:
+
                 row_text = " | ".join(
                     cell.text.strip() for cell in row.cells
                 )
@@ -69,6 +78,7 @@ def parse_document(
 
     # 3. PDF FILE
     elif ext == "pdf":
+
         pdf = fitz.open(
             stream=file_bytes,
             filetype="pdf"
@@ -79,6 +89,7 @@ def parse_document(
 
                 page = pdf.load_page(page_num)
 
+                # Try digital text extraction first
                 text = page.get_text("text").strip()
 
                 # Scanned page: use OCR
@@ -94,14 +105,16 @@ def parse_document(
                         source_language=source_language
                     )
 
-                    text = ocr_result["text"]
+                    text = ocr_result.get("text", "")
 
-                    engines.append(ocr_result["engine"])
+                    engines.append(
+                        ocr_result.get("engine", "PaddleOCR")
+                    )
 
-                    if ocr_result["confidence"] is not None:
-                        confidences.append(
-                            ocr_result["confidence"]
-                        )
+                    page_confidence = ocr_result.get("confidence")
+
+                    if page_confidence is not None:
+                        confidences.append(page_confidence)
 
                 else:
                     engines.append("PDF Digital Extraction")
@@ -120,12 +133,14 @@ def parse_document(
 
         engine_used = (
             ", ".join(dict.fromkeys(engines))
-            if engines else "PDF Extraction"
+            if engines
+            else "PDF Extraction"
         )
 
         confidence = (
             sum(confidences) / len(confidences)
-            if confidences else None
+            if confidences
+            else None
         )
 
     # 4. IMAGE FILES
@@ -137,21 +152,24 @@ def parse_document(
             source_language=source_language
         )
 
-        original_text = ocr_result["text"]
+        original_text = ocr_result.get("text", "")
 
-        engine_used = ocr_result["engine"]
-        confidence = ocr_result["confidence"]
+        engine_used = ocr_result.get("engine", "PaddleOCR")
+        confidence = ocr_result.get("confidence")
 
         pages_data.append({
             "page": 1,
             "text": original_text
         })
 
+    # 5. UNSUPPORTED FILE FORMAT
     else:
+
         raise ValueError(
             f"Unsupported file format: .{ext}"
         )
 
+    # FINAL RESPONSE
     return {
         "text": original_text.strip(),
         "pages": pages_data,

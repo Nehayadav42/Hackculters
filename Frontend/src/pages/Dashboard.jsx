@@ -1,9 +1,9 @@
-
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/useAuth.js";
 import { getMonuments, uploadArchiveFile } from "../services/api.js";
 import "../styles/dashboard.css";
+import OcrViewer from "../components/OcrViewer.jsx";
 
 const FEATURED = [
   {
@@ -659,8 +659,21 @@ export default function Dashboard() {
         />
       )}
 
-      {(active === "saved" || active === "manuscripts") && (
-        <EmptySection type={active} onNavigate={handleNavigate} />
+      {active === "saved" && (
+        <EmptySection type="saved" onNavigate={handleNavigate} />
+      )}
+
+      {active === "manuscripts" && (
+        <div className="w-full">
+          <SectionHeading
+            eyebrow="DIGITAL ARCHIVE INTELLIGENCE"
+            title="Manuscript OCR & Translation Hub."
+            description="Upload historical images, scanned PDFs, or text documents to run local PaddleOCR text extraction, deep translation, and Roman transliteration independently."
+          />
+          <div className="mt-6 w-full">
+            <OcrViewer />
+          </div>
+        </div>
       )}
 
       {active === "contributions" && (

@@ -1,6 +1,7 @@
 import { supabase } from '../config/supabaseClient.js';
 import { processDocumentViaAI } from '../services/ocr.service.js';
 
+
 export const processOcrDocument = async (req, res, next) => {
     try {
         if (!req.file) return res.status(400).json({ success: false, message: "No file provided" });
@@ -20,7 +21,7 @@ export const processOcrDocument = async (req, res, next) => {
             source_language, output_language, document_type
         );
 
-        // 3. Save to Database (using your existing translated_text and translated_language columns)
+        // 3. Save to Database
         const { data: documentRecord, error: dbError } = await supabase
             .from('documents')
             .insert([{
@@ -29,10 +30,10 @@ export const processOcrDocument = async (req, res, next) => {
                 document_type: req.file.mimetype.includes('image') ? 'Image' : 'Document',
                 file_path: publicUrlData.publicUrl,
                 original_file_name: originalName,
-                language: aiResult.detected_source_language,
+                language: aiResult.detected_source_language || source_language,
                 ocr_text: aiResult.original_text,
-                translated_text: aiResult.translated_text,
-                translated_language: aiResult.target_language,
+                translated_text: aiResult.translated_text || null,
+                translated_language: aiResult.target_language || null,
                 ocr_engine: aiResult.ocr_engine,
                 confidence_score: aiResult.ocr_confidence,
                 status: 'completed'
@@ -41,23 +42,23 @@ export const processOcrDocument = async (req, res, next) => {
 
         if (dbError) throw new Error(dbError.message);
 
-        res.status(201).json({ success: true, data: documentRecord, ai_metadata: aiResult });
+        // 4. Return both the DB record and the full AI metadata to the frontend
+        res.status(201).json({ 
+            success: true, 
+            data: documentRecord, 
+            ai_metadata: aiResult 
+        });
     } catch (error) {
         next(error);
     }
 };
 
 export const getDocumentOcrById = async (req, res, next) => {
+    // ... keep your existing function exactly as it is ...
     try {
         const { id } = req.params;
-        const { data, error } = await supabase
-            .from('documents')
-            .select('*')
-            .eq('id', id)
-            .single();
-
+        const { data, error } = await supabase.from('documents').select('*').eq('id', id).single();
         if (error) return res.status(404).json({ success: false, message: "Document not found" });
-
         res.status(200).json({ success: true, data });
     } catch (error) {
         next(error);

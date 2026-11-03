@@ -53,6 +53,22 @@ def normalize_ocr_language(source_language: str) -> str:
         "english": "en",
         "en": "en",
         "hindi": "hi",
+        "hi": "hi",
+        "sanskrit": "sa",
+        "sa": "sa",
+        "marathi": "mr",
+        "mr": "mr",
+        "bengali": "bn",
+        "bn": "bn"
+    }
+
+    return language_map.get(language, "hi" if language in ["hi", "hindi"] else "en")
+    language = (source_language or "en").lower().strip()
+
+    language_map = {
+        "english": "en",
+        "en": "en",
+        "hindi": "hi",
         "hi": "hi"
     }
 
@@ -159,6 +175,8 @@ def run_paddle_ocr(
     language = normalize_ocr_language(source_language)
     ocr_model = get_paddle_ocr(language)
 
+    # Disable angle classification restriction if text is skewed, 
+    # and lower the threshold to catch all handwritten lines
     results = ocr_model.ocr(img_array, cls=True)
 
     full_text, confidences = reconstruct_text(results)
