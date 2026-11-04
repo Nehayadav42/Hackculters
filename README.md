@@ -259,12 +259,16 @@ PORT=5000
 NODE_ENV=development
 
 SUPABASE_URL=your_supabase_project_url
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+SUPABASE_ANON_KEY=your_supabase_anon_key
 
-CLIENT_URL=http://localhost:5173
+FRONTEND_ORIGINS=http://localhost:5173
 
-# Add other required AI, Cloudinary and Redis
-# configuration variables if enabled in your setup.
+GEMINI_API_KEY=your_gemini_api_key
+PYTHON_OCR_URL=http://localhost:8000/process-document
+
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 ```
 
 Start the backend:
@@ -291,12 +295,11 @@ npm install
 Create a `.env` file inside the Frontend directory:
 
 ```env
-VITE_API_URL=http://localhost:5000/api/v1
-
 VITE_SUPABASE_URL=your_supabase_project_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 VITE_MAPBOX_ACCESS_TOKEN=your_mapbox_public_access_token
+VITE_CESIUM_ION_TOKEN=your_cesium_ion_token
 ```
 
 Start the frontend:
@@ -337,7 +340,7 @@ pip install -r requirements.txt
 Start the FastAPI service using the actual application module:
 
 ```bash
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn app:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 OCR service URL:
@@ -463,7 +466,7 @@ Run the three services in separate terminals:
 |---|---|---|
 | Backend | `npm run dev` | 5000 |
 | Frontend | `npm run dev` | 5173 |
-| OCR Service | `uvicorn main:app --host 0.0.0.0 --port 8000 --reload` | 8000 |
+| OCR Service | `uvicorn app:app --host 0.0.0.0 --port 8000 --reload` | 8000 |
 
 Open the frontend:
 

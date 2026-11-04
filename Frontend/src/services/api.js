@@ -12,7 +12,7 @@ async function getAuthorizationHeader() {
 
   const token = data.session?.access_token;
   if (!token) {
-    throw new Error("Please sign in before submitting a contribution.");
+    throw new Error("Please sign in before using this archive feature.");
   }
 
   return { Authorization: `Bearer ${token}` };
@@ -69,17 +69,23 @@ export const getMapData = () => request("/monuments/map-data");
 export const searchArchives = (query) =>
   request(`/monuments/search/all?q=${encodeURIComponent(query)}`);
 
-export const chatWithArchive = ({ monumentId, question }) =>
-  request("/ai/chat", {
+export async function chatWithArchive({ monumentId, question }) {
+  const authorization = await getAuthorizationHeader();
+  return request("/ai/chat", {
     method: "POST",
+    headers: authorization,
     body: JSON.stringify({ monumentId, question }),
   });
+}
 
-export const summarizeDocument = ({ documentId }) =>
-  request("/ai/summarize", {
+export async function summarizeDocument({ documentId }) {
+  const authorization = await getAuthorizationHeader();
+  return request("/ai/summarize", {
     method: "POST",
+    headers: authorization,
     body: JSON.stringify({ documentId }),
   });
+}
 
 export async function uploadArchiveFile({
   file,
@@ -161,7 +167,7 @@ export async function processOcrDocument({
 }) {
   const authorization = await getAuthorizationHeader();
   const formData = new FormData();
-  formData.append("document", file);
+  formData.append("file", file);
   formData.append("source_language", sourceLanguage);
   formData.append("output_language", targetLanguage);
   formData.append("document_type", documentType);

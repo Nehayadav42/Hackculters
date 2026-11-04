@@ -12,3 +12,7 @@ export const STEPWELLS = [
   { name: "Agrasen ki Baoli", place: "New Delhi", state: "Delhi", period: "14th c.", architecturalForm: "Long, narrow baoli framed by arched galleries", lon: 77.22, lat: 28.63,
     text: "A long, narrow stepwell in the middle of the city. Arched niches flank the stairs." },
 ];
+
+export const SORTED_STEPWELLS = [...STEPWELLS].sort((first, second) =>
+  first.name.localeCompare(second.name)
+);

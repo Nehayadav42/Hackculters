@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
-import { Canvas } from "@react-three/fiber";
+import { useLayoutEffect, useRef, useState } from "react";
+import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
+import { MathUtils, Vector3 } from "three";
 import { HOTSPOTS } from "./hotspots.js";
 
 const MODEL_PROFILES = {
@@ -389,6 +390,43 @@ function StepwellModel({ site }) {
   );
 }
 
+function FitStepwellCamera({ site, controlsRef }) {
+  const { camera, size } = useThree();
+
+  useLayoutEffect(() => {
+    if (size.width <= 0 || size.height <= 0) return;
+
+    const profile =
+      MODEL_PROFILES[site?.name] || MODEL_PROFILES["Rani ki Vav"];
+    const radius = Math.hypot(
+      (profile.width + 2.2) / 2,
+      (profile.depth + 2.2) / 2,
+      1.9
+    );
+    const verticalHalfFov = MathUtils.degToRad(camera.fov / 2);
+    const horizontalHalfFov = Math.atan(
+      Math.tan(verticalHalfFov) * (size.width / size.height)
+    );
+    const limitingHalfFov = Math.min(verticalHalfFov, horizontalHalfFov);
+    const distance = (radius / Math.sin(limitingHalfFov)) * 1.15;
+    const target = new Vector3(0, -0.15, 0);
+    const direction = new Vector3(0.62, 0.48, 0.62).normalize();
+
+    camera.position.copy(target).addScaledVector(direction, distance);
+    camera.lookAt(target);
+
+    const controls = controlsRef.current;
+    if (controls) {
+      controls.target.copy(target);
+      controls.maxDistance = Math.max(40, distance * 1.5);
+      controls.update();
+      controls.saveState();
+    }
+  }, [camera, controlsRef, site?.name, size.height, size.width]);
+
+  return null;
+}
+
 export default function StepwellCanvas({ site }) {
   const [expanded, setExpanded] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState(null);
@@ -470,7 +508,7 @@ export default function StepwellCanvas({ site }) {
           gl={{ antialias: true, alpha: false }}
         >
           <color attach="background" args={["#192b3a"]} />
-          <fog attach="fog" args={["#192b3a", 14, 26]} />
+          <fog attach="fog" args={["#192b3a", 38, 72]} />
           <ambientLight intensity={0.65} />
           <hemisphereLight args={["#e8e1d3", "#243748", 0.85]} />
           <directionalLight
@@ -482,6 +520,7 @@ export default function StepwellCanvas({ site }) {
           />
           <directionalLight position={[-5, 4, -5]} intensity={0.8} />
           <StepwellModel site={site} />
+          <FitStepwellCamera site={site} controlsRef={controlsRef} />
           <mesh
             rotation={[-Math.PI / 2, 0, 0]}
             position={[0, -1.77, 0]}
@@ -500,7 +539,7 @@ export default function StepwellCanvas({ site }) {
             dampingFactor={0.08}
             rotateSpeed={0.7}
             minDistance={6}
-            maxDistance={17}
+            maxDistance={48}
             minPolarAngle={0.35}
             maxPolarAngle={Math.PI / 2}
           />

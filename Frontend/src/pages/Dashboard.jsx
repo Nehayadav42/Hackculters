@@ -6,6 +6,7 @@ import {
   getMonumentImages,
   uploadArchiveFile,
 } from "../services/api.js";
+import { getImageObjectFit } from "../utils/image.js";
 import "../styles/dashboard.css";
 import OcrViewer from "../components/OcrViewer.jsx";
 
@@ -73,6 +74,7 @@ function MonumentCard({ monument, index }) {
 
   const [image, setImage] = useState(fallbackImage);
   const [imageFailed, setImageFailed] = useState(false);
+  const [imageFit, setImageFit] = useState("cover");
 
   const location = [monument.city, monument.state]
     .filter(Boolean)
@@ -123,7 +125,12 @@ function MonumentCard({ monument, index }) {
             alt={monument.name || "Heritage site"}
             loading="lazy"
             onError={() => setImageFailed(true)}
-            className="absolute inset-0 h-full w-full object-contain p-2 transition-transform duration-500 group-hover:scale-[1.02]"
+            onLoad={(event) =>
+              setImageFit(getImageObjectFit(event.currentTarget))
+            }
+            className={`absolute inset-0 h-full w-full ${
+              imageFit === "contain" ? "object-contain" : "object-cover"
+            } object-center transition-transform duration-500 group-hover:scale-[1.02]`}
           />
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#e8edf0]">
@@ -191,7 +198,7 @@ function Overview({
         <div className="absolute -right-2 -top-12 h-56 w-56 rounded-full border border-white/10" />
         <div className="absolute -bottom-24 right-32 h-64 w-64 rounded-full border border-white/10" />
 
-        <div className="relative z-10 max-w-2xl">
+        <div className="relative z-10 mx-auto max-w-2xl text-center">
           <p className="mb-4 text-[10px] font-semibold tracking-[0.25em] text-[#e1a080]">
             YOUR HERITAGE JOURNEY BEGINS HERE
           </p>
@@ -204,7 +211,7 @@ function Overview({
             </span>
           </h2>
 
-          <p className="mt-4 max-w-lg text-sm leading-7 text-white/85">
+          <p className="mx-auto mt-4 max-w-lg text-sm leading-7 text-white/85">
             Discover the stories, architecture and knowledge that shaped
             our history. Your personal space to explore India's cultural heritage.
           </p>
@@ -478,7 +485,7 @@ function Contributions({ monuments, loading, error }) {
       <form
         ref={formRef}
         onSubmit={handleSubmit}
-        className="max-w-3xl rounded-2xl border border-[#d2dce2] bg-[#f8f9fa] p-6 shadow-sm sm:p-8"
+        className="w-full rounded-2xl border border-[#d2dce2] bg-[#f8f9fa] p-6 shadow-sm sm:p-8"
       >
         <div className="grid gap-5 sm:grid-cols-2">
           <label className="text-xs font-semibold text-[#66727d]">
@@ -740,7 +747,7 @@ export default function Dashboard() {
             description="Upload historical images, scanned PDFs, or text documents for OCR, Hindi–English translation, and Roman transliteration through the configured archive services."
           />
           <div className="mt-6 w-full">
-            <OcrViewer />
+            <OcrViewer monuments={monuments} monumentsLoading={monumentsLoading} />
           </div>
         </div>
       )}

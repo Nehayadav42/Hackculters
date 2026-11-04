@@ -9,8 +9,8 @@ const router = express.Router();
 router.use(requireSupabase);
 
 // Existing AI endpoints
-router.post('/summarize', aiController.summarizeDocument);
-router.post('/chat', aiController.chatWithAssistant);
+router.post('/summarize', requireAuthenticatedUser, aiController.summarizeDocument);
+router.post('/chat', requireAuthenticatedUser, aiController.chatWithAssistant);
 
 // New OCR Endpoints
 router.post(

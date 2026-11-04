@@ -4,6 +4,20 @@ import "./cesium-city.css";
 
 const OSM_BUILDINGS_ASSET_ID = 96188;
 
+function getBuildingsErrorMessage(error) {
+  const statusCode = error?.statusCode ?? error?.response?.status;
+
+  if (statusCode === 401 || statusCode === 403) {
+    return `Cesium ion denied access to OSM Buildings (asset ${OSM_BUILDINGS_ASSET_ID}, HTTP ${statusCode}). Use a browser token with asset access and the assets:read permission. The OpenStreetMap background remains available.`;
+  }
+
+  if (statusCode === 404) {
+    return `Cesium ion could not find OSM Buildings asset ${OSM_BUILDINGS_ASSET_ID}. Check the asset ID and account access. The OpenStreetMap background remains available.`;
+  }
+
+  return `Cesium ion could not load OSM Buildings asset ${OSM_BUILDINGS_ASSET_ID}${statusCode ? ` (HTTP ${statusCode})` : ""}. Check token permissions and network access. The OpenStreetMap background remains available.`;
+}
+
 export default function CesiumCityViewer() {
   const containerRef = useRef(null);
   const ionToken = import.meta.env.VITE_CESIUM_ION_TOKEN?.trim() || "";
@@ -79,17 +93,17 @@ export default function CesiumCityViewer() {
         buildings.tileFailed.addEventListener(() => {
           if (disposed || reportedTilesetError) return;
           reportedTilesetError = true;
-          setError("Some Cesium ion building tiles could not be loaded.");
+          setError(
+            `Some tiles from Cesium ion OSM Buildings asset ${OSM_BUILDINGS_ASSET_ID} could not be loaded. Check asset access and network connectivity. The OpenStreetMap background remains available.`
+          );
         });
 
         viewer.scene.primitives.add(buildings);
         setStatus("ready");
-      } catch {
+      } catch (error) {
         if (disposed) return;
-        setError(
-          "Cesium ion could not load OSM Buildings. Check the browser token, asset access, and network connection."
-        );
-        setStatus("error");
+        setError(getBuildingsErrorMessage(error));
+        setStatus(viewer ? "ready" : "error");
       }
     }
 

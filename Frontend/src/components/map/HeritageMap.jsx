@@ -71,7 +71,7 @@ function MonumentInfoPanel({ site, onClose }) {
           <img
             src={site.thumbnail_url}
             alt={site.name || "Heritage monument"}
-            className="mb-3 h-24 w-full rounded-lg bg-[#e8edf0] object-cover"
+            className="mb-3 h-24 w-full rounded-lg bg-[#e8edf0] object-cover object-center"
             onError={(event) => {
               event.currentTarget.style.display = "none";
             }}
@@ -137,7 +137,11 @@ export default function HeritageMap({
   const hasFitBoundsRef = useRef(false);
 
   const [mapReady, setMapReady] = useState(false);
-  const [mapError, setMapError] = useState("");
+  const [mapError, setMapError] = useState(() =>
+    MAPBOX_TOKEN
+      ? ""
+      : "Mapbox access token is missing. Please check VITE_MAPBOX_ACCESS_TOKEN."
+  );
   const [selectedSite, setSelectedSite] = useState(null);
 
   // Keep the latest callback
@@ -149,12 +153,7 @@ export default function HeritageMap({
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
-    if (!MAPBOX_TOKEN) {
-      setMapError(
-        "Mapbox access token is missing. Please check VITE_MAPBOX_ACCESS_TOKEN."
-      );
-      return;
-    }
+    if (!MAPBOX_TOKEN) return;
 
     mapboxgl.accessToken = MAPBOX_TOKEN;
 

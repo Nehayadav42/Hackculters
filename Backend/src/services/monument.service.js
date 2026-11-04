@@ -141,7 +141,8 @@ export const fetchMonumentDetails = async (monumentId) => {
                 original_text,
                 translated_text,
                 language,
-                source_name
+                source_name,
+                status
             )
         `)
         .eq("id", monumentId)

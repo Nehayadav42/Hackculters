@@ -1,7 +1,7 @@
 
 import Section from "../layout/Section.jsx";
 import StepwellCanvas from "../stepwell/StepwellCanvas.jsx";
-import { STEPWELLS } from "../../data/stepwells.js";
+import { SORTED_STEPWELLS } from "../../data/stepwells.js";
 import { lazy, Suspense, useState } from "react";
 
 const CesiumCityViewer = lazy(() => import("../city/CesiumCityViewer.jsx"));
@@ -10,7 +10,7 @@ export default function Stepwell3D() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [mode, setMode] = useState("monument");
 
-  const featuredSite = STEPWELLS[selectedIndex];
+  const featuredSite = SORTED_STEPWELLS[selectedIndex];
   const cityMode = mode === "city";
 
   return (
@@ -129,7 +129,7 @@ export default function Stepwell3D() {
                 }
                 className="mt-2 w-full rounded-lg border border-white/20 bg-[#2e4658] px-3 py-3 text-sm text-white outline-none focus:border-[#bf6548]"
               >
-                {STEPWELLS.map((site, index) => (
+                {SORTED_STEPWELLS.map((site, index) => (
                   <option
                     key={site.name}
                     value={index}
