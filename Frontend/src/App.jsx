@@ -77,6 +77,16 @@ function LandingRoute() {
   return user ? <Navigate to="/dashboard" replace /> : <PublicLandingPage />;
 }
 
+function ScrollToTop() {
+  const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0 });
+  }, [location.pathname, location.search]);
+
+  return null;
+}
+
 function AppRoutes() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -161,6 +171,7 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <AppRoutes />
     </BrowserRouter>
   );

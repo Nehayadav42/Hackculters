@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import { useState } from "react";
 
 export default function OcrViewer() {
   const [file, setFile] = useState(null);
@@ -10,6 +10,7 @@ export default function OcrViewer() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState(null);
+  const [savedDocument, setSavedDocument] = useState(null);
 
   async function handleExtract(e) {
     e.preventDefault();
@@ -21,34 +22,35 @@ export default function OcrViewer() {
 
     setError("");
     setResult(null);
+    setSavedDocument(null);
     setLoading(true);
 
     try {
       const formData = new FormData();
 
-      formData.append("file", file);
+      formData.append("document", file);
       formData.append("source_language", sourceLang);
       formData.append("output_language", targetLang);
       formData.append("document_type", docType);
 
-      const res = await fetch(
-        "http://localhost:8000/process-document",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      const response = await fetch("/api/v1/ai/ocr", {
+        method: "POST",
+        body: formData,
+      });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(
-          data.detail || "OCR processing failed."
-        );
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error("Invalid response received from server.");
       }
 
-      setResult(data);
+      if (!response.ok || data?.success === false) {
+        throw new Error(data?.message || "OCR processing failed.");
+      }
 
+      setResult(data.ai_metadata);
+      setSavedDocument(data.data);
     } catch (err) {
       setError(err.message || "Something went wrong.");
     } finally {
@@ -330,6 +332,12 @@ export default function OcrViewer() {
           </span>
 
         </div>
+      )}
+
+      {savedDocument && (
+        <p className="mt-3 text-sm text-[#FFE5A0]" role="status">
+          OCR result saved to the document archive.
+        </p>
       )}
 
     </div>

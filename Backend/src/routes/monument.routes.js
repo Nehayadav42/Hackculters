@@ -2,9 +2,16 @@
 import express from "express";
 import multer from "multer";
 import * as monumentController from "../controllers/monument.controller.js";
-import upload from "../config/storage.js";
+import { createDocumentUpload } from "../config/documentUpload.js";
+import AppError from "../utils/AppError.js";
 
 const router = express.Router();
+const archiveUpload = createDocumentUpload("archive_file", [
+    ".pdf",
+    ".jpg",
+    ".jpeg",
+    ".png",
+]);
 
 const imageUpload = multer({
     storage: multer.memoryStorage(),
@@ -20,7 +27,7 @@ const imageUpload = multer({
 
         if (!allowedTypes.includes(file.mimetype)) {
             return cb(
-                new Error("Only JPG, PNG and WEBP images are allowed.")
+                new AppError("Only JPG, PNG and WEBP images are allowed.", 400)
             );
         }
 
@@ -36,7 +43,7 @@ router.get("/manuscript/:word", monumentController.getManuscriptTranslation);
 // Existing document upload — unchanged
 router.post(
     "/upload",
-    upload.single("archive_file"),
+    archiveUpload,
     monumentController.uploadArchiveFile
 );
 

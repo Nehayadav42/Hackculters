@@ -123,7 +123,7 @@ function MonumentCard({ monument, index }) {
             alt={monument.name || "Heritage site"}
             loading="lazy"
             onError={() => setImageFailed(true)}
-            className="absolute inset-0 h-full w-full object-contain p-2 transition-transform duration-500 group-hover:scale-[1.02]"
+            className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.02]"
           />
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#eae5da]">
@@ -186,12 +186,12 @@ function Overview({
 
   return (
     <>
-      <section className="relative mb-9 overflow-hidden rounded-2xl bg-[#1d4034] px-6 py-9 text-white sm:px-10 sm:py-12">
+      <section className="relative mb-9 flex min-h-[360px] items-center justify-center overflow-hidden rounded-2xl bg-[#1d4034] px-6 py-9 text-center text-white sm:min-h-[400px] sm:px-10 sm:py-12">
         <div className="absolute -right-10 -top-20 h-72 w-72 rounded-full border border-white/10" />
         <div className="absolute -right-2 -top-12 h-56 w-56 rounded-full border border-white/10" />
         <div className="absolute -bottom-24 right-32 h-64 w-64 rounded-full border border-white/10" />
 
-        <div className="relative z-10 max-w-2xl">
+        <div className="relative z-10 mx-auto flex max-w-2xl flex-col items-center">
           <p className="mb-4 text-[10px] font-semibold tracking-[0.25em] text-[#d5b77c]">
             YOUR HERITAGE JOURNEY BEGINS HERE
           </p>
@@ -433,9 +433,7 @@ function Contributions({ monuments, loading, error }) {
         category,
       });
       const savedTitle = result.document?.title || title.trim() || file.name;
-      setUploadMessage(
-        `"${savedTitle}" was uploaded and linked to the selected monument. OCR is not reliable yet: the current worker stores fixed sample text, so no transcription is being presented as extracted content.`
-      );
+      setUploadMessage(`"${savedTitle}" was uploaded and OCR completed.`);
       setTitle("");
       setFile(null);
       formRef.current?.reset();
@@ -452,19 +450,20 @@ function Contributions({ monuments, loading, error }) {
 
   return (
     <>
-      <SectionHeading
-        eyebrow="COMMUNITY ARCHIVE"
-        title="Contribute a record."
-        description="Upload a JPG, PNG, or PDF and associate it with an existing monument record. The current backend stores the file and document metadata, but its OCR worker writes fixed sample text rather than extracting your file."
-      />
+      <div className="mx-auto w-full max-w-4xl">
+        <SectionHeading
+          eyebrow="COMMUNITY ARCHIVE"
+          title="Contribute a record."
+          description="Upload a JPG, PNG, or PDF and associate it with an existing monument record. OCR is processed before the document is marked complete."
+        />
 
-      <form
-        ref={formRef}
-        onSubmit={handleSubmit}
-        className="max-w-3xl rounded-2xl border border-[#e5dfd1] bg-[#fffdf7] p-6 shadow-sm sm:p-8"
-      >
-        <div className="grid gap-5 sm:grid-cols-2">
-          <label className="text-xs font-semibold text-[#53675d]">
+        <form
+          ref={formRef}
+          onSubmit={handleSubmit}
+          className="w-full rounded-2xl border border-[#e5dfd1] bg-[#fffdf7] p-5 shadow-sm sm:p-8"
+        >
+        <div className="grid min-w-0 gap-5 sm:grid-cols-2">
+          <label className="min-w-0 text-xs font-semibold text-[#53675d]">
             Associated monument
             <select
               value={monumentId}
@@ -484,7 +483,7 @@ function Contributions({ monuments, loading, error }) {
             </select>
           </label>
 
-          <label className="text-xs font-semibold text-[#53675d]">
+          <label className="min-w-0 text-xs font-semibold text-[#53675d]">
             Archive item type
             <select
               value={category}
@@ -497,7 +496,7 @@ function Contributions({ monuments, loading, error }) {
             </select>
           </label>
 
-          <label className="text-xs font-semibold text-[#53675d] sm:col-span-2">
+          <label className="min-w-0 text-xs font-semibold text-[#53675d] sm:col-span-2">
             Title <span className="font-normal text-[#5f6259]">(optional)</span>
             <input
               value={title}
@@ -509,7 +508,7 @@ function Contributions({ monuments, loading, error }) {
             />
           </label>
 
-          <label className="text-xs font-semibold text-[#53675d] sm:col-span-2">
+          <label className="min-w-0 text-xs font-semibold text-[#53675d] sm:col-span-2">
             File
             <input
               type="file"
@@ -519,8 +518,8 @@ function Contributions({ monuments, loading, error }) {
               className="mt-2 block w-full rounded-lg border border-dashed border-[#cfc5b2] bg-[#faf8f2] px-3 py-4 text-sm font-normal text-[#53675d] file:mr-4 file:rounded-full file:border-0 file:bg-[#183b32] file:px-4 file:py-2 file:text-xs file:font-semibold file:text-white"
             />
             <span className="mt-2 block font-normal text-[#5f6259]">
-              Supported by the current upload service: JPG, PNG, and PDF. No
-              extracted text, translation, or processing progress is returned.
+              Supported file types: JPG, PNG, and PDF. OCR results are saved
+              with the document before the upload is marked complete.
             </span>
           </label>
         </div>
@@ -548,7 +547,7 @@ function Contributions({ monuments, loading, error }) {
         )}
         {uploading && (
           <p role="status" className="mt-5 text-sm text-[#5e655d]">
-            Uploading file... Keep this page open until the server responds.
+            Uploading and processing OCR... Keep this page open until the server responds.
           </p>
         )}
 
@@ -559,7 +558,8 @@ function Contributions({ monuments, loading, error }) {
         >
           {uploading ? "Submitting archive item..." : "Submit contribution"}
         </button>
-      </form>
+        </form>
+      </div>
     </>
   );
 }

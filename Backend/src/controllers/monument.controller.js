@@ -4,7 +4,8 @@ import {
     uploadMonumentImage
 } from "../services/monument.service.js";
 import { supabase } from '../config/supabaseClient.js';
-import { ocrQueue } from '../workers/ocrWorker.js';
+import { processAndSaveDocument } from "../services/ocr.service.js";
+import { getDocumentFileUrl } from "../config/documentStorage.js";
 
 // Get map data
 export const getMapData = async (req, res, next) => {
@@ -90,9 +91,10 @@ export const uploadArchiveFile = async (req, res, next) => {
             title,
             document_type,
             category,
-            language,
             source_name,
-            source_url
+            source_url,
+            source_language,
+            output_language,
         } = req.body;
 
         // Support old frontend field names too
@@ -106,44 +108,22 @@ export const uploadArchiveFile = async (req, res, next) => {
             });
         }
 
-        const filePath = req.file.path;
-
-        const { data, error } = await supabase
-            .from('documents')
-            .insert([{
-                site_id: siteId,
-                title: title || req.file.originalname || "Untitled",
-                document_type: documentType,
-                file_path: filePath,
-                original_file_name: req.file.originalname,
-                language: language || "English",
-                source_name: source_name || null,
-                source_url: source_url || null,
-                status: "pending"
-            }])
-            .select()
-            .single();
-
-        if (error) {
-            throw new Error(error.message);
-        }
-
-        // Queue OCR for supported documents
-        if (
-            documentType.toLowerCase().includes('manuscript') ||
-            documentType.toLowerCase().includes('document') ||
-            documentType.toLowerCase().includes('application/pdf')
-        ) {
-            await ocrQueue.add('extract-text', {
-                documentId: data.id,
-                filePath
-            });
-        }
+        const { document, aiResult } = await processAndSaveDocument({
+            file: req.file,
+            siteId,
+            title,
+            documentType,
+            sourceLanguage: source_language || "auto",
+            targetLanguage: output_language || "en",
+            sourceName: source_name,
+            sourceUrl: source_url,
+        });
 
         res.status(201).json({
             success: true,
-            message: "File uploaded successfully.",
-            document: data
+            message: "File uploaded and OCR processing completed.",
+            document,
+            ai_metadata: aiResult,
         });
 
     } catch (error) {
@@ -231,23 +211,10 @@ export const searchArchives = async (req, res, next) => {
             throw new Error(docError.message);
         }
 
-        // Generate public URLs for document files
-        const documentsWithUrls = (documents || []).map((document) => {
-            let fileUrl = null;
-
-            if (document.file_path) {
-                const { data } = supabase.storage
-                    .from('heritage-archives')
-                    .getPublicUrl(document.file_path);
-
-                fileUrl = data.publicUrl;
-            }
-
-            return {
-                ...document,
-                file_url: fileUrl
-            };
-        });
+        const documentsWithUrls = (documents || []).map((document) => ({
+            ...document,
+            file_url: getDocumentFileUrl(document.file_path),
+        }));
 
         res.status(200).json({
             success: true,

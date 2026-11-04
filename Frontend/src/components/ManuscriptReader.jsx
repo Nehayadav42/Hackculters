@@ -34,7 +34,7 @@ const translatedText =
   document.english_translation ||
   "";
   const processingStatus =
-    document.processing_status || document.ocr_status || "";
+    document.status || document.processing_status || document.ocr_status || "";
 
   return (
     <div className="overflow-hidden rounded-2xl border border-[#d8cfbd] bg-[#eee9dc]">
@@ -166,9 +166,11 @@ const translatedText =
                 TRANSCRIPTION UNAVAILABLE
               </p>
               <p className="text-sm leading-6 text-[#5e625a]">
-                The current document API does not provide extracted or
-                corrected text for this record. No sample transcription is
-                shown.
+                {processingStatus === "processing"
+                  ? "OCR is still processing this document. Please check again shortly."
+                  : processingStatus === "failed"
+                    ? "OCR processing failed for this document. Please upload it again or contact an archive administrator."
+                    : "No extracted or corrected text is available for this document."}
               </p>
             </div>
           )}

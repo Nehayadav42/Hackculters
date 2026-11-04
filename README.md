@@ -8,10 +8,10 @@ HeritageVerse is a digital archive for exploring Indian heritage through a publi
 - Supabase authentication with protected dashboard and monument routes.
 - Dashboard and monument collection read records from the backend API.
 - Monument detail pages show available record fields, images, coordinates, and related documents.
-- Dashboard contribution form sends archive files to the existing multipart upload endpoint.
+- Dashboard contributions are stored in Supabase Storage, processed by the Python OCR service, and saved as completed document records before the upload returns.
 - Saved discoveries do not persist yet; there is no user-specific bookmark API.
 - Manuscripts are shown through monument records; there is no separate manuscript listing API.
-- AI chat, AI summaries, 3D model metadata, manuscript translation, and OCR extraction currently return simulated responses or data.
+- AI chat, AI summaries, 3D model metadata, and manuscript translation currently return simulated responses or data.
 
 ## Run locally
 
@@ -41,13 +41,21 @@ Requirements: Node.js, a Supabase project, and the services needed by the backen
    PORT=5000
    SUPABASE_URL=...
    SUPABASE_ANON_KEY=...
-   CLOUDINARY_CLOUD_NAME=...
-   CLOUDINARY_API_KEY=...
-   CLOUDINARY_API_SECRET=...
-   REDIS_URL=redis://127.0.0.1:6379
+   SUPABASE_DOCUMENTS_BUCKET=heritage-archives
+   PYTHON_OCR_URL=http://localhost:8000/process-document
    ```
 
-3. Start the API and frontend in separate terminals:
+   `SUPABASE_DOCUMENTS_BUCKET` defaults to `heritage-archives`; set it to the existing document bucket if the project uses a different name. The bucket must allow uploads and public reads for original-document links. The backend Supabase key/policies must allow document insert/update. `PYTHON_OCR_URL` is optional when the Python service runs locally at the shown address. The repository has no SQL migrations; check the deployed bucket and policies before running.
+
+3. Install Python OCR dependencies and start the OCR service:
+
+   ```powershell
+   cd ocr-service
+   pip install -r requirements.txt
+   python app.py
+   ```
+
+4. Start the API and frontend in separate terminals:
 
    ```powershell
    cd Backend
@@ -77,6 +85,7 @@ Vite proxies `/api` requests to `http://localhost:5000`. The backend currently a
 - `GET /api/v1/monuments/map-data` — map records.
 - `GET /api/v1/monuments/:id` — monument details and related documents.
 - `POST /api/v1/monuments/upload` — multipart upload; file field is `archive_file`, with `monument_id`, `title`, and `category`.
+- `POST /api/v1/ai/ocr` — multipart OCR upload; file field is `document`, with optional source/target language and document type. Results are saved to the same document archive.
 - `GET /api/v1/monuments/search/all?q=...` — archive search.
 - `GET /api/v1/monuments/manuscript/:word` — currently returns a fixed translation example.
 - `GET /api/v1/monuments/:id/3d-model` — currently returns placeholder model metadata.
@@ -84,9 +93,9 @@ Vite proxies `/api` requests to `http://localhost:5000`. The backend currently a
 
 ## Database and integration notes
 
-There are no database migrations or schema definitions in this repository; the Supabase schema is external and must be checked before changing it. The monument list/detail service queries `heritage_sites`, while archive search queries a separate `monuments` table. Monument detail currently selects `documents.category`; if the deployed `documents` table does not have that column, the detail request will fail until the database/schema or query is reconciled. This repository does not apply database changes automatically.
+There are no database migrations or schema definitions in this repository; the Supabase schema is external and must be checked before changing it. Monument and archive search query `heritage_sites` and `documents`. Document uploads use existing `documents` fields for the file reference/name/type, source/language metadata, OCR/translation text, OCR engine/confidence metadata, and `status`. Upload status transitions through `processing`, `completed`, or `failed`; the deployed `status` column and its policies must allow these values.
 
-The OCR worker is simulated and depends on Redis. File uploads depend on Cloudinary configuration and successful document persistence. Verify those external services and the Supabase schema in the target environment before presenting a live upload as complete.
+Both upload interfaces send the uploaded file bytes to the Python OCR service. Files are stored under the configured documents bucket; the OCR process does not fetch files from Cloudinary or rely on public URL access. PDF uploads are limited to 25 MB.
 
 ## Checks
 

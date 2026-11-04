@@ -1,15 +1,30 @@
 
 const errorHandler = (err, req, res, next) => {
-    err.statusCode = err.statusCode || 500;
-    err.status = err.status || "error";
+    const isMulterError = err.name === "MulterError";
+    const statusCode =
+        err.statusCode ||
+        (isMulterError && err.code === "LIMIT_FILE_SIZE"
+            ? 413
+            : isMulterError
+                ? 400
+                : 500);
+    const message =
+        err.isOperational || statusCode < 500
+            ? err.message
+            : "Something went wrong while processing the request.";
 
-    // What the judges/frontend see
-    res.status(err.statusCode).json({
+    res.status(statusCode).json({
         success: false,
-        status: err.status,
-        message: err.message,
+        status: statusCode < 500 ? "fail" : "error",
+        message:
+            isMulterError && err.code === "LIMIT_FILE_SIZE"
+                ? "The uploaded file exceeds the allowed size limit."
+                : message,
         // Only show stack trace in development, never production
-        stack: process.env.NODE_ENV === "development" ? err.stack : undefined
+        stack:
+            process.env.NODE_ENV === "development" && statusCode >= 500
+                ? err.stack
+                : undefined
     });
 };
 

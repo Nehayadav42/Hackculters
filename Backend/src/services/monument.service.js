@@ -1,6 +1,7 @@
 
 import { randomUUID } from "node:crypto";
 import { supabase } from "../config/supabaseClient.js";
+import { getDocumentFileUrl } from "../config/documentStorage.js";
 import AppError from "../utils/AppError.js";
 
 // Generate public image URLs for monuments
@@ -50,19 +51,9 @@ async function attachThumbnailUrls(monuments) {
 // Generate public URLs for document files
 function attachDocumentUrls(documents = []) {
     return documents.map((document) => {
-        let fileUrl = null;
-
-        if (document.file_path) {
-            const { data } = supabase.storage
-                .from("heritage-archives")
-                .getPublicUrl(document.file_path);
-
-            fileUrl = data.publicUrl;
-        }
-
         return {
             ...document,
-            file_url: fileUrl,
+            file_url: getDocumentFileUrl(document.file_path),
         };
     });
 }
@@ -126,7 +117,8 @@ export const fetchMonumentDetails = async (monumentId) => {
                 original_text,
                 translated_text,
                 language,
-                source_name
+                source_name,
+                status
             )
         `)
         .eq("id", monumentId)
@@ -136,7 +128,10 @@ export const fetchMonumentDetails = async (monumentId) => {
         throw new AppError(error.message, 404);
     }
 
-    return data;
+    return {
+        ...data,
+        documents: attachDocumentUrls(data.documents || []),
+    };
 };
 
 // Fetch all public images belonging to one monument
