@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -41,18 +40,15 @@ function InfoRow({ label, value }) {
   );
 }
 
+// Compact monument information panel
 function MonumentInfoPanel({ site, onClose }) {
   if (!site) return null;
 
   return (
-    <div
-      className="absolute left-3 top-3 z-20 flex w-[min(290px,calc(100%-24px))] flex-col overflow-hidden rounded-xl border border-[#d2dce2] bg-white shadow-xl"
-      style={{
-        maxHeight: "calc(100% - 24px)",
-      }}
-    >
-      {/* Panel header */}
-      <div className="flex shrink-0 items-center justify-between border-b border-[#e5e9ed] px-3 py-2">
+    <div className="absolute left-3 top-3 z-20 flex w-[min(300px,calc(100%-24px))] flex-col overflow-hidden rounded-xl border border-[#d2dce2] bg-white shadow-xl">
+
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-[#e5e9ed] px-3 py-2">
         <span className="text-[10px] font-semibold tracking-wider text-[#bf6548]">
           HERITAGE DETAILS
         </span>
@@ -67,97 +63,40 @@ function MonumentInfoPanel({ site, onClose }) {
         </button>
       </div>
 
-      {/* Scrollable information */}
-      <div className="min-h-0 flex-1 overflow-y-auto p-3">
+      {/* Compact information */}
+      <div className="p-3">
+
         {/* Monument image */}
-        <div className="mb-3 h-[125px] overflow-hidden rounded-lg bg-[#e8edf0]">
-          {site.thumbnail_url ? (
-            <img
-              src={site.thumbnail_url}
-              alt={site.name || "Heritage monument"}
-              className="h-full w-full object-cover"
-              onError={(event) => {
-                event.currentTarget.style.display = "none";
-              }}
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center text-sm text-[#66727d]">
-              🏛️ Heritage monument
-            </div>
-          )}
-        </div>
+        {site.thumbnail_url ? (
+          <img
+            src={site.thumbnail_url}
+            alt={site.name || "Heritage monument"}
+            className="mb-3 h-24 w-full rounded-lg bg-[#e8edf0] object-cover"
+            onError={(event) => {
+              event.currentTarget.style.display = "none";
+            }}
+          />
+        ) : null}
 
         {/* Name */}
-        <h3 className="text-lg font-bold leading-snug text-[#1a2c3b]">
+        <h3 className="text-base font-bold leading-snug text-[#1a2c3b]">
           {site.name || site.title || "Heritage site"}
         </h3>
 
         {/* Location */}
-        <p className="mt-1 text-xs leading-relaxed text-[#66727d]">
-          📍{" "}
-          {[site.city, site.state, site.country]
-            .filter(Boolean)
-            .join(", ")}
+        <p className="mt-1 text-xs text-[#66727d]">
+          📍 {[site.city, site.state, site.country].filter(Boolean).join(", ")}
         </p>
 
-        {/* Badges */}
-        <div className="mt-3 flex flex-wrap gap-2">
-          {site.is_unesco_site === true && (
-            <span className="rounded-full bg-[#e5f3e9] px-2.5 py-1 text-[10px] font-semibold text-[#26733d]">
-              UNESCO Site
-            </span>
-          )}
-
-          {site.is_featured === true && (
-            <span className="rounded-full bg-[#fff0df] px-2.5 py-1 text-[10px] font-semibold text-[#a65b23]">
-              Featured Heritage
-            </span>
-          )}
-
-          {site.category && (
-            <span className="rounded-full bg-[#edf1f4] px-2.5 py-1 text-[10px] font-semibold text-[#435465]">
-              {site.category}
-            </span>
-          )}
-        </div>
-
-        {/* Description */}
+        {/* Short description */}
         {site.description && (
-          <section className="mt-3">
-            <h4 className="mb-1 text-xs font-bold text-[#1a2c3b]">
-              About this monument
-            </h4>
-            <p className="text-xs leading-relaxed text-[#526273]">
-              {site.description}
-            </p>
-          </section>
+          <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-[#526273]">
+            {site.description}
+          </p>
         )}
 
-        {/* Historical information */}
-        {site.historical_details && (
-          <section className="mt-4 border-t border-[#e5e9ed] pt-3">
-            <h4 className="mb-1 text-xs font-bold text-[#1a2c3b]">
-              Historical significance
-            </h4>
-            <p className="text-xs leading-relaxed text-[#526273]">
-              {site.historical_details}
-            </p>
-          </section>
-        )}
-
-        {/* Architectural information */}
-        {site.architectural_details && (
-          <section className="mt-4 border-t border-[#e5e9ed] pt-3">
-            <h4 className="mb-1 text-xs font-bold text-[#1a2c3b]">
-              Architectural details
-            </h4>
-            <p className="text-xs leading-relaxed text-[#526273]">
-              {site.architectural_details}
-            </p>
-          </section>
-        )}
-
-        <div className="mt-3">
+        {/* Important architectural information */}
+        <div className="mt-2">
           <InfoRow
             label="Period"
             value={site.architectural_period}
@@ -167,40 +106,15 @@ function MonumentInfoPanel({ site, onClose }) {
             label="Style"
             value={site.architectural_style}
           />
-
-          <InfoRow
-            label="Dynasty"
-            value={site.dynasty}
-          />
         </div>
-
-        {/* Tags */}
-        {site.tags?.length > 0 && (
-          <section className="mt-3 border-t border-[#e5e9ed] pt-3">
-            <h4 className="mb-2 text-xs font-bold text-[#1a2c3b]">
-              Tags
-            </h4>
-
-            <div className="flex flex-wrap gap-1.5">
-              {site.tags.map((tag, index) => (
-                <span
-                  key={`${tag}-${index}`}
-                  className="rounded-md bg-[#f0f2f4] px-2 py-1 text-[10px] text-[#526273]"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </section>
-        )}
       </div>
 
-      {/* Fixed action button */}
+      {/* Full details button */}
       {site.id && (
-        <div className="shrink-0 border-t border-[#e5e9ed] bg-white p-3">
+        <div className="border-t border-[#e5e9ed] bg-white p-3">
           <a
             href={`/monuments/${encodeURIComponent(site.id)}`}
-            className="block rounded-lg bg-[#bf6548] px-3 py-3 text-center text-xs font-semibold text-white transition hover:bg-[#a95338]"
+            className="block rounded-lg bg-[#bf6548] px-3 py-2.5 text-center text-xs font-semibold text-white transition hover:bg-[#a95338]"
           >
             View full monument details →
           </a>
@@ -226,12 +140,12 @@ export default function HeritageMap({
   const [mapError, setMapError] = useState("");
   const [selectedSite, setSelectedSite] = useState(null);
 
-  // Keep the latest callback.
+  // Keep the latest callback
   useEffect(() => {
     onSelectSiteRef.current = onSelectSite;
   }, [onSelectSite]);
 
-  // 1. Initialize Mapbox.
+  // 1. Initialize Mapbox
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
@@ -258,7 +172,7 @@ export default function HeritageMap({
       "top-right"
     );
 
-    // Fullscreen includes the information panel too.
+    // Fullscreen includes the information panel
     const mapWrapper = mapContainerRef.current.parentElement;
 
     map.addControl(
@@ -305,7 +219,7 @@ export default function HeritageMap({
         });
       }
 
-      // Marker click.
+      // Marker click
       map.on("click", "heritage-site-circles", (event) => {
         const feature = event.features?.[0];
 
@@ -326,7 +240,7 @@ export default function HeritageMap({
         map.getCanvas().style.cursor = "";
       });
 
-      // Wait until map is fully ready.
+      // Wait until map is fully ready
       const handleIdle = () => {
         if (!map.isStyleLoaded()) return;
 
@@ -360,7 +274,7 @@ export default function HeritageMap({
     };
   }, []);
 
-  // 2. Send monument data to Mapbox.
+  // 2. Send monument data to Mapbox
   useEffect(() => {
     const map = mapRef.current;
 
@@ -398,7 +312,7 @@ export default function HeritageMap({
       features,
     });
 
-    // Fit all markers once.
+    // Fit all markers once
     if (features.length > 0 && !hasFitBoundsRef.current) {
       const bounds = new mapboxgl.LngLatBounds();
 
@@ -416,7 +330,7 @@ export default function HeritageMap({
     }
   }, [sites, mapReady]);
 
-  // 3. Select monument, move map and update the information panel.
+  // 3. Select monument and move map
   useEffect(() => {
     const map = mapRef.current;
 
@@ -442,10 +356,10 @@ export default function HeritageMap({
         longitude
       );
 
-      // Update the React information panel.
+      // Update the React information panel
       setSelectedSite(site);
 
-      // Remove previous marker highlight.
+      // Remove previous marker highlight
       const previousId = previousSelectedIdRef.current;
 
       if (previousId && map.getSource("heritage-sites")) {
@@ -458,7 +372,7 @@ export default function HeritageMap({
         );
       }
 
-      // Move map to selected monument.
+      // Move map to selected monument
       map.flyTo({
         center: [longitude, latitude],
         zoom: 12,
@@ -466,7 +380,7 @@ export default function HeritageMap({
         essential: true,
       });
 
-      // Highlight selected marker.
+      // Highlight selected marker
       const highlightSelectedMarker = () => {
         if (!map.getSource("heritage-sites")) return;
 
@@ -502,6 +416,7 @@ export default function HeritageMap({
     }
   }, [selectedSiteId, sites, mapReady]);
 
+  // 4. Render map and compact information panel
   return (
     <div
       className="relative w-full overflow-hidden rounded-xl"
@@ -526,13 +441,13 @@ export default function HeritageMap({
 
       {/* Mapbox container */}
       <div
-  ref={mapContainerRef}
-  className="w-full h-full bg-[#eef1f3]"
-  style={{
-    width: "100%",
-    height: "100%",
-  }}
-/>
+        ref={mapContainerRef}
+        className="h-full w-full bg-[#eef1f3]"
+        style={{
+          width: "100%",
+          height: "100%",
+        }}
+      />
 
       {/* Fixed React information panel */}
       {mapReady && selectedSite && (

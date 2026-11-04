@@ -74,34 +74,26 @@ function attachDocumentUrls(documents = []) {
 // Fetch map pins
 export const fetchMapPins = async () => {
     const { data, error } = await supabase
-        .from("heritage_sites")
-        .select(`
-            id,
-            name,
-            category,
-            description,
-            city,
-            state,
-            country,
-            latitude,
-            longitude,
-            historical_details,
-            architectural_details,
-            architectural_period,
-            dynasty,
-            architectural_style,
-            is_unesco_site,
-            thumbnail_url,
-            is_featured,
-            tags
-          `);
-
+      .from("heritage_sites")
+      .select(`
+        id,
+        name,
+        city,
+        state,
+        latitude,
+        longitude,
+        description,
+        architectural_period,
+        architectural_style,
+         is_unesco_site
+      `);
+  
     if (error) {
-        throw new AppError(error.message, 500);
+      throw new AppError(error.message, 500);
     }
-
-    return data;
-};
+  
+    return await attachThumbnailUrls(data);
+  };
 
 // Fetch monuments with filters and images
 export const fetchMonumentsList = async (filters = {}) => {
