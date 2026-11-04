@@ -15,6 +15,7 @@
     "@supabase/supabase-js": "^2.118.0",
     "@tailwindcss/vite": "^4.3.3",
     "cesium": "^1.147.0",
+    "mapbox-gl": "^3.34.2",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-router-dom": "^7.18.5",

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { getMapData } from "../services/api.js";
-import OpenStreetMapFrame from "../components/archive/OpenStreetMapFrame.jsx";
+import HeritageMap from "../components/map/HeritageMap.jsx";
 
 function hasValidCoordinates(site) {
   if (
@@ -166,12 +166,12 @@ export default function HeritageMapPage() {
               }`}
             >
               <div className="overflow-hidden rounded-xl border border-[#d2dce2] bg-[#f8f9fa]">
-                <OpenStreetMapFrame
-                  latitude={selectedSite.latitude}
-                  longitude={selectedSite.longitude}
-                  title={selectedSite.name}
-                  height={520}
-                />
+              <HeritageMap
+                  sites={locatedSites}
+                  selectedSiteId={selectedSite.id}
+                   onSelectSite={(siteId) => updateMapSelection(siteId)}
+                   height={520}
+              />
                 <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#d2dce2] p-4">
                   <div>
                     <h2 className="font-serif text-xl text-[#1a2c3b]">

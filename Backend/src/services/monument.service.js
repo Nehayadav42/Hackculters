@@ -75,7 +75,26 @@ function attachDocumentUrls(documents = []) {
 export const fetchMapPins = async () => {
     const { data, error } = await supabase
         .from("heritage_sites")
-        .select("id, name, city, state, latitude, longitude");
+        .select(`
+            id,
+            name,
+            category,
+            description,
+            city,
+            state,
+            country,
+            latitude,
+            longitude,
+            historical_details,
+            architectural_details,
+            architectural_period,
+            dynasty,
+            architectural_style,
+            is_unesco_site,
+            thumbnail_url,
+            is_featured,
+            tags
+          `);
 
     if (error) {
         throw new AppError(error.message, 500);
