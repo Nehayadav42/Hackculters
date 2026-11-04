@@ -21,6 +21,7 @@ import {
 import { useAuth } from "./context/useAuth.js";
 
 import DepthGauge from "./components/layout/DepthGauge.jsx";
+import Footer from "./components/layout/Footer.jsx";
 import Header from "./components/layout/Header.jsx";
 import Hero from "./components/sections/Hero.jsx";
 import ArchiveSearch from "./components/sections/ArchiveSearch.jsx";
@@ -144,6 +145,7 @@ function PublicLandingPage() {
 
         <ArchiveSearch archive={archive} />
         <LazyStepwell3D />
+        <Footer />
       </main>
     </>
   );
@@ -173,6 +175,12 @@ function AppRoutes() {
       navigationType
     );
   }, [location.pathname, location.search, location.hash, navigationType]);
+
+  useEffect(() => {
+    if (!location.hash) {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    }
+  }, [location.hash, location.pathname]);
 
   useEffect(() => {
     if (location.pathname === "/" && logoutInProgress) {

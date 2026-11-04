@@ -1,15 +1,20 @@
 
 import { useMemo, useState } from "react";
-import { STEPWELLS } from "../data/stepwells";
+import { SORTED_STEPWELLS, STEPWELLS } from "../data/stepwells";
 
-const states = ["All", ...new Set(STEPWELLS.map((item) => item.state))];
+const states = [
+  "All",
+  ...[...new Set(STEPWELLS.map((item) => item.state))].sort((first, second) =>
+    first.localeCompare(second)
+  ),
+];
 
 export default function ExploreHeritage({ onBack, onSelectMonument }) {
   const [search, setSearch] = useState("");
   const [selectedState, setSelectedState] = useState("All");
 
   const filteredMonuments = useMemo(() => {
-    return STEPWELLS.filter((monument) => {
+    return SORTED_STEPWELLS.filter((monument) => {
       const query = search.toLowerCase();
 
       const matchesSearch =

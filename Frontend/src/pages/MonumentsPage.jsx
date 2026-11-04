@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { getMonuments } from "../services/api.js";
+import { getImageObjectFit } from "../utils/image.js";
 
 const getUniqueValues = (items, key) =>
   [...new Set(items.map((item) => item[key]).filter(Boolean))].sort();
@@ -17,6 +18,7 @@ function MonumentImage({ monument }) {
   const image = getMonumentImage(monument);
   const [failed, setFailed] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [imageFit, setImageFit] = useState("cover");
 
   if (!image || failed) {
     return (
@@ -43,9 +45,14 @@ function MonumentImage({ monument }) {
         src={image}
         alt={monument.name || "Heritage monument"}
         loading="lazy"
-        onLoad={() => setLoaded(true)}
+        onLoad={(event) => {
+          setImageFit(getImageObjectFit(event.currentTarget));
+          setLoaded(true);
+        }}
         onError={() => setFailed(true)}
-        className={`h-full w-full object-contain transition-opacity duration-300 ${
+        className={`h-full w-full ${
+          imageFit === "contain" ? "object-contain" : "object-cover"
+        } object-center transition-opacity duration-300 ${
           loaded ? "opacity-100" : "opacity-0"
         }`}
       />

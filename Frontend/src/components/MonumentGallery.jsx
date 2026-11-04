@@ -7,6 +7,7 @@ import {
   getMonumentImages,
   uploadMonumentImage,
 } from "../services/api.js";
+import { getImageObjectFit } from "../utils/image.js";
 
 function formatGalleryImages(response, images, name) {
   const databaseImages = Array.isArray(response?.data)
@@ -57,6 +58,7 @@ export default function MonumentGallery({
   const [error, setError] = useState("");
   const [activeImage, setActiveImage] = useState(null);
   const [failedImages, setFailedImages] = useState([]);
+  const [imageFits, setImageFits] = useState({});
 
   const fileInputRef = useRef(null);
   const fallbackImagesKey = JSON.stringify(images);
@@ -362,6 +364,13 @@ export default function MonumentGallery({
                       src={image.url}
                       alt={image.title}
                       loading="lazy"
+                      onLoad={(event) => {
+                        const imageFit = getImageObjectFit(event.currentTarget);
+                        setImageFits((previous) => ({
+                          ...previous,
+                          [image.url]: imageFit,
+                        }));
+                      }}
                       onError={() =>
                         setFailedImages((previous) =>
                           previous.includes(image.url)
@@ -369,7 +378,11 @@ export default function MonumentGallery({
                             : [...previous, image.url]
                         )
                       }
-                      className="block h-full w-full object-contain"
+                      className={`block h-full w-full ${
+                        imageFits[image.url] === "contain"
+                          ? "object-contain"
+                          : "object-cover"
+                      } object-center`}
                     />
                   )}
 

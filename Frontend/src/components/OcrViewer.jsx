@@ -1,7 +1,8 @@
 import { useState } from "react";
 
-export default function OcrViewer() {
+export default function OcrViewer({ monuments = [], monumentsLoading = false }) {
   const [file, setFile] = useState(null);
+  const [monumentId, setMonumentId] = useState("");
   const [sourceLang, setSourceLang] = useState("hi");
   const [docType, setDocType] = useState("auto");
   const [targetLang, setTargetLang] = useState("en");
@@ -13,8 +14,8 @@ export default function OcrViewer() {
   async function handleExtract(e) {
     e.preventDefault();
 
-    if (!file) {
-      setError("Please choose a file first.");
+    if (!file || !monumentId) {
+      setError("Choose a monument and a file before processing.");
       return;
     }
 
@@ -43,9 +44,10 @@ export default function OcrViewer() {
       formData.append("source_language", sourceLang);
       formData.append("output_language", targetLang);
       formData.append("document_type", docType);
+      formData.append("site_id", monumentId);
 
       // 3. Fetch directly to your Node.js Express route with the dynamic token
-      const res = await fetch("http://localhost:5000/api/v1/ai/ocr", {
+      const res = await fetch("/api/v1/ai/ocr", {
         method: "POST",
         body: formData,
         headers: {
@@ -147,7 +149,7 @@ export default function OcrViewer() {
       {/* Control Bar */}
       <form
         onSubmit={handleExtract}
-        className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 items-end bg-[#223240] p-5 rounded-xl mb-6 border border-[#3f5261]"
+        className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-5 items-end bg-[#223240] p-5 rounded-xl mb-6 border border-[#3f5261]"
       >
 
         {/* File Upload */}
@@ -172,6 +174,29 @@ export default function OcrViewer() {
             }}
           />
 
+        </div>
+
+        <div>
+          <label htmlFor="ocr-monument" style={labelStyle}>
+            Associated Monument
+          </label>
+          <select
+            id="ocr-monument"
+            value={monumentId}
+            onChange={(event) => setMonumentId(event.target.value)}
+            disabled={monumentsLoading || monuments.length === 0}
+            required
+            style={selectStyle}
+          >
+            <option value="">
+              {monumentsLoading ? "Loading monuments..." : "Select a monument"}
+            </option>
+            {monuments.map((monument) => (
+              <option key={monument.id} value={monument.id}>
+                {monument.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Source Language */}
@@ -223,10 +248,10 @@ export default function OcrViewer() {
         </div>
 
         {/* Extract Button */}
-        <div className="md:col-span-2 xl:col-span-4 flex justify-end">
+        <div className="md:col-span-2 xl:col-span-5 flex justify-end">
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || monumentsLoading || monuments.length === 0}
             className="bg-[#bf6548] text-[#171717] font-bold px-8 py-3 rounded-lg text-sm transition hover:bg-[#d87d5c] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading
@@ -235,6 +260,12 @@ export default function OcrViewer() {
           </button>
         </div>
       </form>
+
+      {monuments.length === 0 && !monumentsLoading && (
+        <p className="mb-5 text-sm text-[#f0b395]">
+          OCR cannot be linked until a monument record is available in the archive.
+        </p>
+      )}
 
       {/* Selected File */}
       {file && (

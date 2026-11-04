@@ -38,7 +38,10 @@ const translatedText =
   document.english_translation ||
   "";
   const processingStatus =
-    document.processing_status || document.ocr_status || "";
+    document.status ||
+    document.processing_status ||
+    document.ocr_status ||
+    "";
 
   return (
     <div className="overflow-hidden rounded-2xl border border-[#c8d3db] bg-[#e8edf0]">
@@ -216,9 +219,8 @@ const translatedText =
                 TRANSCRIPTION UNAVAILABLE
               </p>
               <p className="text-sm leading-6 text-[#66727d]">
-                The current document API does not provide extracted or
-                corrected text for this record. No sample transcription is
-                shown.
+                This record has no extracted or corrected text available. No
+                sample transcription is shown.
               </p>
             </div>
           )}
