@@ -1,9 +1,13 @@
 
 import { useState } from "react";
+import { summarizeDocument } from "../services/api.js";
 
 export default function ManuscriptReader({ documents = [] }) {
   const [activeDocument, setActiveDocument] = useState(0);
   const [showTranslation, setShowTranslation] = useState(false);
+  const [summary, setSummary] = useState("");
+  const [summaryError, setSummaryError] = useState("");
+  const [summarizing, setSummarizing] = useState(false);
 
  // 1. Update the filter so it doesn't hide documents that use 'original_text' or 'ocr_text'
  const validDocuments = documents.filter(
@@ -12,11 +16,11 @@ export default function ManuscriptReader({ documents = [] }) {
 
 if (!validDocuments.length) {
   return (
-    <div className="rounded-2xl border border-[#ded6c6] bg-[#eee9dc] p-8 text-center">
-      <p className="font-serif text-xl text-[#183b32]">
+    <div className="rounded-2xl border border-[#d2dce2] bg-[#e8edf0] p-8 text-center">
+      <p className="font-serif text-xl text-[#1a2c3b]">
         Manuscript collection
       </p>
-      <p className="mt-2 text-sm text-[#5e625a]">
+      <p className="mt-2 text-sm text-[#66727d]">
         No digitized manuscripts are available for this monument yet.
       </p>
     </div>
@@ -37,24 +41,24 @@ const translatedText =
     document.processing_status || document.ocr_status || "";
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-[#d8cfbd] bg-[#eee9dc]">
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#d8cfbd] p-5">
+    <div className="overflow-hidden rounded-2xl border border-[#c8d3db] bg-[#e8edf0]">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#c8d3db] p-5">
         <div>
-          <p className="text-xs tracking-[0.2em] text-[#a17b43]">
+          <p className="text-xs tracking-[0.2em] text-[#bf6548]">
             DIGITAL ARCHIVE
           </p>
-          <h3 className="mt-2 font-serif text-xl text-[#183b32]">
+          <h3 className="mt-2 font-serif text-xl text-[#1a2c3b]">
             Manuscript Reader
           </h3>
         </div>
 
-        <span className="rounded-full bg-[#183b32] px-3 py-1.5 text-xs text-white">
+        <span className="rounded-full bg-[#1a2c3b] px-3 py-1.5 text-xs text-white">
           {validDocuments.length} Document{validDocuments.length > 1 ? "s" : ""}
         </span>
       </div>
 
       {validDocuments.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto border-b border-[#d8cfbd] p-4">
+        <div className="flex gap-2 overflow-x-auto border-b border-[#c8d3db] p-4">
           {validDocuments.map((item, index) => (
             <button
               key={item.id || index}
@@ -62,10 +66,12 @@ const translatedText =
               onClick={() => {
                 setActiveDocument(index);
                 setShowTranslation(false);
+                setSummary("");
+                setSummaryError("");
               }}
               className={`shrink-0 rounded-full px-4 py-2 text-sm transition ${
                 activeDocument === index
-                  ? "bg-[#183b32] text-white"
+                  ? "bg-[#1a2c3b] text-white"
                   : "bg-white/70 text-[#625f54] hover:bg-white"
               }`}
             >
@@ -78,29 +84,57 @@ const translatedText =
       <div className="p-5 md:p-8">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h4 className="font-serif text-lg text-[#183b32]">
+            <h4 className="font-serif text-lg text-[#1a2c3b]">
               {document.title || "Untitled Manuscript"}
             </h4>
-            <p className="mt-1 text-xs text-[#625e51]">
+            <p className="mt-1 text-xs text-[#5e6b76]">
               {[document.category, document.language]
                 .filter(Boolean)
                 .join(" · ") || "Historical document"}
             </p>
             {processingStatus && (
-              <p className="mt-1 text-xs text-[#625e51]">
+              <p className="mt-1 text-xs text-[#5e6b76]">
                 Processing status: {processingStatus}
               </p>
             )}
           </div>
 
           <div className="flex gap-2">
+            {document.id && (
+              <button
+                type="button"
+                disabled={summarizing || !rawText}
+                onClick={async () => {
+                  setSummaryError("");
+                  setSummary("");
+                  setSummarizing(true);
+                  try {
+                    const response = await summarizeDocument({
+                      documentId: document.id,
+                    });
+                    setSummary(response.summary);
+                  } catch (error) {
+                    setSummaryError(
+                      error instanceof Error
+                        ? error.message
+                        : "Unable to summarize this document."
+                    );
+                  } finally {
+                    setSummarizing(false);
+                  }
+                }}
+                className="rounded-full border border-[#cfc5b2] px-4 py-2 text-xs text-[#625f54] transition hover:border-[#bf6548] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {summarizing ? "Summarizing..." : "AI summary"}
+              </button>
+            )}
             <button
               type="button"
               disabled={!rawText && !correctedText}
               onClick={() => setShowTranslation(false)}
               className={`rounded-full px-4 py-2 text-xs ${
                 !showTranslation
-                  ? "bg-[#a17b43] text-white"
+                  ? "bg-[#bf6548] text-white"
                   : "border border-[#cfc5b2] text-[#625f54]"
               } disabled:cursor-not-allowed disabled:opacity-40`}
             >
@@ -113,7 +147,7 @@ const translatedText =
               onClick={() => setShowTranslation(true)}
               className={`rounded-full px-4 py-2 text-xs disabled:cursor-not-allowed disabled:opacity-40 ${
                 showTranslation
-                  ? "bg-[#a17b43] text-white"
+                  ? "bg-[#bf6548] text-white"
                   : "border border-[#cfc5b2] text-[#625f54]"
               }`}
             >
@@ -122,10 +156,26 @@ const translatedText =
           </div>
         </div>
 
-        <div className="min-h-[240px] rounded-xl border border-[#d8cfbd] bg-[#f8f4e9] p-6 md:p-8">
+        {summaryError && (
+          <p role="alert" className="mb-4 rounded-lg border border-[#d8b8a7] bg-[#fff8f4] p-3 text-sm text-[#8b5546]">
+            {summaryError}
+          </p>
+        )}
+        {summary && (
+          <div className="mb-5 rounded-xl border border-[#c8d3db] bg-[#f8f9fa] p-5">
+            <p className="mb-2 text-[10px] font-semibold tracking-[0.15em] text-[#bf6548]">
+              SOURCE-BASED SUMMARY
+            </p>
+            <p className="whitespace-pre-line text-sm leading-7 text-[#39382f]">
+              {summary}
+            </p>
+          </div>
+        )}
+
+        <div className="min-h-[240px] rounded-xl border border-[#c8d3db] bg-[#f8f9fa] p-6 md:p-8">
           {showTranslation ? (
             <>
-              <p className="mb-5 text-[10px] tracking-[0.2em] text-[#a17b43]">
+              <p className="mb-5 text-[10px] tracking-[0.2em] text-[#bf6548]">
                 ENGLISH TRANSLATION
               </p>
               <p
@@ -137,7 +187,7 @@ const translatedText =
             </>
           ) : rawText || correctedText ? (
             <>
-              <p className="mb-5 text-[10px] tracking-[0.2em] text-[#a17b43]">
+              <p className="mb-5 text-[10px] tracking-[0.2em] text-[#bf6548]">
                 {correctedText ? "REVIEWED TRANSCRIPTION" : "EXTRACTED TEXT"}
               </p>
               <p
@@ -147,8 +197,8 @@ const translatedText =
                 {correctedText || rawText}
               </p>
               {correctedText && rawText && (
-                <details className="mt-6 border-t border-[#d8cfbd] pt-4">
-                  <summary className="cursor-pointer text-xs font-medium text-[#a17b43]">
+                <details className="mt-6 border-t border-[#c8d3db] pt-4">
+                  <summary className="cursor-pointer text-xs font-medium text-[#bf6548]">
                     Show raw OCR text
                   </summary>
                   <p
@@ -162,10 +212,10 @@ const translatedText =
             </>
           ) : (
             <div>
-              <p className="mb-3 text-[10px] tracking-[0.2em] text-[#a17b43]">
+              <p className="mb-3 text-[10px] tracking-[0.2em] text-[#bf6548]">
                 TRANSCRIPTION UNAVAILABLE
               </p>
-              <p className="text-sm leading-6 text-[#5e625a]">
+              <p className="text-sm leading-6 text-[#66727d]">
                 The current document API does not provide extracted or
                 corrected text for this record. No sample transcription is
                 shown.
@@ -175,7 +225,7 @@ const translatedText =
         </div>
 
         <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
-          <div className="text-xs text-[#625e51]">
+          <div className="text-xs text-[#5e6b76]">
             {document.language && <p>Language: {document.language}</p>}
             {(document.source || document.source_url || document.provenance) && (
               <p className="mt-1">
@@ -185,12 +235,12 @@ const translatedText =
             )}
           </div>
 
-          {document.file_url && (
-            <a
-              href={document.file_url}
+          {(document.file_url || document.file_path) && (
+  <a
+    href={document.file_url || document.file_path}
               target="_blank"
               rel="noreferrer"
-              className="rounded-full bg-[#183b32] px-5 py-2.5 text-sm text-white transition hover:bg-[#285548]"
+              className="rounded-full bg-[#1a2c3b] px-5 py-2.5 text-sm text-white transition hover:bg-[#344d61]"
             >
               Open Original Document ↗
             </a>

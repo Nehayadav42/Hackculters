@@ -40,16 +40,16 @@ function SectionHeading({ eyebrow, title, description, action }) {
   return (
     <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
       <div>
-        <p className="mb-2 text-[10px] font-semibold tracking-[0.22em] text-[#a17b43]">
+        <p className="mb-2 text-[10px] font-semibold tracking-[0.22em] text-[#bf6548]">
           {eyebrow}
         </p>
 
-        <h2 className="font-serif text-3xl text-[#263b30] sm:text-4xl">
+        <h2 className="font-serif text-3xl text-[#20384b] sm:text-4xl">
           {title}
         </h2>
 
         {description && (
-          <p className="mt-2 max-w-xl text-sm leading-6 text-[#5e655d]">
+          <p className="mt-2 max-w-xl text-sm leading-6 text-[#66727d]">
             {description}
           </p>
         )}
@@ -114,9 +114,9 @@ function MonumentCard({ monument, index }) {
   return (
     <Link
       to={`/monuments/${monument.id}`}
-      className="dashboard-card group flex h-full flex-col overflow-hidden rounded-xl border border-[#e5dfd1] bg-[#fffdf7] transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+      className="dashboard-card group flex h-full flex-col overflow-hidden rounded-xl border border-[#d2dce2] bg-[#f8f9fa] transition duration-300 hover:-translate-y-1 hover:shadow-xl"
     >
-      <div className="relative aspect-[16/10] overflow-hidden bg-[#eee9df]">
+      <div className="relative aspect-[16/10] overflow-hidden bg-[#e8edf0]">
         {image && !imageFailed ? (
           <img
             src={image}
@@ -126,41 +126,41 @@ function MonumentCard({ monument, index }) {
             className="absolute inset-0 h-full w-full object-contain p-2 transition-transform duration-500 group-hover:scale-[1.02]"
           />
         ) : (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#eae5da]">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#e8edf0]">
             <span className="font-serif text-5xl text-[#b9ab90]">
               {String(index + 1).padStart(2, "0")}
             </span>
-            <span className="mt-3 text-xs text-[#77796f]">
+            <span className="mt-3 text-xs text-[#75818a]">
               Photograph unavailable
             </span>
           </div>
         )}
 
-        <span className="absolute bottom-3 left-3 rounded-full border border-[#d6cbb9] bg-[#fffdf7]/95 px-3 py-1 text-[10px] font-medium tracking-wide text-[#183b32] shadow-sm">
+        <span className="absolute bottom-3 left-3 rounded-full border border-[#d6cbb9] bg-[#f8f9fa]/95 px-3 py-1 text-[10px] font-medium tracking-wide text-[#1a2c3b] shadow-sm">
           {monument.category || "Heritage site"}
         </span>
       </div>
 
       <div className="flex flex-1 flex-col p-5">
-        <p className="text-[10px] font-semibold tracking-[0.15em] text-[#a17b43]">
+        <p className="text-[10px] font-semibold tracking-[0.15em] text-[#bf6548]">
           {monument.architectural_period || "HISTORICAL RECORD"}
         </p>
 
-        <h3 className="mt-2 font-serif text-xl text-[#263b30]">
+        <h3 className="mt-2 font-serif text-xl text-[#20384b]">
           {monument.name}
         </h3>
 
-        <p className="mt-1 text-xs text-[#5f6259]">
+        <p className="mt-1 text-xs text-[#66727d]">
           {location || "Location not available"}
         </p>
 
-        <p className="mt-4 line-clamp-3 text-xs leading-6 text-[#5e655d]">
+        <p className="mt-4 line-clamp-3 text-xs leading-6 text-[#66727d]">
           {monument.description ||
             "Explore the historical and architectural record of this heritage site."}
         </p>
 
         <div className="mt-auto border-t border-[#e9e3d7] pt-4">
-          <span className="text-xs font-semibold text-[#98713e] transition-colors group-hover:text-[#183b32]">
+          <span className="text-xs font-semibold text-[#a95037] transition-colors group-hover:text-[#1a2c3b]">
             Explore details ↗
           </span>
         </div>
@@ -186,20 +186,20 @@ function Overview({
 
   return (
     <>
-      <section className="relative mb-9 overflow-hidden rounded-2xl bg-[#1d4034] px-6 py-9 text-white sm:px-10 sm:py-12">
+      <section className="relative mb-9 overflow-hidden rounded-2xl bg-[#20384b] px-6 py-9 text-white sm:px-10 sm:py-12">
         <div className="absolute -right-10 -top-20 h-72 w-72 rounded-full border border-white/10" />
         <div className="absolute -right-2 -top-12 h-56 w-56 rounded-full border border-white/10" />
         <div className="absolute -bottom-24 right-32 h-64 w-64 rounded-full border border-white/10" />
 
         <div className="relative z-10 max-w-2xl">
-          <p className="mb-4 text-[10px] font-semibold tracking-[0.25em] text-[#d5b77c]">
+          <p className="mb-4 text-[10px] font-semibold tracking-[0.25em] text-[#e1a080]">
             YOUR HERITAGE JOURNEY BEGINS HERE
           </p>
 
           <h2 className="font-serif text-3xl leading-tight sm:text-5xl">
             Welcome back,
             <br />
-            <span className="italic text-[#d5b77c]">
+            <span className="italic text-[#e1a080]">
               {displayName}.
             </span>
           </h2>
@@ -212,7 +212,7 @@ function Overview({
           <button
             type="button"
             onClick={() => onNavigate("explore")}
-            className="mt-7 rounded-full bg-[#d2b477] px-6 py-3 text-xs font-bold tracking-wide text-[#19251d] transition hover:bg-[#e2c991]"
+            className="mt-7 rounded-full bg-[#e1a080] px-6 py-3 text-xs font-bold tracking-wide text-[#172635] transition hover:bg-[#f0b395]"
           >
             Start Exploring <span className="ml-2">↗</span>
           </button>
@@ -232,27 +232,27 @@ function Overview({
               key={item.number}
               type="button"
               onClick={() => onNavigate(item.target)}
-              className="group rounded-xl border border-[#e5dfd1] bg-[#fffdf7] p-6 text-left transition duration-300 hover:-translate-y-1 hover:border-[#c4a36b] hover:shadow-lg"
+              className="group rounded-xl border border-[#d2dce2] bg-[#f8f9fa] p-6 text-left transition duration-300 hover:-translate-y-1 hover:border-[#c4a36b] hover:shadow-lg"
             >
               <div className="flex items-center justify-between">
                 <span className="font-serif text-3xl text-[#b79b6c]">
                   {item.icon}
                 </span>
 
-                <span className="text-[10px] tracking-widest text-[#5f6259]">
+                <span className="text-[10px] tracking-widest text-[#66727d]">
                   {item.number}
                 </span>
               </div>
 
-              <h3 className="mt-6 font-serif text-xl text-[#263b30]">
+              <h3 className="mt-6 font-serif text-xl text-[#20384b]">
                 {item.title}
               </h3>
 
-              <p className="mt-2 min-h-[48px] text-xs leading-6 text-[#5e655d]">
+              <p className="mt-2 min-h-[48px] text-xs leading-6 text-[#66727d]">
                 {item.description}
               </p>
 
-              <p className="mt-5 text-xs font-semibold text-[#98713e]">
+              <p className="mt-5 text-xs font-semibold text-[#a95037]">
                 {item.action}{" "}
                 <span className="ml-1 transition group-hover:ml-2">
                   →
@@ -272,7 +272,7 @@ function Overview({
             <button
               type="button"
               onClick={() => onNavigate("explore")}
-              className="text-xs font-semibold text-[#98713e] hover:text-[#263b30]"
+              className="text-xs font-semibold text-[#a95037] hover:text-[#20384b]"
             >
               View all monuments →
             </button>
@@ -287,13 +287,13 @@ function Overview({
             {[0, 1, 2].map((item) => (
               <div
                 key={item}
-                className="animate-pulse overflow-hidden rounded-xl border border-[#e5dfd1] bg-[#fffdf7]"
+                className="animate-pulse overflow-hidden rounded-xl border border-[#d2dce2] bg-[#f8f9fa]"
               >
-                <div className="aspect-[16/10] bg-[#e8e1d2]" />
+                <div className="aspect-[16/10] bg-[#e3e9ed]" />
                 <div className="space-y-3 p-5">
-                  <div className="h-3 w-1/3 rounded bg-[#e8e1d2]" />
-                  <div className="h-5 w-2/3 rounded bg-[#e8e1d2]" />
-                  <div className="h-3 w-1/2 rounded bg-[#e8e1d2]" />
+                  <div className="h-3 w-1/3 rounded bg-[#e3e9ed]" />
+                  <div className="h-5 w-2/3 rounded bg-[#e3e9ed]" />
+                  <div className="h-3 w-1/2 rounded bg-[#e3e9ed]" />
                 </div>
               </div>
             ))}
@@ -321,11 +321,11 @@ function Overview({
             ))}
           </div>
         ) : (
-          <div className="rounded-xl border border-dashed border-[#d9d0bf] bg-[#fffdf7] p-8 text-center">
-            <p className="font-serif text-xl text-[#263b30]">
+          <div className="rounded-xl border border-dashed border-[#d9d0bf] bg-[#f8f9fa] p-8 text-center">
+            <p className="font-serif text-xl text-[#20384b]">
               The collection is waiting for its first records.
             </p>
-            <p className="mt-2 text-sm text-[#5e655d]">
+            <p className="mt-2 text-sm text-[#66727d]">
               There are no heritage sites available from the archive yet.
             </p>
           </div>
@@ -363,8 +363,8 @@ function EmptySection({ type, onNavigate }) {
         description={item.description}
       />
 
-      <div className="rounded-2xl border border-dashed border-[#d9d0bf] bg-[#fffdf7] px-6 py-14 text-center">
-        <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[#eee7d8] font-serif text-2xl text-[#98713e]">
+      <div className="rounded-2xl border border-dashed border-[#d9d0bf] bg-[#f8f9fa] px-6 py-14 text-center">
+        <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[#e8edf0] font-serif text-2xl text-[#a95037]">
           {type === "saved"
             ? "♡"
             : type === "manuscripts"
@@ -372,11 +372,11 @@ function EmptySection({ type, onNavigate }) {
               : "✧"}
         </div>
 
-        <h3 className="mt-5 font-serif text-2xl text-[#263b30]">
+        <h3 className="mt-5 font-serif text-2xl text-[#20384b]">
           {type === "saved" ? "Not available yet." : "Start with a monument."}
         </h3>
 
-        <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-[#5e655d]">
+        <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-[#66727d]">
           {type === "saved"
             ? "Saved discoveries need a user-specific storage endpoint before this can persist between visits."
             : "Open a monument record to explore its related digitized documents."}
@@ -385,7 +385,7 @@ function EmptySection({ type, onNavigate }) {
         <button
           type="button"
           onClick={() => onNavigate(item.target)}
-          className="mt-6 rounded-full bg-[#1d4034] px-6 py-3 text-xs font-semibold text-white transition hover:bg-[#2b5947]"
+          className="mt-6 rounded-full bg-[#20384b] px-6 py-3 text-xs font-semibold text-white transition hover:bg-[#344d61]"
         >
           {item.action} →
         </button>
@@ -414,12 +414,19 @@ function Contributions({ monuments, loading, error }) {
       return;
     }
 
-    const supportedTypes = ["image/jpeg", "image/png", "application/pdf"];
+    const supportedTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "application/pdf",
+      "text/plain",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
     if (
       (file.type && !supportedTypes.includes(file.type)) ||
-      !/\.(jpe?g|png|pdf)$/i.test(file.name)
+      !/\.(jpe?g|png|webp|pdf|txt|docx)$/i.test(file.name)
     ) {
-      setUploadError("Choose a JPG, PNG, or PDF file.");
+      setUploadError("Choose a JPG, PNG, WEBP, PDF, TXT, or DOCX file.");
       return;
     }
 
@@ -432,10 +439,20 @@ function Contributions({ monuments, loading, error }) {
         title: title.trim() || file.name,
         category,
       });
-      const savedTitle = result.document?.title || title.trim() || file.name;
-      setUploadMessage(
-        `"${savedTitle}" was uploaded and linked to the selected monument. OCR is not reliable yet: the current worker stores fixed sample text, so no transcription is being presented as extracted content.`
-      );
+      const savedTitle =
+        result.document?.title ||
+        result.document?.original_file_name ||
+        title.trim() ||
+        file.name;
+      if (result.processing?.status === "failed") {
+        setUploadError(
+          `"${savedTitle}" was saved, but OCR failed: ${result.processing.message}`
+        );
+      } else {
+        setUploadMessage(
+          `"${savedTitle}" was saved and OCR processing completed. The extracted text is linked to the archive record.`
+        );
+      }
       setTitle("");
       setFile(null);
       formRef.current?.reset();
@@ -455,23 +472,23 @@ function Contributions({ monuments, loading, error }) {
       <SectionHeading
         eyebrow="COMMUNITY ARCHIVE"
         title="Contribute a record."
-        description="Upload a JPG, PNG, or PDF and associate it with an existing monument record. The current backend stores the file and document metadata, but its OCR worker writes fixed sample text rather than extracting your file."
+        description="Upload a JPG, PNG, WEBP, PDF, TXT, or DOCX file and associate it with a monument. The archive stores the original in Cloudinary and runs OCR through the Python service."
       />
 
       <form
         ref={formRef}
         onSubmit={handleSubmit}
-        className="max-w-3xl rounded-2xl border border-[#e5dfd1] bg-[#fffdf7] p-6 shadow-sm sm:p-8"
+        className="max-w-3xl rounded-2xl border border-[#d2dce2] bg-[#f8f9fa] p-6 shadow-sm sm:p-8"
       >
         <div className="grid gap-5 sm:grid-cols-2">
-          <label className="text-xs font-semibold text-[#53675d]">
+          <label className="text-xs font-semibold text-[#66727d]">
             Associated monument
             <select
               value={monumentId}
               onChange={(event) => setMonumentId(event.target.value)}
               required
               disabled={loading || monuments.length === 0}
-              className="mt-2 h-12 w-full rounded-lg border border-[#e1dacb] bg-[#faf8f2] px-3 text-sm font-normal text-[#263b30] outline-none focus:border-[#a17b43] disabled:opacity-60"
+              className="mt-2 h-12 w-full rounded-lg border border-[#d2dce2] bg-[#f8f9fa] px-3 text-sm font-normal text-[#20384b] outline-none focus:border-[#bf6548] disabled:opacity-60"
             >
               <option value="">
                 {loading ? "Loading archive..." : "Select a monument"}
@@ -484,12 +501,12 @@ function Contributions({ monuments, loading, error }) {
             </select>
           </label>
 
-          <label className="text-xs font-semibold text-[#53675d]">
+          <label className="text-xs font-semibold text-[#66727d]">
             Archive item type
             <select
               value={category}
               onChange={(event) => setCategory(event.target.value)}
-              className="mt-2 h-12 w-full rounded-lg border border-[#e1dacb] bg-[#faf8f2] px-3 text-sm font-normal text-[#263b30] outline-none focus:border-[#a17b43]"
+              className="mt-2 h-12 w-full rounded-lg border border-[#d2dce2] bg-[#f8f9fa] px-3 text-sm font-normal text-[#20384b] outline-none focus:border-[#bf6548]"
             >
               <option>Manuscript</option>
               <option>Document</option>
@@ -497,38 +514,38 @@ function Contributions({ monuments, loading, error }) {
             </select>
           </label>
 
-          <label className="text-xs font-semibold text-[#53675d] sm:col-span-2">
-            Title <span className="font-normal text-[#5f6259]">(optional)</span>
+          <label className="text-xs font-semibold text-[#66727d] sm:col-span-2">
+            Title <span className="font-normal text-[#66727d]">(optional)</span>
             <input
               value={title}
               onChange={(event) => setTitle(event.target.value)}
               type="text"
               maxLength={160}
               placeholder="Give this archive item a title"
-              className="mt-2 h-12 w-full rounded-lg border border-[#e1dacb] bg-[#faf8f2] px-3 text-sm font-normal text-[#263b30] outline-none placeholder:text-[#5f6259] focus:border-[#a17b43]"
+              className="mt-2 h-12 w-full rounded-lg border border-[#d2dce2] bg-[#f8f9fa] px-3 text-sm font-normal text-[#20384b] outline-none placeholder:text-[#66727d] focus:border-[#bf6548]"
             />
           </label>
 
-          <label className="text-xs font-semibold text-[#53675d] sm:col-span-2">
+          <label className="text-xs font-semibold text-[#66727d] sm:col-span-2">
             File
             <input
               type="file"
-              accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
+              accept=".jpg,.jpeg,.png,.webp,.pdf,.txt,.docx,image/jpeg,image/png,image/webp,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
               onChange={(event) => setFile(event.target.files?.[0] || null)}
               required
-              className="mt-2 block w-full rounded-lg border border-dashed border-[#cfc5b2] bg-[#faf8f2] px-3 py-4 text-sm font-normal text-[#53675d] file:mr-4 file:rounded-full file:border-0 file:bg-[#183b32] file:px-4 file:py-2 file:text-xs file:font-semibold file:text-white"
+              className="mt-2 block w-full rounded-lg border border-dashed border-[#cfc5b2] bg-[#f8f9fa] px-3 py-4 text-sm font-normal text-[#66727d] file:mr-4 file:rounded-full file:border-0 file:bg-[#1a2c3b] file:px-4 file:py-2 file:text-xs file:font-semibold file:text-white"
             />
-            <span className="mt-2 block font-normal text-[#5f6259]">
-              Supported by the current upload service: JPG, PNG, and PDF. No
-              extracted text, translation, or processing progress is returned.
+            <span className="mt-2 block font-normal text-[#66727d]">
+              Maximum 10 MB. Text extraction and translation depend on the
+              Python OCR service being available.
             </span>
           </label>
         </div>
 
-        <p className="mt-5 rounded-lg border border-[#e5dfd1] bg-[#f7f3e8] px-4 py-3 text-xs leading-5 text-[#5e655d]">
-          Source/provenance notes are not accepted or stored by the current
-          upload endpoint. Keep a note of your source until the backend adds
-          provenance fields.
+        <p className="mt-5 rounded-lg border border-[#d2dce2] bg-[#e8edf0] px-4 py-3 text-xs leading-5 text-[#66727d]">
+          Only contribute material you have permission to share. Add its source
+          and provenance to the title when known; the current database schema
+          does not have dedicated provenance fields.
         </p>
 
         {error && (
@@ -542,12 +559,12 @@ function Contributions({ monuments, loading, error }) {
           </p>
         )}
         {uploadMessage && (
-          <p role="status" className="mt-5 text-sm text-[#31594b]">
+          <p role="status" className="mt-5 text-sm text-[#2f4658]">
             {uploadMessage}
           </p>
         )}
         {uploading && (
-          <p role="status" className="mt-5 text-sm text-[#5e655d]">
+          <p role="status" className="mt-5 text-sm text-[#66727d]">
             Uploading file... Keep this page open until the server responds.
           </p>
         )}
@@ -555,7 +572,7 @@ function Contributions({ monuments, loading, error }) {
         <button
           type="submit"
           disabled={uploading || loading || monuments.length === 0}
-          className="mt-6 rounded-full bg-[#183b32] px-6 py-3 text-xs font-semibold tracking-wide text-white transition hover:bg-[#285548] disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-6 rounded-full bg-[#1a2c3b] px-6 py-3 text-xs font-semibold tracking-wide text-white transition hover:bg-[#344d61] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {uploading ? "Submitting archive item..." : "Submit contribution"}
         </button>
@@ -579,17 +596,17 @@ function Profile({ user }) {
         description="Your account information and personal details."
       />
 
-      <div className="max-w-2xl rounded-2xl border border-[#e5dfd1] bg-[#fffdf7] p-6 sm:p-8">
+      <div className="max-w-2xl rounded-2xl border border-[#d2dce2] bg-[#f8f9fa] p-6 sm:p-8">
         <div className="flex items-center gap-4 border-b border-[#e9e3d7] pb-6">
-          <div className="grid h-16 w-16 place-items-center rounded-full bg-[#1d4034] font-serif text-3xl text-[#d5b77c]">
+          <div className="grid h-16 w-16 place-items-center rounded-full bg-[#20384b] font-serif text-3xl text-[#e1a080]">
             {displayName.charAt(0).toUpperCase()}
           </div>
 
           <div>
-            <h3 className="font-serif text-2xl text-[#263b30]">
+            <h3 className="font-serif text-2xl text-[#20384b]">
               {displayName}
             </h3>
-            <p className="mt-1 text-xs text-[#5f6259]">
+            <p className="mt-1 text-xs text-[#66727d]">
               HeritageVerse Explorer
             </p>
           </div>
@@ -597,28 +614,28 @@ function Profile({ user }) {
 
         <div className="space-y-5 pt-6">
           <div>
-            <p className="text-[10px] font-semibold tracking-widest text-[#a17b43]">
+            <p className="text-[10px] font-semibold tracking-widest text-[#bf6548]">
               FULL NAME
             </p>
-            <p className="mt-2 text-sm text-[#263b30]">
+            <p className="mt-2 text-sm text-[#20384b]">
               {displayName}
             </p>
           </div>
 
           <div>
-            <p className="text-[10px] font-semibold tracking-widest text-[#a17b43]">
+            <p className="text-[10px] font-semibold tracking-widest text-[#bf6548]">
               EMAIL ADDRESS
             </p>
-            <p className="mt-2 break-all text-sm text-[#263b30]">
+            <p className="mt-2 break-all text-sm text-[#20384b]">
               {user?.email || "Not available"}
             </p>
           </div>
 
           <div>
-            <p className="text-[10px] font-semibold tracking-widest text-[#a17b43]">
+            <p className="text-[10px] font-semibold tracking-widest text-[#bf6548]">
               ACCOUNT CREATED
             </p>
-            <p className="mt-2 text-sm text-[#263b30]">
+            <p className="mt-2 text-sm text-[#20384b]">
               {user?.created_at
                 ? new Date(user.created_at).toLocaleDateString("en-IN", {
                     day: "numeric",
@@ -720,7 +737,7 @@ export default function Dashboard() {
           <SectionHeading
             eyebrow="DIGITAL ARCHIVE INTELLIGENCE"
             title="Manuscript OCR & Translation Hub."
-            description="Upload historical images, scanned PDFs, or text documents to run local PaddleOCR text extraction, deep translation, and Roman transliteration independently."
+            description="Upload historical images, scanned PDFs, or text documents for OCR, Hindi–English translation, and Roman transliteration through the configured archive services."
           />
           <div className="mt-6 w-full">
             <OcrViewer />

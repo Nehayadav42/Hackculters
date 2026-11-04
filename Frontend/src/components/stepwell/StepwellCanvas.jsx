@@ -1,312 +1,395 @@
-
 import { useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import ArchitecturalHotspots from "./ArchitecturalHotspots.jsx";
 import { HOTSPOTS } from "./hotspots.js";
 
-function Stone({ position, scale, color = "#b99b70" }) {
-  return (
-    <mesh position={position} castShadow receiveShadow>
-      <boxGeometry args={scale} />
-      <meshStandardMaterial color={color} roughness={0.85} />
-    </mesh>
-  );
-}
+const MODEL_PROFILES = {
+  "Rani ki Vav": {
+    levels: 7,
+    width: 5.6,
+    depth: 9.6,
+    plan: "axial",
+    stairSides: ["front"],
+    gallerySides: ["left", "right"],
+    galleryCount: 6,
+    arches: true,
+  },
+  "Adalaj Vav": {
+    levels: 6,
+    width: 7.6,
+    depth: 7.6,
+    plan: "octagonal",
+    stairSides: ["front"],
+    gallerySides: ["front", "back", "left", "right"],
+    galleryCount: 4,
+    arches: true,
+  },
+  "Dada Harir ni Vav": {
+    levels: 8,
+    width: 4.6,
+    depth: 9.4,
+    plan: "linear",
+    stairSides: ["front"],
+    gallerySides: ["left", "right"],
+    galleryCount: 4,
+    arches: true,
+  },
+  "Surya Kund": {
+    levels: 4,
+    width: 10.4,
+    depth: 8.8,
+    plan: "kund",
+    stairSides: ["front", "back", "left", "right"],
+    gallerySides: [],
+    shrines: true,
+    waterShape: "rectangular",
+  },
+  "Chand Baori": {
+    levels: 10,
+    width: 8.8,
+    depth: 8.8,
+    plan: "deep-square",
+    stairSides: ["front", "left", "right"],
+    gallerySides: ["back"],
+    galleryCount: 7,
+    arches: true,
+  },
+  "Agrasen ki Baoli": {
+    levels: 8,
+    width: 4.2,
+    depth: 10.8,
+    plan: "linear",
+    stairSides: ["front"],
+    gallerySides: ["left", "right", "back"],
+    galleryCount: 4,
+    arches: true,
+  },
+};
 
-function Platform({ position, size, color = "#b99b70" }) {
-  return (
-    <Stone position={position} scale={[size[0], 0.2, size[1]]} color={color} />
-  );
-}
+const STONE_TONES = ["#a58b68", "#947a5c", "#80684e", "#b39a77"];
 
-function OpenPlatform({ position, size, color = "#b99b70" }) {
-  const [width, depth] = size;
-  const thickness = 0.22;
-
-  return (
-    <group position={position}>
-      <Stone position={[0, 0, depth / 2]} scale={[width, thickness, thickness]} color={color} />
-      <Stone position={[0, 0, -depth / 2]} scale={[width, thickness, thickness]} color={color} />
-      <Stone position={[width / 2, 0, 0]} scale={[thickness, thickness, depth]} color={color} />
-      <Stone position={[-width / 2, 0, 0]} scale={[thickness, thickness, depth]} color={color} />
-    </group>
-  );
-}
-
-function Pillar({ position, height = 2, color = "#c7a77d" }) {
-  return (
-    <mesh position={[position[0], position[1] + height / 2, position[2]]} castShadow>
-      <cylinderGeometry args={[0.12, 0.16, height, 8]} />
-      <meshStandardMaterial color={color} roughness={0.8} />
-    </mesh>
-  );
-}
-
-function Water({ position, size }) {
-  return (
-    <mesh position={position} rotation={[-Math.PI / 2, 0, 0]}>
-      <planeGeometry args={size} />
-      <meshStandardMaterial color="#477d82" roughness={0.2} metalness={0.3} />
-    </mesh>
-  );
-}
-
-function RaniKiVav({ photos }) {
-  const levels = Math.max(4, Math.floor(photos / 3));
-
-  return (
-    <group>
-      {Array.from({ length: levels }, (_, i) => {
-        const size = 7 - i * (5.5 / levels);
-        const y = 1.8 - i * (3.2 / levels);
-
-        return (
-          <group key={i}>
-            <OpenPlatform position={[0, y, 0]} size={[size, size]} />
-            <OpenPlatform
-              position={[0, y - 0.1, 0]}
-              size={[size * 0.45, size * 0.45]}
-              color="#8f7659"
-            />
-          </group>
-        );
-      })}
-
-      {Array.from({ length: 4 }, (_, side) =>
-        Array.from({ length: 7 }, (_, i) => {
-          const offset = -2.4 + i * 0.8;
-
-          return (
-            <Pillar
-              key={`${side}-${i}`}
-              position={[
-                side === 0 ? offset : side === 1 ? 3 : side === 2 ? -offset : -3,
-                -0.5,
-                side === 0 ? 3 : side === 1 ? offset : side === 2 ? -3 : -offset
-              ]}
-              height={1.2 + (i % 3) * 0.25}
-            />
-          );
-        })
-      )}
-
-      <Water position={[0, -1.05, 0]} size={[1.5, 1.5]} />
-    </group>
-  );
-}
-
-function AdalajVav() {
-  return (
-    <group>
-      {[3.2, 2.5, 1.8].map((radius, i) => (
-        <mesh key={i} position={[0, 1.2 - i * 0.9, 0]}>
-          <cylinderGeometry args={[radius, radius, 0.2, 8]} />
-          <meshStandardMaterial color={i === 0 ? "#b99b70" : "#9c8060"} />
-        </mesh>
-      ))}
-
-      {Array.from({ length: 8 }, (_, i) => {
-        const angle = (i * Math.PI) / 4;
-
-        return (
-          <group key={i}>
-            <Pillar
-              position={[Math.cos(angle) * 2.65, -0.7, Math.sin(angle) * 2.65]}
-              height={2.3}
-            />
-            <Pillar
-              position={[Math.cos(angle) * 1.85, -0.8, Math.sin(angle) * 1.85]}
-              height={1.8}
-              color="#d0b48b"
-            />
-          </group>
-        );
-      })}
-
-      <Water position={[0, -1.1, 0]} size={[1.8, 1.8]} />
-    </group>
-  );
-}
-
-function DadaHarirVav({ photos }) {
-  const levels = Math.max(4, Math.floor(photos / 4));
-
-  return (
-    <group>
-      {Array.from({ length: levels }, (_, i) => (
-        <mesh key={i} position={[0, 1.4 - i * 0.65, 0]}>
-          <cylinderGeometry args={[3.5 - i * 0.55, 3.5 - i * 0.55, 0.18, 8]} />
-          <meshStandardMaterial color="#b99b70" />
-        </mesh>
-      ))}
-
-      {Array.from({ length: 8 }, (_, i) => {
-        const angle = (i * Math.PI) / 4;
-
-        return (
-          <Pillar
-            key={i}
-            position={[Math.cos(angle) * 2.7, -1, Math.sin(angle) * 2.7]}
-            height={3}
-          />
-        );
-      })}
-
-      <Water position={[0, -1.25, 0]} size={[1.3, 1.3]} />
-    </group>
-  );
-}
-
-function SuryaKund() {
-  return (
-    <group>
-      {[6, 5, 4, 3].map((size, i) => (
-        <Platform
-          key={i}
-          position={[0, 1.1 - i * 0.55, 0]}
-          size={[size, size * 0.85]}
-          color={i % 2 === 0 ? "#b99b70" : "#a78a66"}
-        />
-      ))}
-
-      {Array.from({ length: 4 }, (_, side) =>
-        Array.from({ length: 7 }, (_, i) => {
-          const offset = -2.7 + i * 0.9;
-
-          return (
-            <Stone
-              key={`${side}-${i}`}
-              position={[
-                side === 0 ? offset : side === 1 ? 2.5 : side === 2 ? offset : -2.5,
-                -0.1,
-                side === 0 ? 2.2 : side === 1 ? offset : side === 2 ? -2.2 : offset
-              ]}
-              scale={[0.48, 0.35, 0.48]}
-            />
-          );
-        })
-      )}
-
-      <Water position={[0, -0.8, 0]} size={[2.2, 1.7]} />
-    </group>
-  );
-}
-
-function ChandBaori() {
-  return (
-    <group>
-      <Platform position={[0, 1.4, 0]} size={[7, 7]} />
-
-      {Array.from({ length: 9 }, (_, row) =>
-        Array.from({ length: 13 }, (_, col) => {
-          const side = col < 6 ? -1 : 1;
-          const x = -3 + col * 0.5;
-          const z = side * (2.8 - row * 0.27);
-          const y = 1.1 - row * 0.32;
-
-          return (
-            <Stone
-              key={`${row}-${col}`}
-              position={[x, y, z]}
-              scale={[0.38, 0.22, 0.32]}
-              color={(row + col) % 2 === 0 ? "#c7a77d" : "#a98c68"}
-            />
-          );
-        })
-      )}
-
-      {Array.from({ length: 4 }, (_, i) => (
-        <Pillar
-          key={i}
-          position={[-2.4 + i * 1.6, -0.6, -2.1]}
-          height={1.8}
-        />
-      ))}
-
-      <Water position={[0, -1.15, 0]} size={[2.2, 1.8]} />
-    </group>
-  );
-}
-
-function AgrasenBaoli() {
-  return (
-    <group>
-      <Platform position={[0, 1.2, 0]} size={[3.5, 8]} />
-
-      {[0, 1, 2, 3, 4].map((i) => (
-        <group key={i}>
-          <Platform
-            position={[0, 0.8 - i * 0.55, 0]}
-            size={[3.1 - i * 0.35, 7 - i * 0.65]}
-            color="#ad8e68"
-          />
-
-          {[-1, 1].map((side) => (
-            <Pillar
-              key={side}
-              position={[side * (1.35 - i * 0.13), -0.8, -2.5 + i * 0.3]}
-              height={2 - i * 0.15}
-            />
-          ))}
-        </group>
-      ))}
-
-      {Array.from({ length: 7 }, (_, i) => (
-        <Stone
-          key={i}
-          position={[-1.2 + i * 0.4, -0.3, 2.7]}
-          scale={[0.35, 0.2, 0.35]}
-          color="#d0b48b"
-        />
-      ))}
-
-      <Water position={[0, -1.15, 0]} size={[1.3, 2.2]} />
-    </group>
-  );
-}
-
-function MonumentModel({
-  site,
-  photos,
-  selectedFeature,
-  onSelectFeature,
+function StoneBlock({
+  position,
+  scale,
+  rotation = [0, 0, 0],
+  color = "#b99b70",
+  roughness = 0.88,
 }) {
-  let model;
+  return (
+    <mesh
+      position={position}
+      scale={scale}
+      rotation={rotation}
+      castShadow
+      receiveShadow
+    >
+      <boxGeometry args={[1, 1, 1]} />
+      <meshStandardMaterial color={color} roughness={roughness} />
+    </mesh>
+  );
+}
 
-  switch (site?.name) {
-    case "Adalaj Vav":
-      model = <AdalajVav />;
-      break;
-    case "Dada Harir ni Vav":
-      model = <DadaHarirVav photos={photos} />;
-      break;
-    case "Surya Kund":
-      model = <SuryaKund />;
-      break;
-    case "Chand Baori":
-      model = <ChandBaori />;
-      break;
-    case "Agrasen ki Baoli":
-      model = <AgrasenBaoli />;
-      break;
-    default:
-      model = <RaniKiVav photos={photos} />;
+function Tier({ level, width, depth, y, plan }) {
+  const thickness = 0.22;
+  const ledge = 0.28;
+  const tone = STONE_TONES[level % STONE_TONES.length];
+  const inset = level * 0.5;
+  const tierWidth = Math.max(1.7, width - inset);
+  const tierDepth = Math.max(1.7, depth - inset);
+
+  if (plan === "octagonal") {
+    const segmentLength = Math.min(tierWidth, tierDepth) * 0.77;
+
+    return (
+      <group>
+        {Array.from({ length: 8 }, (_, index) => {
+          const angle = (index * Math.PI) / 4;
+          return (
+            <StoneBlock
+              key={index}
+              position={[
+                Math.cos(angle) * tierWidth * 0.42,
+                y,
+                Math.sin(angle) * tierDepth * 0.42,
+              ]}
+              rotation={[0, -angle + Math.PI / 2, 0]}
+              scale={[segmentLength, thickness, ledge]}
+              color={tone}
+            />
+          );
+        })}
+      </group>
+    );
   }
 
   return (
     <group>
-      {model}
-      <ArchitecturalHotspots
-        site={site}
-        selectedFeature={selectedFeature}
-        onSelectFeature={onSelectFeature}
+      <StoneBlock
+        position={[0, y, -tierDepth / 2]}
+        scale={[tierWidth, thickness, ledge]}
+        color={tone}
       />
+      <StoneBlock
+        position={[0, y, tierDepth / 2]}
+        scale={[tierWidth, thickness, ledge]}
+        color={tone}
+      />
+      <StoneBlock
+        position={[-tierWidth / 2, y, 0]}
+        scale={[ledge, thickness, tierDepth]}
+        color={tone}
+      />
+      <StoneBlock
+        position={[tierWidth / 2, y, 0]}
+        scale={[ledge, thickness, tierDepth]}
+        color={tone}
+      />
+      <StoneBlock
+        position={[0, y - 0.2, -tierDepth / 2 + 0.22]}
+        scale={[tierWidth * 0.84, 0.12, 0.08]}
+        color="#705c45"
+      />
+      {plan === "deep-square" && (
+        <StoneBlock
+          position={[0, y - 0.2, tierDepth / 2 - 0.22]}
+          scale={[tierWidth * 0.84, 0.12, 0.08]}
+          color="#705c45"
+        />
+      )}
     </group>
   );
 }
 
-export default function StepwellCanvas({ photos = 12, site }) {
+function DescendingStairs({ side, width, depth, count }) {
+  const steps = Array.from({ length: count }, (_, index) => {
+    const y = 1.22 - index * 0.105;
+    const inset = index * 0.14;
+    const offset = side === "front" || side === "right" ? 1 : -1;
+    const position =
+      side === "front" || side === "back"
+        ? [0, y, offset * (depth / 2 - 0.46 - inset)]
+        : [offset * (width / 2 - 0.46 - inset), y, 0];
+    const scale =
+      side === "front" || side === "back"
+        ? [Math.max(1.1, width * 0.28), 0.105, 0.23]
+        : [0.23, 0.105, Math.max(1.1, depth * 0.28)];
+
+    return (
+      <StoneBlock
+        key={`${side}-${index}`}
+        position={position}
+        scale={scale}
+        color={STONE_TONES[index % STONE_TONES.length]}
+      />
+    );
+  });
+
+  return <group>{steps}</group>;
+}
+
+function Colonnade({
+  width,
+  depth,
+  sides,
+  count,
+  arches,
+}) {
+  const bays = sides.flatMap((side) =>
+    Array.from({ length: count }, (_, index) => {
+      const progress = count === 1 ? 0.5 : index / (count - 1);
+      const alongWidth = (progress - 0.5) * width * 0.72;
+      const alongDepth = (progress - 0.5) * depth * 0.72;
+      const isEnd = side === "front" || side === "back";
+      const nextProgress = Math.min(
+        1,
+        progress + 1 / Math.max(1, count - 1)
+      );
+
+      return {
+        side,
+        index,
+        x: isEnd ? alongWidth : (side === "right" ? 1 : -1) * width * 0.43,
+        z: isEnd
+          ? (side === "back" ? -1 : 1) * depth * 0.43
+          : alongDepth,
+        rotation: isEnd ? 0 : Math.PI / 2,
+        archX: isEnd ? (nextProgress + progress - 1) * width * 0.36 : (side === "right" ? 1 : -1) * width * 0.43,
+        archZ: isEnd
+          ? (side === "back" ? -1 : 1) * depth * 0.43
+          : (nextProgress + progress - 1) * depth * 0.36,
+      };
+    })
+  );
+
+  return (
+    <group>
+      {bays.map(({ side, index, x, z, rotation, archX, archZ }) => (
+        <group key={`${side}-${index}`}>
+          <mesh position={[x, 0.96, z]} castShadow receiveShadow>
+            <cylinderGeometry args={[0.09, 0.14, 1.5, 12]} />
+            <meshStandardMaterial color="#aa9271" roughness={0.88} />
+          </mesh>
+          <StoneBlock
+            position={[x, 0.22, z]}
+            scale={[0.32, 0.16, 0.32]}
+            color="#705c45"
+          />
+          <mesh position={[x, 1.76, z]} castShadow>
+            <cylinderGeometry args={[0.18, 0.13, 0.16, 8]} />
+            <meshStandardMaterial color="#b39a77" roughness={0.88} />
+          </mesh>
+          <StoneBlock
+            position={[x, 1.7, z]}
+            scale={[0.3, 0.16, 0.3]}
+            color="#d1bc98"
+          />
+          {arches && index < count - 1 && (
+            <mesh
+              position={[
+                archX,
+                1.55,
+                archZ,
+              ]}
+              rotation={[0, rotation, 0]}
+              castShadow
+            >
+              <torusGeometry args={[0.34, 0.055, 8, 20, Math.PI]} />
+              <meshStandardMaterial color="#aa9271" roughness={0.88} />
+            </mesh>
+          )}
+        </group>
+      ))}
+      {sides.map((side) => {
+        const isEnd = side === "front" || side === "back";
+        const z = isEnd
+          ? (side === "back" ? -1 : 1) * depth * 0.43
+          : 0;
+        const x = isEnd
+          ? 0
+          : (side === "right" ? 1 : -1) * width * 0.43;
+
+        return (
+          <StoneBlock
+            key={`beam-${side}`}
+            position={[x, 1.82, z]}
+            scale={isEnd ? [width * 0.78, 0.2, 0.38] : [0.38, 0.2, depth * 0.78]}
+            color="#d1bc98"
+          />
+        );
+      })}
+    </group>
+  );
+}
+
+function ShrinePavilions({ width, depth }) {
+  const shrines = [
+    [-width * 0.38, -depth * 0.38],
+    [width * 0.38, -depth * 0.38],
+    [-width * 0.38, depth * 0.38],
+    [width * 0.38, depth * 0.38],
+  ];
+
+  return (
+    <group>
+      {shrines.map(([x, z], index) => (
+        <group key={index} position={[x, -0.1, z]}>
+          <mesh position={[0, 0.42, 0]} castShadow>
+            <cylinderGeometry args={[0.14, 0.2, 0.8, 10]} />
+            <meshStandardMaterial color="#aa9271" roughness={0.88} />
+          </mesh>
+          <mesh position={[0, 0.95, 0]} castShadow>
+            <coneGeometry args={[0.35, 0.34, 8]} />
+            <meshStandardMaterial color="#80684e" roughness={0.9} />
+          </mesh>
+        </group>
+      ))}
+    </group>
+  );
+}
+
+function StepwellModel({ site }) {
+  const profile = MODEL_PROFILES[site?.name] || MODEL_PROFILES["Rani ki Vav"];
+  const {
+    levels,
+    width,
+    depth,
+    plan,
+    stairSides,
+    gallerySides,
+    galleryCount,
+    arches,
+    shrines,
+    waterShape,
+  } = profile;
+  const tiers = Array.from({ length: levels }, (_, level) => (
+    <Tier
+      key={`tier-${level}`}
+      level={level}
+      width={width}
+      depth={depth}
+      y={1.35 - level * 0.28}
+      plan={plan}
+    />
+  ));
+  const stairRuns = stairSides.map((side) => (
+      <DescendingStairs
+        key={side}
+        side={side}
+        width={width}
+        depth={depth}
+        count={levels * 3}
+      />
+  ));
+
+  return (
+    <group>
+      <StoneBlock
+        position={[0, -1.58, 0]}
+        scale={[width + 2.2, 0.32, depth + 2.2]}
+        color="#6f614e"
+      />
+      {tiers}
+      {stairRuns}
+      {gallerySides.length > 0 && (
+        <Colonnade
+          width={width}
+          depth={depth}
+          sides={gallerySides}
+          count={galleryCount}
+          arches={arches}
+        />
+      )}
+      {shrines && <ShrinePavilions width={width} depth={depth} />}
+
+      {waterShape === "rectangular" ? (
+        <mesh position={[0, -1.31, 0]} receiveShadow>
+          <boxGeometry args={[width * 0.28, 0.08, depth * 0.25]} />
+          <meshStandardMaterial color="#3f7781" roughness={0.24} metalness={0.12} />
+        </mesh>
+      ) : (
+        <mesh
+          position={[0, -1.31, 0]}
+          rotation={[-Math.PI / 2, 0, 0]}
+          receiveShadow
+        >
+          <circleGeometry args={[0.82, 48]} />
+          <meshStandardMaterial color="#3f7781" roughness={0.24} metalness={0.12} />
+        </mesh>
+      )}
+      {waterShape !== "rectangular" && (
+        <mesh
+          position={[0, -1.29, 0]}
+          rotation={[-Math.PI / 2, 0, 0]}
+        >
+          <ringGeometry args={[0.9, 1.04, 48]} />
+          <meshStandardMaterial color="#d0b48b" roughness={0.8} />
+        </mesh>
+      )}
+    </group>
+  );
+}
+
+export default function StepwellCanvas({ site }) {
   const [expanded, setExpanded] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState(null);
   const controlsRef = useRef(null);
@@ -336,9 +419,7 @@ export default function StepwellCanvas({ photos = 12, site }) {
     const controls = controlsRef.current;
     if (!controls) return;
 
-    const cameraOffset = controls.object.position
-      .clone()
-      .sub(controls.target);
+    const cameraOffset = controls.object.position.clone().sub(controls.target);
     const distance = cameraOffset.length();
     const nextDistance = Math.min(
       controls.maxDistance,
@@ -357,21 +438,20 @@ export default function StepwellCanvas({ photos = 12, site }) {
     <div
       className={
         expanded
-          ? "fixed inset-0 z-[999] flex flex-col bg-[#102d26]"
+          ? "fixed inset-0 z-[999] flex flex-col bg-[#12202d]"
           : "stepwell-canvas relative"
       }
     >
       {expanded && (
         <div className="flex shrink-0 items-center justify-between border-b border-white/10 px-6 py-4">
           <div>
-            <p className="text-[10px] tracking-[0.2em] text-[#c49a58]">
+            <p className="text-[10px] tracking-[0.2em] text-[#bf6548]">
               HERITAGEVERSE 3D EXPLORER
             </p>
             <h2 className="mt-1 font-serif text-2xl text-white">
               {site?.name || "Monument Explorer"}
             </h2>
           </div>
-
           <button
             type="button"
             onClick={() => setExpanded(false)}
@@ -384,32 +464,32 @@ export default function StepwellCanvas({ photos = 12, site }) {
 
       <div className={`relative min-h-0 flex-1 ${expanded ? "" : "h-full w-full"}`}>
         <Canvas
-          camera={{ position: [9, 7, 10], fov: 38 }}
+          camera={{ position: [9, 5, 11], fov: 40 }}
           shadows
-          dpr={[1, 1.5]}
+          dpr={[1, 1.4]}
           gl={{ antialias: true, alpha: false }}
         >
-          <color attach="background" args={["#173b32"]} />
-          <ambientLight intensity={1.7} />
-          <directionalLight position={[7, 10, 6]} intensity={2.5} castShadow />
-          <directionalLight position={[-5, 4, -5]} intensity={1} />
-
-          <MonumentModel
-            site={site}
-            photos={photos}
-            selectedFeature={selectedFeature}
-            onSelectFeature={setSelectedFeature}
+          <color attach="background" args={["#192b3a"]} />
+          <fog attach="fog" args={["#192b3a", 14, 26]} />
+          <ambientLight intensity={0.65} />
+          <hemisphereLight args={["#e8e1d3", "#243748", 0.85]} />
+          <directionalLight
+            position={[7, 10, 6]}
+            intensity={1.8}
+            castShadow
+            shadow-mapSize-width={1024}
+            shadow-mapSize-height={1024}
           />
-
+          <directionalLight position={[-5, 4, -5]} intensity={0.8} />
+          <StepwellModel site={site} />
           <mesh
             rotation={[-Math.PI / 2, 0, 0]}
-            position={[0, -1.55, 0]}
+            position={[0, -1.77, 0]}
             receiveShadow
           >
-            <planeGeometry args={[30, 30]} />
-            <meshStandardMaterial color="#173b32" roughness={1} />
+            <planeGeometry args={[40, 40]} />
+            <meshStandardMaterial color="#192b3a" roughness={1} />
           </mesh>
-
           <OrbitControls
             ref={controlsRef}
             makeDefault
@@ -431,10 +511,10 @@ export default function StepwellCanvas({ photos = 12, site }) {
             <div
               role="region"
               aria-label="Architectural detail"
-              className="pointer-events-auto absolute bottom-14 right-4 w-[min(300px,calc(100%-32px))] rounded-xl border border-white/15 bg-[#102d26]/95 p-5 text-white shadow-2xl backdrop-blur-xl"
+              className="pointer-events-auto absolute bottom-14 right-4 w-[min(300px,calc(100%-32px))] rounded-xl border border-white/15 bg-[#12202d]/95 p-5 text-white shadow-2xl backdrop-blur-xl"
             >
               <div className="mb-3 flex items-center justify-between">
-                <span className="text-[9px] font-semibold tracking-[0.2em] text-[#c49a58]">
+                <span className="text-[9px] font-semibold tracking-[0.2em] text-[#bf6548]">
                   ARCHITECTURAL DETAIL
                 </span>
                 <button
@@ -446,14 +526,13 @@ export default function StepwellCanvas({ photos = 12, site }) {
                   ×
                 </button>
               </div>
-
               <h3 className="mb-2 font-serif text-lg font-medium">
                 {activeFeature.title}
               </h3>
               <p className="mb-3 text-xs leading-5 text-white/90">
                 {activeFeature.description}
               </p>
-              <span className="inline-flex rounded-full border border-[#c49a58]/40 bg-[#c49a58]/10 px-3 py-1 text-[9px] font-medium tracking-wide text-[#e2bd7f]">
+              <span className="inline-flex rounded-full border border-[#bf6548]/40 bg-[#bf6548]/10 px-3 py-1 text-[9px] font-medium tracking-wide text-[#e2bd7f]">
                 {activeFeature.category}
               </span>
             </div>
@@ -463,7 +542,7 @@ export default function StepwellCanvas({ photos = 12, site }) {
         <div
           role="group"
           aria-label="Explore architectural details"
-          className="absolute right-3 top-3 z-30 flex items-center gap-1.5 rounded-xl border border-white/10 bg-[#102d26]/85 p-1.5 shadow-lg backdrop-blur"
+          className="absolute right-3 top-3 z-30 flex items-center gap-1.5 rounded-xl border border-white/10 bg-[#12202d]/85 p-1.5 shadow-lg backdrop-blur"
         >
           {featureItems.map((item, index) => {
             const number = index + 1;
@@ -476,10 +555,10 @@ export default function StepwellCanvas({ photos = 12, site }) {
                 onClick={() => selectFeature(item)}
                 aria-label={`Explore feature ${number}: ${item.title}`}
                 title={item.title}
-                className={`flex h-7 w-7 items-center justify-center rounded-full border text-xs font-semibold transition ${
+                className={`flex h-8 w-8 items-center justify-center rounded-full border text-xs font-semibold transition ${
                   isActive
-                    ? "border-[#e8d2a5] bg-[#c49a58] text-white"
-                    : "border-white/30 bg-[#98713e] text-white hover:bg-[#c49a58]"
+                    ? "border-[#e8d2a5] bg-[#bf6548] text-white"
+                    : "border-white/30 bg-[#a95037] text-white hover:bg-[#bf6548]"
                 }`}
               >
                 {number}
@@ -492,24 +571,22 @@ export default function StepwellCanvas({ photos = 12, site }) {
           <button
             type="button"
             onClick={resetView}
-            className="rounded-lg border border-white/15 bg-[#102d26]/90 px-4 py-2 text-xs text-white shadow-lg backdrop-blur transition hover:bg-[#24483d]"
+            className="rounded-lg border border-white/15 bg-[#12202d]/90 px-4 py-2 text-xs text-white shadow-lg backdrop-blur transition hover:bg-[#2e4658]"
           >
-            Reset View
+            Reset view
           </button>
-
           <button
             type="button"
             onClick={() => adjustZoom("in")}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/15 bg-[#102d26]/90 text-lg text-white shadow-lg backdrop-blur transition hover:bg-[#24483d]"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/15 bg-[#12202d]/90 text-lg text-white shadow-lg backdrop-blur transition hover:bg-[#2e4658]"
             aria-label="Zoom in"
           >
             +
           </button>
-
           <button
             type="button"
             onClick={() => adjustZoom("out")}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/15 bg-[#102d26]/90 text-lg text-white shadow-lg backdrop-blur transition hover:bg-[#24483d]"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/15 bg-[#12202d]/90 text-lg text-white shadow-lg backdrop-blur transition hover:bg-[#2e4658]"
             aria-label="Zoom out"
           >
             −
@@ -520,15 +597,11 @@ export default function StepwellCanvas({ photos = 12, site }) {
           <button
             type="button"
             onClick={() => setExpanded(true)}
-            className="absolute bottom-4 right-4 z-30 rounded-full border border-white/25 bg-[#102d26]/90 px-4 py-2 text-xs text-white shadow-lg backdrop-blur transition hover:bg-[#24483d]"
+            className="absolute bottom-3 right-3 z-30 rounded-lg border border-white/15 bg-[#12202d]/90 px-4 py-2 text-xs text-white shadow-lg backdrop-blur transition hover:bg-[#2e4658]"
           >
-            ⛶ Expand Viewer
+            Full screen
           </button>
         )}
-
-        <div className="pointer-events-none absolute bottom-4 left-4 z-10 rounded bg-black/55 px-2 py-1 text-[10px] tracking-wide text-white/90">
-          DRAG TO ROTATE · SCROLL TO ZOOM · SELECT A MARKER
-        </div>
       </div>
     </div>
   );

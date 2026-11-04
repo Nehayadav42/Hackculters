@@ -5,11 +5,18 @@ import { getMonumentById } from "../services/api.js";
 import MonumentMap from "../components/MonumentMap.jsx";
 import MonumentGallery from "../components/MonumentGallery.jsx";
 import ManuscriptReader from "../components/ManuscriptReader.jsx";
+import EvidenceGapLens from "../components/archive/EvidenceGapLens.jsx";
+import ArchiveAssistant from "../components/archive/ArchiveAssistant.jsx";
+import { BHOPAL_COLLECTION } from "../data/bhopal.js";
+
+function normalizeMonumentName(value) {
+  return value.toLocaleLowerCase().replace(/[^a-z0-9]/g, "");
+}
 
 function DetailSection({ title, children }) {
   return (
-    <section className="border-b border-[#ded6c6] py-8">
-      <h2 className="mb-5 font-serif text-2xl text-[#183b32]">
+    <section className="border-b border-[#d2dce2] py-8">
+      <h2 className="mb-5 font-serif text-2xl text-[#1a2c3b]">
         {title}
       </h2>
       {children}
@@ -24,7 +31,7 @@ function DetailText({ value }) {
     (typeof value === "string" && !value.trim())
   ) {
     return (
-      <p className="text-sm text-[#625e51]">
+      <p className="text-sm text-[#5e6b76]">
         Information is not available yet.
       </p>
     );
@@ -115,8 +122,8 @@ export default function MonumentDetailPage() {
 
   if (loading) {
     return (
-      <section className="flex min-h-screen items-center justify-center bg-[#f5f2e9]">
-        <p className="text-sm tracking-widest text-[#a17b43]">
+      <section className="flex min-h-screen items-center justify-center bg-[#f3f5f6]">
+        <p className="text-sm tracking-widest text-[#bf6548]">
           EXPLORING HERITAGE...
         </p>
       </section>
@@ -125,18 +132,18 @@ export default function MonumentDetailPage() {
 
   if (error || !monument) {
     return (
-      <section className="flex min-h-screen flex-col items-center justify-center bg-[#f5f2e9] px-6 text-center">
-        <h1 className="font-serif text-3xl text-[#183b32]">
+      <section className="flex min-h-screen flex-col items-center justify-center bg-[#f3f5f6] px-6 text-center">
+        <h1 className="font-serif text-3xl text-[#1a2c3b]">
           Monument unavailable
         </h1>
 
-        <p className="mt-3 max-w-lg text-sm text-[#5e625a]">
+        <p className="mt-3 max-w-lg text-sm text-[#66727d]">
           {error || "The requested monument could not be found."}
         </p>
 
         <Link
           to="/monuments"
-          className="mt-6 rounded-full bg-[#183b32] px-6 py-3 text-sm text-white"
+          className="mt-6 rounded-full bg-[#1a2c3b] px-6 py-3 text-sm text-white"
         >
           Explore Monuments
         </Link>
@@ -148,6 +155,11 @@ export default function MonumentDetailPage() {
     monument.name ||
     monument.title ||
     "Untitled Monument";
+  const external3dUrl = BHOPAL_COLLECTION.find(
+    (entry) =>
+      entry.external3dUrl &&
+      normalizeMonumentName(entry.name) === normalizeMonumentName(name)
+  )?.external3dUrl;
 
   const location =
     monument.location ||
@@ -194,56 +206,51 @@ export default function MonumentDetailPage() {
     monument.longitude != null;
 
   return (
-    <div className="min-h-screen bg-[#f5f2e9] text-[#24251f]">
-      <header className="border-b border-[#ded6c6] px-5 py-5 md:px-12">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <Link
-            to="/dashboard"
-            className="font-serif text-xl font-semibold tracking-wide text-[#183b32]"
-          >
-            HeritageVerse
-          </Link>
-
-          <Link
-            to="/monuments"
-            className="text-sm font-medium text-[#5e625a] transition hover:text-[#a17b43]"
-          >
-            ← All Monuments
-          </Link>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-[#f3f5f6] text-[#20384b]">
       <section className="mx-auto max-w-7xl px-5 pb-12 pt-10 md:px-12 md:pt-16">
         <div className="mb-8">
           <div className="mb-4 flex flex-wrap gap-2">
             {category && (
-              <span className="rounded-full bg-[#e8e1d2] px-4 py-1.5 text-xs font-medium text-[#183b32]">
+              <span className="rounded-full bg-[#e3e9ed] px-4 py-1.5 text-xs font-medium text-[#1a2c3b]">
                 {category}
               </span>
             )}
 
             {period && (
-              <span className="rounded-full bg-[#e8e1d2] px-4 py-1.5 text-xs font-medium text-[#183b32]">
+              <span className="rounded-full bg-[#e3e9ed] px-4 py-1.5 text-xs font-medium text-[#1a2c3b]">
                 {period}
               </span>
             )}
 
             {monument.is_unesco && (
-              <span className="rounded-full bg-[#183b32] px-4 py-1.5 text-xs text-white">
+              <span className="rounded-full bg-[#1a2c3b] px-4 py-1.5 text-xs text-white">
                 UNESCO Heritage
               </span>
             )}
           </div>
 
-          <h1 className="max-w-4xl font-serif text-4xl leading-tight text-[#183b32] md:text-6xl">
+          <h1 className="max-w-4xl font-serif text-4xl leading-tight text-[#1a2c3b] md:text-6xl">
             {name}
           </h1>
 
           {location && (
-            <p className="mt-4 text-sm text-[#5e625a]">
+            <p className="mt-4 text-sm text-[#66727d]">
               <span className="mr-2">⌖</span>
               {location}
             </p>
+          )}
+
+          {external3dUrl && (
+            <a
+              href={external3dUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Explore ${name} in Bhopal 3D (opens in a new tab)`}
+              className="mt-5 inline-flex min-h-11 items-center gap-3 rounded-full bg-[#1a2c3b] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#2f4658] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#bf6548]"
+            >
+              Explore in Bhopal 3D
+              <span aria-hidden="true">↗</span>
+            </a>
           )}
         </div>
 
@@ -256,6 +263,11 @@ export default function MonumentDetailPage() {
 
         <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-[1fr_300px]">
           <div>
+            <EvidenceGapLens
+              monument={monument}
+              documents={documents}
+            />
+
             <DetailSection title="Overview">
               <DetailText value={overview} />
             </DetailSection>
@@ -276,15 +288,15 @@ export default function MonumentDetailPage() {
                   {timeline.map((item, index) => (
                     <div
                       key={item.id || index}
-                      className="relative border-l-2 border-[#c49a58] pl-6"
+                      className="relative border-l-2 border-[#bf6548] pl-6"
                     >
-                      <span className="absolute -left-[7px] top-1 h-3 w-3 rounded-full bg-[#a17b43]" />
+                      <span className="absolute -left-[7px] top-1 h-3 w-3 rounded-full bg-[#bf6548]" />
 
-                      <p className="font-semibold text-[#183b32]">
+                      <p className="font-semibold text-[#1a2c3b]">
                         {item.year || item.date || "Historical period"}
                       </p>
 
-                      <p className="mt-2 text-sm leading-7 text-[#5e625a]">
+                      <p className="mt-2 text-sm leading-7 text-[#66727d]">
                         {item.description || item.event || item.title}
                       </p>
                     </div>
@@ -305,30 +317,34 @@ export default function MonumentDetailPage() {
               <ManuscriptReader documents={documents} />
             </DetailSection>
 
+            <DetailSection title="Ask about this record">
+              <ArchiveAssistant monumentId={id} />
+            </DetailSection>
+
             <DetailSection title="Related Documents">
               {documents.length > 0 ? (
                 <div className="space-y-3">
                   {documents.map((document, index) => (
                     <div
                       key={document.id || index}
-                      className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-[#ded6c6] bg-white/50 p-4"
+                      className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-[#d2dce2] bg-white/50 p-4"
                     >
                       <div>
-                        <p className="font-medium text-[#183b32]">
+                        <p className="font-medium text-[#1a2c3b]">
                           {document.title || "Untitled document"}
                         </p>
 
-                        <p className="mt-1 text-xs text-[#5e625a]">
+                        <p className="mt-1 text-xs text-[#66727d]">
                           {document.category || "Archive"}
                         </p>
                       </div>
 
-                      {document.file_url && (
-                        <a
-                          href={document.file_url}
+                      {(document.file_url || document.file_path) && (
+  <a
+    href={document.file_url || document.file_path}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-sm font-medium text-[#a17b43] hover:underline"
+                          className="text-sm font-medium text-[#bf6548] hover:underline"
                         >
                           View Document ↗
                         </a>
@@ -337,7 +353,7 @@ export default function MonumentDetailPage() {
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-[#5e625a]">
+                <p className="text-sm text-[#66727d]">
                   No related documents are available yet.
                 </p>
               )}
@@ -359,8 +375,8 @@ export default function MonumentDetailPage() {
             )}
           </div>
 
-          <aside className="h-fit rounded-2xl border border-[#ded6c6] bg-[#eee9dc] p-6 lg:sticky lg:top-8">
-            <h2 className="font-serif text-xl text-[#183b32]">
+          <aside className="h-fit rounded-2xl border border-[#d2dce2] bg-[#e8edf0] p-6 lg:sticky lg:top-8">
+            <h2 className="font-serif text-xl text-[#1a2c3b]">
               At a Glance
             </h2>
 
@@ -385,13 +401,13 @@ export default function MonumentDetailPage() {
                 .map(([label, value]) => (
                   <div
                     key={label}
-                    className="border-b border-[#d8cfbd] pb-4"
+                    className="border-b border-[#c8d3db] pb-4"
                   >
-                    <p className="text-xs uppercase tracking-wider text-[#625e51]">
+                    <p className="text-xs uppercase tracking-wider text-[#5e6b76]">
                       {label}
                     </p>
 
-                    <p className="mt-2 text-sm font-medium text-[#183b32]">
+                    <p className="mt-2 text-sm font-medium text-[#1a2c3b]">
                       {value}
                     </p>
                   </div>
@@ -403,7 +419,7 @@ export default function MonumentDetailPage() {
                 href={monument.source_url}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-6 inline-block text-sm font-medium text-[#a17b43] hover:underline"
+                className="mt-6 inline-block text-sm font-medium text-[#bf6548] hover:underline"
               >
                 Explore Source ↗
               </a>
@@ -412,7 +428,7 @@ export default function MonumentDetailPage() {
         </div>
       </section>
 
-      <footer className="border-t border-[#ded6c6] px-5 py-8 text-center text-xs tracking-wide text-[#625e51]">
+      <footer className="border-t border-[#d2dce2] px-5 py-8 text-center text-xs tracking-wide text-[#5e6b76]">
         HERITAGEVERSE · PRESERVING STORIES THROUGH TECHNOLOGY
       </footer>
     </div>

@@ -1,3 +1,4 @@
+@import "tailwindcss";
 @import "./tokens.css";
 @import "./base.css";
 @import "./animations.css";
@@ -8,4 +9,3 @@
 @import "./manuscripts.css";
 @import "./stepwell.css";
 @import "./architecture.css";
-@import "tailwindcss";

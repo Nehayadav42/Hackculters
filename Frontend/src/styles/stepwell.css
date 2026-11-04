@@ -1,3 +1,4 @@
+@layer components {
 /* Stepwell experience */
 
 .stepwell-experience {
@@ -49,6 +50,37 @@
   align-items: stretch;
 }
 
+.stepwell-mode-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 22px;
+}
+
+.stepwell-mode-switch button {
+  min-height: 42px;
+  padding: 10px 16px;
+  border: 1px solid rgba(243, 245, 246, 0.25);
+  border-radius: 999px;
+  background: rgba(243, 245, 246, 0.06);
+  color: rgba(243, 245, 246, 0.82);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+
+.stepwell-mode-switch button[aria-pressed="true"] {
+  border-color: #bf6548;
+  background: #bf6548;
+  color: #fff;
+}
+
+.stepwell-mode-switch button:focus-visible {
+  outline: 2px solid #f0b395;
+  outline-offset: 3px;
+}
+
 /* Interactive viewer */
 
 .stepwell-viewer {
@@ -81,7 +113,7 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #8cad82;
+  background: #bf6548;
 }
 
 .stepwell-canvas {
@@ -95,6 +127,18 @@
   border-radius: 8px;
   cursor: grab;
   touch-action: none;
+}
+
+.stepwell-city-viewer {
+  max-width: none;
+}
+
+.cesium-city-loading {
+  display: grid;
+  min-height: 360px;
+  place-items: center;
+  color: rgba(243, 245, 246, 0.78);
+  font-size: 13px;
 }
 
 .stepwell-canvas:active {
@@ -272,6 +316,15 @@
   line-height: 1.7;
 }
 
+.stepwell-model-note {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(250, 248, 242, 0.17);
+  color: rgba(250, 248, 242, 0.78);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
 /* Responsive */
 
 @media (max-width: 860px) {
@@ -316,4 +369,5 @@
   .controls-heading h3 {
     font-size: 21px;
   }
+}
 }

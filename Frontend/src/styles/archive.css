@@ -1,3 +1,4 @@
+@layer components {
 /* =================================
    Archive Section
 ================================= */
@@ -424,74 +425,6 @@
   background: var(--lime);
 }
 
-#map {
-  display: block;
-  width: 100%;
-  height: auto;
-
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-}
-
-#map .g {
-  stroke: rgba(24, 59, 50, 0.14);
-  stroke-width: 1;
-}
-
-#map text {
-  fill: var(--mute);
-  font: 11px var(--sans);
-}
-
-#map:not(.all) .pt:not(.on):not(:hover):not(:focus) text {
-  opacity: 0;
-}
-
-.pt {
-  cursor: pointer;
-}
-
-.pt circle {
-  fill: var(--water);
-  transition:
-    r var(--transition),
-    opacity var(--transition);
-}
-
-.pt:hover circle {
-  fill: var(--gold);
-}
-
-.pt.off circle {
-  opacity: 0.18;
-}
-
-.pt.on circle {
-  fill: var(--gold);
-  stroke: var(--forest);
-  stroke-width: 1.5;
-}
-
-.pt text {
-  fill: var(--forest);
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.pt.off text {
-  opacity: 0;
-}
-
-.pt:focus-visible {
-  outline: none;
-}
-
-.pt:focus-visible circle {
-  stroke: var(--forest);
-  stroke-width: 2;
-}
-
 .archive-map-footer {
   display: flex;
   justify-content: space-between;
@@ -567,4 +500,5 @@
     align-items: flex-start;
     flex-direction: column;
   }
+}
 }

@@ -7,7 +7,7 @@ export default function ProtectedRoute({ children }) {
 
   if (loading || logoutInProgress) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#11120f] text-[#c7a96b]">
+      <div className="flex min-h-screen items-center justify-center bg-[#0f1822] text-[#e1a080]">
         Checking authentication...
       </div>
     );

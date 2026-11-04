@@ -1,33 +1,31 @@
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Noto+Serif+Devanagari:wght@400;500;600&display=swap");
-
 :root {
   /* Brand colours */
-  --lime: #f5f1e8;
-  --lime2: #eae3d5;
-  --lime3: #d8cebb;
+  --lime: #f3f5f6;
+  --lime2: #e8edf0;
+  --lime3: #d5dfe5;
 
-  --water: #49685c;
-  --deep: #183b32;
+  --water: #51697c;
+  --deep: #1a2c3b;
 
-  --ink: #202923;
-  --mute: #737970;
+  --ink: #182531;
+  --mute: #66727d;
 
-  --indigo: #526b61;
-  --turmeric: #bd8744;
+  --indigo: #526d82;
+  --turmeric: #bf6548;
 
   /* Extended palette */
-  --paper: #faf8f2;
-  --surface: #f0ebdf;
-  --surface-dark: #e4ddce;
+  --paper: #f8f9fa;
+  --surface: #e9eef1;
+  --surface-dark: #dce4e9;
 
-  --forest: #183b32;
-  --forest-light: #31594b;
+  --forest: #1a2c3b;
+  --forest-light: #2f4658;
 
-  --gold: #bd8744;
-  --gold-light: #d8b47b;
+  --gold: #bf6548;
+  --gold-light: #e1a080;
 
-  --border: rgba(32, 41, 35, 0.16);
-  --border-light: rgba(250, 248, 242, 0.2);
+  --border: rgba(24, 37, 49, 0.16);
+  --border-light: rgba(248, 249, 250, 0.2);
 
   /* Typography */
   --serif: "Cormorant Garamond", Georgia, serif;
@@ -42,11 +40,16 @@
   --section-space: clamp(76px, 10vw, 140px);
 
   /* Effects */
-  --shadow-soft: 0 12px 40px rgba(24, 59, 50, 0.08);
-  --shadow-card: 0 20px 60px rgba(24, 59, 50, 0.12);
+  --shadow-soft: 0 12px 40px rgba(26, 44, 59, 0.08);
+  --shadow-card: 0 20px 60px rgba(26, 44, 59, 0.12);
 
   --transition: 240ms ease;
 
   /* Accessibility */
   color-scheme: light;
+}
+
+@theme {
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Manrope", system-ui, sans-serif;
 }

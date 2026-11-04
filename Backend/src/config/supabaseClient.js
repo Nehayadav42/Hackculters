@@ -30,3 +30,22 @@ if (supabaseUrl && supabaseKey) {
 }
 
 export { supabase };
+
+export function createAuthenticatedSupabaseClient(accessToken) {
+    if (!supabaseUrl || !supabaseKey) {
+        return null;
+    }
+
+    return createClient(supabaseUrl, supabaseKey, {
+        global: {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        },
+        auth: {
+            persistSession: false,
+            autoRefreshToken: false,
+            detectSessionInUrl: false,
+        },
+    });
+}

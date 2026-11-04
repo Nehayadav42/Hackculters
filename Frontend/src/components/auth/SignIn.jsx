@@ -1,7 +1,7 @@
 function AuthField({ label, type, value, onChange, autoComplete }) {
   return (
     <label className="block space-y-1.5">
-      <span className="block text-xs font-semibold text-[#e8e2d4] sm:text-sm">
+      <span className="block text-xs font-semibold text-[#d9e1e6] sm:text-sm">
         {label}
       </span>
       <input
@@ -10,7 +10,7 @@ function AuthField({ label, type, value, onChange, autoComplete }) {
         onChange={onChange}
         autoComplete={autoComplete}
         required
-        className="h-11 w-full rounded-xl border border-[#454438] bg-[#22231e] px-4 text-sm text-[#f2eee4] outline-none transition placeholder:text-[#777568] focus:border-[#c7a96b] focus:ring-2 focus:ring-[#c7a96b]/20"
+        className="h-11 w-full rounded-xl border border-[#3a4b59] bg-[#26333f] px-4 text-sm text-[#f3f5f6] outline-none transition placeholder:text-[#71808b] focus:border-[#e1a080] focus:ring-2 focus:ring-[#e1a080]/20"
       />
     </label>
   );
@@ -40,7 +40,7 @@ export default function SignIn({
       />
 
       <label className="block space-y-1.5">
-        <span className="block text-xs font-semibold text-[#e8e2d4] sm:text-sm">
+        <span className="block text-xs font-semibold text-[#d9e1e6] sm:text-sm">
           Password
         </span>
         <span className="relative block">
@@ -50,13 +50,13 @@ export default function SignIn({
             onChange={onPasswordChange}
             autoComplete="current-password"
             required
-            className="h-11 w-full rounded-xl border border-[#454438] bg-[#22231e] px-4 pr-12 text-sm text-[#f2eee4] outline-none transition placeholder:text-[#777568] focus:border-[#c7a96b] focus:ring-2 focus:ring-[#c7a96b]/20"
+            className="h-11 w-full rounded-xl border border-[#3a4b59] bg-[#26333f] px-4 pr-12 text-sm text-[#f3f5f6] outline-none transition placeholder:text-[#71808b] focus:border-[#e1a080] focus:ring-2 focus:ring-[#e1a080]/20"
           />
           <button
             type="button"
             onClick={onTogglePassword}
             aria-label={showPassword ? "Hide password" : "Show password"}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#aaa797] hover:text-[#c7a96b]"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#aeb9c1] hover:text-[#e1a080]"
           >
             {showPassword ? "Hide" : "Show"}
           </button>
@@ -67,7 +67,7 @@ export default function SignIn({
         <button
           type="button"
           onClick={onForgotPassword}
-          className="text-xs font-medium text-[#c7a96b] transition hover:text-[#e0c58f]"
+          className="text-xs font-medium text-[#e1a080] transition hover:text-[#f0b395]"
         >
           Forgot password?
         </button>
@@ -93,7 +93,7 @@ export default function SignIn({
       <button
         type="submit"
         disabled={loading}
-        className="mt-1 flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#c7a96b] px-5 text-sm font-bold text-[#171710] transition duration-300 hover:-translate-y-0.5 hover:bg-[#d7bb82] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
+        className="mt-1 flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#e1a080] px-5 text-sm font-bold text-[#111a23] transition duration-300 hover:-translate-y-0.5 hover:bg-[#f0b395] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
       >
         {loading ? "Please wait..." : "Sign In"}
         {!loading && <span aria-hidden="true">→</span>}

@@ -4,7 +4,8 @@ import {
     uploadMonumentImage
 } from "../services/monument.service.js";
 import { supabase } from '../config/supabaseClient.js';
-import { ocrQueue } from '../workers/ocrWorker.js';
+import { processUploadedDocumentViaAI } from "../services/ocr.service.js";
+import AppError from "../utils/AppError.js";
 
 // Get map data
 export const getMapData = async (req, res, next) => {
@@ -60,15 +61,10 @@ export const getMonumentById = async (req, res, next) => {
 // Manuscript translation
 export const getManuscriptTranslation = async (req, res, next) => {
     try {
-        res.status(200).json({
-            success: true,
-            data: {
-                original: "गणेशाय",
-                transliteration: "ganesaya",
-                english: "to Ganesha",
-                meaning: "Ganesha in the dative case: an invocation addressed to him. The ending -aya means 'to'."
-            }
-        });
+        throw new AppError(
+            "Use the OCR workspace to extract, translate, and transliterate an uploaded manuscript.",
+            501
+        );
     } catch (error) {
         next(error);
     }
@@ -108,7 +104,7 @@ export const uploadArchiveFile = async (req, res, next) => {
 
         const filePath = req.file.path;
 
-        const { data, error } = await supabase
+        const { data, error } = await req.supabase
             .from('documents')
             .insert([{
                 site_id: siteId,
@@ -119,7 +115,7 @@ export const uploadArchiveFile = async (req, res, next) => {
                 language: language || "English",
                 source_name: source_name || null,
                 source_url: source_url || null,
-                status: "pending"
+                status: "processing"
             }])
             .select()
             .single();
@@ -128,44 +124,76 @@ export const uploadArchiveFile = async (req, res, next) => {
             throw new Error(error.message);
         }
 
-        // Queue OCR for supported documents
-        if (
-            documentType.toLowerCase().includes('manuscript') ||
-            documentType.toLowerCase().includes('document') ||
-            documentType.toLowerCase().includes('application/pdf')
-        ) {
-            await ocrQueue.add('extract-text', {
-                documentId: data.id,
-                filePath
+        let aiResult;
+
+        try {
+            aiResult = await processUploadedDocumentViaAI({
+                fileUrl: filePath,
+                originalName: req.file.originalname,
+                fileType: req.file.mimetype,
+                sourceLanguage: language || "auto",
+                targetLanguage: "en",
+                documentType
             });
+        } catch (processingError) {
+            const { data: failedDocument, error: statusError } = await req.supabase
+                .from("documents")
+                .update({ status: "failed" })
+                .eq("id", data.id)
+                .select()
+                .single();
+
+            if (statusError) {
+                throw new AppError(
+                    `The file was stored, but its OCR status could not be saved: ${statusError.message}`,
+                    500
+                );
+            }
+
+            return res.status(207).json({
+                success: true,
+                message: "The file was stored, but OCR processing failed.",
+                document: failedDocument,
+                processing: {
+                    status: "failed",
+                    message: processingError.message
+                }
+            });
+        }
+
+        const { data: processedDocument, error: processingError } = await req.supabase
+            .from("documents")
+            .update({
+                original_text: aiResult.original_text || null,
+                ocr_text: aiResult.original_text || null,
+                translated_text: aiResult.translated_text || null,
+                translated_language: aiResult.target_language || null,
+                language: aiResult.detected_source_language || language || null,
+                ocr_engine: aiResult.ocr_engine || null,
+                confidence_score: aiResult.ocr_confidence ?? null,
+                status: "completed"
+            })
+            .eq("id", data.id)
+            .select()
+            .single();
+
+        if (processingError) {
+            throw new AppError(
+                `OCR completed, but its results could not be saved: ${processingError.message}`,
+                500
+            );
         }
 
         res.status(201).json({
             success: true,
-            message: "File uploaded successfully.",
-            document: data
+            message: "File uploaded and OCR processing completed.",
+            document: {
+                ...processedDocument,
+                file_url: filePath
+            },
+            ai_metadata: aiResult
         });
 
-    } catch (error) {
-        next(error);
-    }
-};
-
-// Get 3D model data
-export const get3DModelData = async (req, res, next) => {
-    try {
-        const { id } = req.params;
-
-        res.status(200).json({
-            success: true,
-            data: {
-                monument_id: id,
-                model_url: "https://example.com/models/rani-ki-vav.gltf",
-                wireframe_url: "https://example.com/models/rani-ki-vav-wireframe.obj",
-                total_photos_processed: 1344,
-                geometry_points: 672
-            }
-        });
     } catch (error) {
         next(error);
     }
@@ -236,16 +264,22 @@ export const searchArchives = async (req, res, next) => {
             let fileUrl = null;
 
             if (document.file_path) {
-                const { data } = supabase.storage
-                    .from('heritage-archives')
-                    .getPublicUrl(document.file_path);
+                if (/^https?:\/\//i.test(document.file_path)) {
+                    // Cloudinary or other external storage URL
+                    fileUrl = document.file_path;
+                } else {
+                    // Supabase Storage path
+                    const { data } = supabase.storage
+                        .from("heritage-archives")
+                        .getPublicUrl(document.file_path);
 
-                fileUrl = data.publicUrl;
+                    fileUrl = data.publicUrl;
+                }
             }
 
             return {
                 ...document,
-                file_url: fileUrl
+                file_url: fileUrl,
             };
         });
 
@@ -255,7 +289,7 @@ export const searchArchives = async (req, res, next) => {
                 monumentsFound: monuments?.length || 0,
                 documentsFound: documentsWithUrls.length,
                 monuments: monuments || [],
-                documents: documentsWithUrls
+                documents: documentsWithUrls,
             }
         });
 
@@ -291,6 +325,7 @@ export const addMonumentImage = async (req, res, next) => {
             siteId: req.params.id,
             file: req.file,
             title: req.body.title,
+            supabaseClient: req.supabase
         });
 
         res.status(201).json({

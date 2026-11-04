@@ -80,7 +80,7 @@ export default function Header({ onAuthClick }) {
             <Link
               to="/monuments"
               onClick={closeMenu}
-              className="transition-colors hover:text-[#c7a96b]"
+              className="transition-colors hover:text-[#e1a080]"
             >
               Monuments
             </Link>
@@ -101,7 +101,7 @@ export default function Header({ onAuthClick }) {
               closeMenu();
               onAuthClick?.();
             }}
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-[#c7a96b] px-6 py-3 text-xs font-bold tracking-wide text-[#171710] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#d7bb82] hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c7a96b]"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-[#e1a080] px-6 py-3 text-xs font-bold tracking-wide text-[#111a23] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#f0b395] hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e1a080]"
           >
             Get Started
             <span aria-hidden="true">↗</span>

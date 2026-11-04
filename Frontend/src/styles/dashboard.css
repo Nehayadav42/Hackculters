@@ -1,9 +1,10 @@
+@layer components {
 .dashboard-layout {
-  --workspace-ink: #20372d;
-  --workspace-muted: #5e655d;
-  --workspace-accent: #8a642f;
+  --workspace-ink: #20384b;
+  --workspace-muted: #66727d;
+  --workspace-accent: #a95037;
   background:
-    radial-gradient(ellipse at 82% 0%, rgba(189, 135, 68, 0.1), transparent 34rem),
+    radial-gradient(ellipse at 82% 0%, rgba(191, 101, 72, 0.1), transparent 34rem),
     var(--paper);
   color: var(--workspace-ink);
 }
@@ -22,7 +23,7 @@
 
 .dashboard-card {
   animation: dashboard-enter 480ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
-  box-shadow: 0 1px 2px rgb(34 43 34 / 4%);
+  box-shadow: 0 1px 2px rgb(26 44 59 / 4%);
 }
 
 .dashboard-card:nth-child(2) {
@@ -43,23 +44,23 @@
 }
 
 .app-sidebar::-webkit-scrollbar-thumb {
-  border: 2px solid #142b25;
+  border: 2px solid #172635;
   border-radius: 999px;
   background: rgb(238 233 221 / 35%);
 }
 
 .app-sidebar-footer {
-  box-shadow: 0 -12px 20px rgb(20 43 37 / 88%);
+  box-shadow: 0 -12px 20px rgb(23 38 53 / 88%);
 }
 
 .app-sidebar a:focus-visible,
 .app-sidebar button:focus-visible {
-  outline-color: #e6c989;
+  outline-color: #f0b395;
   outline-offset: -2px;
 }
 
 .workspace-header {
-  box-shadow: 0 1px 0 rgb(32 55 45 / 3%);
+  box-shadow: 0 1px 0 rgb(26 44 59 / 3%);
   min-width: 0;
 }
 
@@ -70,12 +71,12 @@
 .dashboard-layout input,
 .dashboard-layout select,
 .dashboard-layout textarea {
-  color: #263b30;
+  color: #20384b;
 }
 
 .dashboard-layout input::placeholder,
 .dashboard-layout textarea::placeholder {
-  color: #66675f;
+  color: #66727d;
   opacity: 1;
 }
 
@@ -126,4 +127,5 @@
   .dashboard-card {
     animation: none;
   }
+}
 }

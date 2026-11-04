@@ -20,12 +20,12 @@ function MonumentImage({ monument }) {
 
   if (!image || failed) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-[#e8e5df]">
+      <div className="flex h-full w-full items-center justify-center bg-[#e8edf0]">
         <div className="text-center">
-          <span className="font-serif text-5xl text-[#183b32]/30">
+          <span className="font-serif text-5xl text-[#1a2c3b]/30">
             {monument.name?.charAt(0)?.toUpperCase() || "H"}
           </span>
-          <p className="mt-2 text-xs text-[#77796f]">
+          <p className="mt-2 text-xs text-[#75818a]">
             Image unavailable
           </p>
         </div>
@@ -34,9 +34,9 @@ function MonumentImage({ monument }) {
   }
 
   return (
-    <div className="relative flex h-full w-full items-center justify-center bg-[#e8e5df]">
+    <div className="relative flex h-full w-full items-center justify-center bg-[#e8edf0]">
       {!loaded && (
-        <div className="absolute inset-0 animate-pulse bg-[#e8e5df]" />
+        <div className="absolute inset-0 animate-pulse bg-[#e8edf0]" />
       )}
 
       <img
@@ -150,34 +150,16 @@ export default function MonumentsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f2e9] text-[#252a24]">
-      <header className="border-b border-[#ded8ca]">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5 sm:px-8">
-          <Link
-            to="/dashboard"
-            className="font-serif text-2xl font-semibold text-[#183b32]"
-          >
-            HeritageVerse
-          </Link>
-
-          <Link
-            to="/dashboard"
-            className="text-xs font-semibold uppercase tracking-widest text-[#55594f] transition hover:text-[#a17b43]"
-          >
-            ← Workspace
-          </Link>
-        </div>
-      </header>
-
-      <section className="bg-[#183b32] px-5 py-16 text-[#f5f2e9] sm:px-8 sm:py-24">
+    <div className="min-h-screen bg-[#f3f5f6] text-[#20384b]">
+      <section className="bg-[#1a2c3b] px-5 py-16 text-[#f3f5f6] sm:px-8 sm:py-24">
         <div className="mx-auto max-w-7xl">
-          <p className="mb-6 text-xs font-semibold uppercase tracking-[0.22em] text-[#d5b77e]">
+          <p className="mb-6 text-xs font-semibold uppercase tracking-[0.22em] text-[#e1a080]">
             THE DIGITAL HERITAGE ARCHIVE
           </p>
 
           <h1 className="max-w-4xl font-serif text-5xl leading-[1.08] sm:text-7xl">
             Explore India's
-            <span className="block text-[#d5b77e]">
+            <span className="block text-[#e1a080]">
               living heritage.
             </span>
           </h1>
@@ -189,7 +171,7 @@ export default function MonumentsPage() {
 
           <div className="mt-12 flex flex-wrap gap-10 border-t border-white/15 pt-7">
             <div>
-              <p className="font-serif text-3xl text-[#e5c78f]">
+              <p className="font-serif text-3xl text-[#f0b395]">
                 {monuments.length.toString().padStart(2, "0")}
               </p>
               <p className="mt-1 text-[10px] uppercase tracking-[0.16em] text-[#c4c9bf]">
@@ -198,7 +180,7 @@ export default function MonumentsPage() {
             </div>
 
             <div>
-              <p className="font-serif text-3xl text-[#e5c78f]">
+              <p className="font-serif text-3xl text-[#f0b395]">
                 {states.length.toString().padStart(2, "0")}
               </p>
               <p className="mt-1 text-[10px] uppercase tracking-[0.16em] text-[#c4c9bf]">
@@ -207,7 +189,7 @@ export default function MonumentsPage() {
             </div>
 
             <div>
-              <p className="font-serif text-3xl text-[#e5c78f]">
+              <p className="font-serif text-3xl text-[#f0b395]">
                 {categories.length.toString().padStart(2, "0")}
               </p>
               <p className="mt-1 text-[10px] uppercase tracking-[0.16em] text-[#c4c9bf]">
@@ -221,20 +203,20 @@ export default function MonumentsPage() {
       <section className="mx-auto max-w-7xl px-5 py-12 sm:px-8 sm:py-16">
         <div className="mb-10 flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#a17b43]">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#bf6548]">
               BROWSE COLLECTION
             </p>
-            <h2 className="mt-3 font-serif text-4xl text-[#183b32] sm:text-5xl">
+            <h2 className="mt-3 font-serif text-4xl text-[#1a2c3b] sm:text-5xl">
               Heritage sites
             </h2>
           </div>
 
-          <p className="text-sm text-[#77796f]">
+          <p className="text-sm text-[#75818a]">
             Showing {filteredMonuments.length} of {monuments.length} records
           </p>
         </div>
 
-        <div className="mb-10 border border-[#ded8ca] bg-white/50 p-5 sm:p-7">
+        <div className="mb-10 border border-[#d2dce2] bg-white/50 p-5 sm:p-7">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <div className="lg:col-span-1">
               <label
@@ -250,7 +232,7 @@ export default function MonumentsPage() {
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="Search monuments..."
-                className="w-full border border-[#ded8ca] bg-[#f5f2e9] px-4 py-3 text-sm text-[#183b32] outline-none transition placeholder:text-[#62645c] focus:border-[#a17b43]"
+                className="w-full border border-[#d2dce2] bg-[#f3f5f6] px-4 py-3 text-sm text-[#1a2c3b] outline-none transition placeholder:text-[#62645c] focus:border-[#bf6548]"
               />
             </div>
 
@@ -266,7 +248,7 @@ export default function MonumentsPage() {
                 id="state-filter"
                 value={stateFilter}
                 onChange={(event) => setStateFilter(event.target.value)}
-                className="w-full border border-[#ded8ca] bg-[#f5f2e9] px-3 py-3 text-sm text-[#183b32] outline-none focus:border-[#a17b43]"
+                className="w-full border border-[#d2dce2] bg-[#f3f5f6] px-3 py-3 text-sm text-[#1a2c3b] outline-none focus:border-[#bf6548]"
               >
                 <option>All States</option>
                 {states.map((state) => (
@@ -287,7 +269,7 @@ export default function MonumentsPage() {
                 id="category-filter"
                 value={categoryFilter}
                 onChange={(event) => setCategoryFilter(event.target.value)}
-                className="w-full border border-[#ded8ca] bg-[#f5f2e9] px-3 py-3 text-sm text-[#183b32] outline-none focus:border-[#a17b43]"
+                className="w-full border border-[#d2dce2] bg-[#f3f5f6] px-3 py-3 text-sm text-[#1a2c3b] outline-none focus:border-[#bf6548]"
               >
                 <option>All Categories</option>
                 {categories.map((category) => (
@@ -308,7 +290,7 @@ export default function MonumentsPage() {
                 id="period-filter"
                 value={periodFilter}
                 onChange={(event) => setPeriodFilter(event.target.value)}
-                className="w-full border border-[#ded8ca] bg-[#f5f2e9] px-3 py-3 text-sm text-[#183b32] outline-none focus:border-[#a17b43]"
+                className="w-full border border-[#d2dce2] bg-[#f3f5f6] px-3 py-3 text-sm text-[#1a2c3b] outline-none focus:border-[#bf6548]"
               >
                 <option>All Periods</option>
                 {periods.map((period) => (
@@ -322,7 +304,7 @@ export default function MonumentsPage() {
             <button
               type="button"
               onClick={clearFilters}
-              className="text-xs font-semibold uppercase tracking-widest text-[#a17b43] transition hover:text-[#183b32]"
+              className="text-xs font-semibold uppercase tracking-widest text-[#bf6548] transition hover:text-[#1a2c3b]"
             >
               Clear all filters ↗
             </button>
@@ -331,13 +313,13 @@ export default function MonumentsPage() {
 
         {loading ? (
           <div className="py-24 text-center">
-            <p className="font-serif text-2xl text-[#183b32]">
+            <p className="font-serif text-2xl text-[#1a2c3b]">
               Loading heritage collection...
             </p>
           </div>
         ) : error ? (
           <div className="border border-[#d9b7a8] bg-[#fff8f4] px-6 py-10 text-center">
-            <h3 className="font-serif text-2xl text-[#183b32]">
+            <h3 className="font-serif text-2xl text-[#1a2c3b]">
               Archive unavailable
             </h3>
             <p className="mt-3 text-sm text-[#8b5546]">{error}</p>
@@ -353,32 +335,32 @@ export default function MonumentsPage() {
                 <Link
                   to={`/monuments/${monument.id}`}
                   key={monument.id}
-                  className="group overflow-hidden border border-[#ded8ca] bg-white/50 transition duration-300 hover:-translate-y-1 hover:border-[#b9955b] hover:shadow-xl hover:shadow-[#183b32]/10"
+                  className="group overflow-hidden border border-[#d2dce2] bg-white/50 transition duration-300 hover:-translate-y-1 hover:border-[#b9955b] hover:shadow-xl hover:shadow-[#1a2c3b]/10"
                 >
-                  <div className="relative aspect-[4/3] overflow-hidden bg-[#e8e5df]">
+                  <div className="relative aspect-[4/3] overflow-hidden bg-[#e8edf0]">
                     <MonumentImage monument={monument} />
 
-                    <span className="absolute left-4 top-4 bg-[#f5f2e9] px-3 py-2 text-[9px] font-semibold uppercase tracking-widest text-[#183b32]">
+                    <span className="absolute left-4 top-4 bg-[#f3f5f6] px-3 py-2 text-[9px] font-semibold uppercase tracking-widest text-[#1a2c3b]">
                       {monument.category || "HERITAGE SITE"}
                     </span>
 
                     {monument.is_unesco_site && (
-                      <span className="absolute bottom-4 left-4 bg-[#183b32] px-3 py-2 text-[9px] font-semibold uppercase tracking-widest text-[#e5c78f]">
+                      <span className="absolute bottom-4 left-4 bg-[#1a2c3b] px-3 py-2 text-[9px] font-semibold uppercase tracking-widest text-[#f0b395]">
                         UNESCO
                       </span>
                     )}
                   </div>
 
                   <div className="p-5 sm:p-6">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#a17b43]">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#bf6548]">
                       {monument.architectural_period || "HISTORICAL RECORD"}
                     </p>
 
-                    <h3 className="mt-3 font-serif text-2xl leading-tight text-[#183b32] transition group-hover:text-[#a17b43]">
+                    <h3 className="mt-3 font-serif text-2xl leading-tight text-[#1a2c3b] transition group-hover:text-[#bf6548]">
                       {monument.name || "Untitled monument"}
                     </h3>
 
-                    <p className="mt-3 text-xs text-[#77796f]">
+                    <p className="mt-3 text-xs text-[#75818a]">
                       {location || "Location not available"}
                     </p>
 
@@ -387,12 +369,12 @@ export default function MonumentsPage() {
                         "Explore the historical and architectural record of this heritage site."}
                     </p>
 
-                    <div className="mt-6 flex items-center justify-between border-t border-[#ded8ca] pt-4">
-                      <span className="text-[10px] font-semibold uppercase tracking-widest text-[#55594f]">
+                    <div className="mt-6 flex items-center justify-between border-t border-[#d2dce2] pt-4">
+                      <span className="text-[10px] font-semibold uppercase tracking-widest text-[#66727d]">
                         Explore record
                       </span>
 
-                      <span className="text-lg text-[#a17b43] transition group-hover:translate-x-1">
+                      <span className="text-lg text-[#bf6548] transition group-hover:translate-x-1">
                         ↗
                       </span>
                     </div>
@@ -402,17 +384,17 @@ export default function MonumentsPage() {
             })}
           </div>
         ) : (
-          <div className="border border-[#ded8ca] py-20 text-center">
-            <p className="font-serif text-3xl text-[#183b32]">
+          <div className="border border-[#d2dce2] py-20 text-center">
+            <p className="font-serif text-3xl text-[#1a2c3b]">
               No records found
             </p>
-            <p className="mt-3 text-sm text-[#77796f]">
+            <p className="mt-3 text-sm text-[#75818a]">
               Try changing your search or filters.
             </p>
             <button
               type="button"
               onClick={clearFilters}
-              className="mt-6 bg-[#183b32] px-6 py-3 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-[#285548]"
+              className="mt-6 bg-[#1a2c3b] px-6 py-3 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-[#344d61]"
             >
               Reset filters
             </button>
@@ -420,10 +402,10 @@ export default function MonumentsPage() {
         )}
       </section>
 
-      <footer className="border-t border-[#ded8ca] px-5 py-7 sm:px-8">
+      <footer className="border-t border-[#d2dce2] px-5 py-7 sm:px-8">
         <div className="mx-auto flex max-w-7xl flex-col justify-between gap-3 text-xs text-[#62645c] sm:flex-row">
           <span>HERITAGEVERSE — A LIVING ARCHIVE</span>
-          <Link to="/dashboard" className="transition hover:text-[#a17b43]">
+          <Link to="/dashboard" className="transition hover:text-[#bf6548]">
             Return to workspace ↑
           </Link>
         </div>

@@ -1,6 +1,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "../context/useAuth.js";
 import {
   getMonumentImages,
   uploadMonumentImage,
@@ -47,6 +49,8 @@ export default function MonumentGallery({
   name = "Monument",
   images = [],
 }) {
+  const { user } = useAuth();
+  const location = useLocation();
   const [galleryImages, setGalleryImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -55,7 +59,6 @@ export default function MonumentGallery({
   const [failedImages, setFailedImages] = useState([]);
 
   const fileInputRef = useRef(null);
-
   const fallbackImagesKey = JSON.stringify(images);
 
   // Fetch gallery images
@@ -64,8 +67,6 @@ export default function MonumentGallery({
 
     async function fetchGallery() {
       try {
-        setLoading(true);
-
         const response = await getMonumentImages(monumentId);
 
         const fallbackImages = JSON.parse(fallbackImagesKey);
@@ -94,10 +95,7 @@ export default function MonumentGallery({
       }
     }
 
-    if (!monumentId) {
-  cancelled = true;
-  return;
-}
+    if (!monumentId) return;
 
     fetchGallery();
 
@@ -106,7 +104,7 @@ export default function MonumentGallery({
     };
   }, [monumentId, name, fallbackImagesKey]);
 
-  // Lock background scrolling while image viewer is open
+  // Lock background scrolling while viewer is open
   useEffect(() => {
     if (!activeImage) return;
 
@@ -188,12 +186,11 @@ export default function MonumentGallery({
     }
   };
 
-  // Open image viewer
+  // Open and close viewer
   const openPreview = (image) => {
     setActiveImage(image);
   };
 
-  // Close image viewer
   const closePreview = () => {
     setActiveImage(null);
   };
@@ -223,65 +220,67 @@ export default function MonumentGallery({
     setActiveImage(galleryImages[index]);
   };
 
-  // Keyboard controls
+  // Keyboard navigation
   useEffect(() => {
-  if (!activeImage) return;
+    if (!activeImage) return;
 
-  const handleKeyDown = (event) => {
-    if (event.key === "Escape") {
-      setActiveImage(null);
-    }
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        setActiveImage(null);
+      }
 
-    if (event.key === "ArrowLeft") {
-      setActiveImage((current) => {
-        const index = galleryImages.findIndex(
-          (image) => image.id === current?.id
-        );
+      if (event.key === "ArrowLeft") {
+        setActiveImage((current) => {
+          const index = galleryImages.findIndex(
+            (image) => image.id === current?.id
+          );
 
-        if (index === -1) return current;
+          if (index === -1) return current;
 
-        return galleryImages[
-          (index - 1 + galleryImages.length) % galleryImages.length
-        ];
-      });
-    }
+          return galleryImages[
+            (index - 1 + galleryImages.length) %
+              galleryImages.length
+          ];
+        });
+      }
 
-    if (event.key === "ArrowRight") {
-      setActiveImage((current) => {
-        const index = galleryImages.findIndex(
-          (image) => image.id === current?.id
-        );
+      if (event.key === "ArrowRight") {
+        setActiveImage((current) => {
+          const index = galleryImages.findIndex(
+            (image) => image.id === current?.id
+          );
 
-        if (index === -1) return current;
+          if (index === -1) return current;
 
-        return galleryImages[
-          (index + 1) % galleryImages.length
-        ];
-      });
-    }
-  };
+          return galleryImages[
+            (index + 1) % galleryImages.length
+          ];
+        });
+      }
+    };
 
-  window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
 
-  return () => {
-    window.removeEventListener("keydown", handleKeyDown);
-  };
-}, [activeImage, galleryImages]);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [activeImage, galleryImages]);
 
   return (
     <>
-      <section className="mt-12 border-t border-[#ded6c6] pt-10">
+      {/* Monument Image Gallery */}
+      <section className="mt-12 border-t border-[#d2dce2] pt-10">
         <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#a17b43]">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#bf6548]">
               MONUMENT COLLECTION
             </p>
 
-            <h2 className="mt-2 font-serif text-3xl text-[#183b32]">
+            <h2 className="mt-2 font-serif text-3xl text-[#1a2c3b]">
               Image Gallery
             </h2>
 
-            <p className="mt-2 text-sm text-[#77796f]">
+            <p className="mt-2 text-sm text-[#75818a]">
               Photographs of {name}
             </p>
           </div>
@@ -295,18 +294,28 @@ export default function MonumentGallery({
               className="hidden"
             />
 
-            <button
-              type="button"
-              disabled={uploading}
-              onClick={() => fileInputRef.current?.click()}
-              className="rounded-full bg-[#183b32] px-5 py-3 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-[#285548] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {uploading ? "Uploading..." : "+ Add Image"}
-            </button>
+            {user ? (
+              <button
+                type="button"
+                disabled={uploading}
+                onClick={() => fileInputRef.current?.click()}
+                className="rounded-full bg-[#1a2c3b] px-5 py-3 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-[#344d61] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {uploading ? "Uploading..." : "+ Add Image"}
+              </button>
+            ) : (
+              <Link
+                to="/auth"
+                state={{ from: location }}
+                className="inline-flex min-h-11 items-center rounded-full bg-[#1a2c3b] px-5 py-3 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-[#344d61]"
+              >
+                Sign in to contribute
+              </Link>
+            )}
           </div>
         </div>
 
-        <p className="mb-5 text-xs text-[#77796f]">
+        <p className="mb-5 text-xs text-[#75818a]">
           JPG, PNG or WEBP · Maximum 8 MB per image
         </p>
 
@@ -317,22 +326,22 @@ export default function MonumentGallery({
         )}
 
         {loading ? (
-          <div className="py-12 text-center text-sm text-[#77796f]">
+          <div className="py-12 text-center text-sm text-[#75818a]">
             Loading image gallery...
           </div>
         ) : galleryImages.length === 0 ? (
           <div className="rounded-xl border border-dashed border-[#cfc5b2] bg-white/40 px-6 py-16 text-center">
-            <p className="font-serif text-2xl text-[#183b32]">
+            <p className="font-serif text-2xl text-[#1a2c3b]">
               No photographs yet
             </p>
 
-            <p className="mt-3 text-sm text-[#77796f]">
+            <p className="mt-3 text-sm text-[#75818a]">
               Add the first photograph to this monument's gallery.
             </p>
           </div>
         ) : (
           <>
-            <div className="mb-4 text-xs text-[#77796f]">
+            <div className="mb-4 text-xs text-[#75818a]">
               {galleryImages.length} photographs
             </div>
 
@@ -342,10 +351,10 @@ export default function MonumentGallery({
                   key={image.id}
                   type="button"
                   onClick={() => openPreview(image)}
-                  className="group relative flex aspect-square items-center justify-center overflow-hidden rounded-xl border border-[#ded6c6] bg-[#e9e3d5]"
+                  className="group relative flex aspect-square items-center justify-center overflow-hidden rounded-xl border border-[#d2dce2] bg-[#e9e3d5]"
                 >
                   {failedImages.includes(image.url) ? (
-                    <div className="flex h-full items-center justify-center text-xs text-[#77796f]">
+                    <div className="flex h-full items-center justify-center text-xs text-[#75818a]">
                       Image unavailable
                     </div>
                   ) : (
@@ -360,12 +369,12 @@ export default function MonumentGallery({
                             : [...previous, image.url]
                         )
                       }
-                      className="h-full w-full object-contain transition duration-300 group-hover:scale-[1.03]"
+                      className="block h-full w-full object-contain"
                     />
                   )}
 
                   <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 to-transparent px-3 pb-3 pt-8 text-left text-xs text-white opacity-0 transition group-hover:opacity-100">
-                    View image ↗
+                    View full image ↗
                   </span>
                 </button>
               ))}
@@ -374,22 +383,22 @@ export default function MonumentGallery({
         )}
       </section>
 
-      {/* Google-style image viewer rendered outside the page */}
+      {/* Standalone image viewer using React Portal */}
       {activeImage &&
         createPortal(
           <div
-            className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/45 p-3 backdrop-blur-[2px] sm:p-6"
+            className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/45 p-4 backdrop-blur-[2px]"
             onClick={closePreview}
             role="dialog"
             aria-modal="true"
             aria-label={`${name} image viewer`}
           >
-            {/* Viewer controls */}
+            {/* Viewer content */}
             <div
-              className="relative flex max-h-[94vh] max-w-[94vw] flex-col items-center"
+              className="relative flex max-h-[90vh] max-w-[92vw] flex-col items-center"
               onClick={(event) => event.stopPropagation()}
             >
-              {/* Top toolbar */}
+              {/* Toolbar */}
               <div className="mb-3 flex w-full items-center justify-between gap-4 text-white">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium">
@@ -404,29 +413,27 @@ export default function MonumentGallery({
                 <button
                   type="button"
                   onClick={closePreview}
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/15 text-2xl text-white transition hover:bg-white/30"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/30 bg-white/15 text-xl text-white transition hover:bg-white/30"
                   aria-label="Close image"
                 >
                   ×
                 </button>
               </div>
 
-              {/* Actual image - no oversized canvas */}
-              <div className="flex max-h-[85vh] max-w-[94vw] items-center justify-center">
-                <img
-                  src={activeImage.url}
-                  alt={activeImage.title}
-                  className="block max-h-[85vh] max-w-[94vw] rounded-lg object-contain shadow-2xl"
-                />
-              </div>
+              {/* Image: its own dimensions, no oversized canvas */}
+              <img
+                src={activeImage.url}
+                alt={activeImage.title}
+                className="block max-h-[82vh] max-w-[92vw] rounded-lg object-contain shadow-2xl"
+              />
 
-              {/* Image navigation */}
+              {/* Previous and next controls */}
               {galleryImages.length > 1 && (
                 <>
                   <button
                     type="button"
                     onClick={showPrevious}
-                    className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-2xl text-[#183b32] shadow-lg transition hover:bg-white sm:-left-14"
+                    className="absolute -left-2 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-2xl text-[#1a2c3b] shadow-lg transition hover:bg-white sm:-left-14"
                     aria-label="Previous image"
                   >
                     ‹
@@ -435,7 +442,7 @@ export default function MonumentGallery({
                   <button
                     type="button"
                     onClick={showNext}
-                    className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-2xl text-[#183b32] shadow-lg transition hover:bg-white sm:-right-14"
+                    className="absolute -right-2 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-2xl text-[#1a2c3b] shadow-lg transition hover:bg-white sm:-right-14"
                     aria-label="Next image"
                   >
                     ›

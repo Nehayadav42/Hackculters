@@ -5,9 +5,15 @@ import monumentRoutes from './routes/monument.routes.js';
 import aiRoutes from './routes/ai.routes.js';
 
 const app = express();
+const allowedOrigins = (
+    process.env.FRONTEND_ORIGINS || "http://localhost:5173"
+)
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
 
 app.use(cors({
-    origin: 'http://localhost:5173', // Your teammate's Vite frontend port
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));

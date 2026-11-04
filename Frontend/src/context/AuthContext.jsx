@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { AuthContext } from "./AuthContext.js";
@@ -9,34 +10,51 @@ export function AuthProvider({ children }) {
   const [logoutInProgress, setLogoutInProgress] = useState(false);
 
   useEffect(() => {
-    const getSession = async () => {
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession();
-
-      if (error) {
-        console.error("Session error:", error.message);
-      }
-
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    };
-
-    getSession();
+    let mounted = true;
+    let authEventReceived = false;
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
-      }
-    );
+    } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+      authEventReceived = true;
 
-    return () => subscription.unsubscribe();
+      if (!mounted) return;
+
+      setSession(currentSession);
+      setUser(currentSession?.user ?? null);
+      setLoading(false);
+    });
+
+    const initializeSession = async () => {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+
+        if (error) throw error;
+
+        if (mounted && !authEventReceived) {
+          setSession(data.session);
+          setUser(data.session?.user ?? null);
+        }
+      } catch (error) {
+        console.error("Session initialization error:", error.message);
+
+        if (mounted && !authEventReceived) {
+          setSession(null);
+          setUser(null);
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    initializeSession();
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signOut = async () => {
@@ -44,9 +62,8 @@ export function AuthProvider({ children }) {
 
     try {
       const { error } = await supabase.auth.signOut();
-      if (error) {
-        throw error;
-      }
+
+      if (error) throw error;
 
       setSession(null);
       setUser(null);
