@@ -32,12 +32,11 @@ const storage = new CloudinaryStorage({
             .replace(/^_+|_+$/g, "")
             .slice(0, 100) || "archive";
 
-        return {
-            folder: "cultural_heritage_archives",
-            resource_type: resourceType,
-            allowed_formats: ["jpg", "jpeg", "png", "webp", "pdf", "txt", "docx"],
-            public_id: `${randomUUID()}-${safeName}${resourceType === "raw" ? extension : ""}`,
-        };
+            return {
+                folder: "cultural_heritage_archives",
+                resource_type: resourceType,
+                public_id: `${randomUUID()}-${safeName}${resourceType === "raw" ? extension : ""}`,
+            };
     },
 });
 

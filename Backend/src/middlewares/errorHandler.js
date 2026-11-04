@@ -1,5 +1,6 @@
 
 const errorHandler = (err, req, res, next) => {
+    console.error("[BACKEND ERROR]", err);
     const isMulterError = err.name === "MulterError";
     const statusCode =
         err.statusCode ||

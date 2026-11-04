@@ -11,8 +11,12 @@ export const processOcrDocument = async (req, res, next) => {
             output_language,
             document_type
         } = req.body;
+        
         const originalName = req.file.originalname;
+        
+        // Thanks to multer-storage-cloudinary, req.file.path is ALREADY the live Cloudinary URL.
         const fileUrl = req.file.path;
+
         const aiResult = await processUploadedDocumentViaAI({
             fileUrl,
             originalName,
@@ -28,7 +32,7 @@ export const processOcrDocument = async (req, res, next) => {
                 site_id: site_id || null,
                 title: title || originalName,
                 document_type: req.file.mimetype.includes('image') ? 'Image' : 'Document',
-                file_path: fileUrl,
+                file_path: fileUrl, 
                 original_file_name: originalName,
                 language: aiResult.detected_source_language || source_language,
                 ocr_text: aiResult.original_text,

@@ -17,7 +17,7 @@ router.post(
     '/ocr',
     requireAuthenticatedUser,
     requireCloudinary,
-    upload.single('document'),
+    upload.single('file'),
     ocrController.processOcrDocument
 );
 router.get(

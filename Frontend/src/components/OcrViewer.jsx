@@ -1,6 +1,4 @@
-
 import { useState } from "react";
-import { processOcrDocument } from "../services/api.js";
 
 export default function OcrViewer() {
   const [file, setFile] = useState(null);
@@ -29,13 +27,40 @@ export default function OcrViewer() {
         throw new Error("Choose a file smaller than 10 MB.");
       }
 
-      const response = await processOcrDocument({
-        file,
-        sourceLanguage: sourceLang,
-        targetLanguage: targetLang,
-        documentType: docType,
+      // 1. Automatically grab the active Supabase session token from localStorage
+      const supabaseKey = Object.keys(localStorage).find(
+        (key) => key.startsWith("sb-") && key.endsWith("-auth-token")
+      );
+      let token = "";
+      if (supabaseKey) {
+        const sessionData = JSON.parse(localStorage.getItem(supabaseKey));
+        token = sessionData?.access_token || "";
+      }
+
+      // 2. Build the form data exactly as Express expects it
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("source_language", sourceLang);
+      formData.append("output_language", targetLang);
+      formData.append("document_type", docType);
+
+      // 3. Fetch directly to your Node.js Express route with the dynamic token
+      const res = await fetch("http://localhost:5000/api/v1/ai/ocr", {
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
-      setResult(response.ai_metadata);
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || data.error || "Failed to process document.");
+      }
+
+      // 4. Set the result using the ai_metadata returned from your Express controller
+      setResult(data.ai_metadata);
     } catch (err) {
       setError(err.message || "Something went wrong.");
     } finally {
